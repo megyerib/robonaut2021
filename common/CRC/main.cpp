@@ -1,12 +1,11 @@
 #include <cstdio>
-#include <cstring>
 #include <cstdint>
 #include "crc8.h"
 
 int main()
 {
     uint8_t test[] = "Hello!";
-    size_t testLen = strlen((char*)test);
+    size_t testLen = 6;
 
     uint8_t crc = Crc8::GetBlockCrc(test, testLen);
     printf("%02X\n", crc);

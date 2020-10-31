@@ -238,3 +238,11 @@ uint8_t Crc8::GetBlockCrc(const uint8_t data[], size_t len)
 
 	return crc;
 }
+
+bool Crc8::CheckBlockCrc(const uint8_t data[], size_t len)
+{
+    uint8_t actualCrc = data[len - 1]; // Last byte
+    uint8_t calculatedCrc = GetBlockCrc(data, len - 1); // Exclude last byte
+
+    return (actualCrc == calculatedCrc);
+}

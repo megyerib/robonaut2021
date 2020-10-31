@@ -9,8 +9,9 @@
  *
  * (Lehet, hogy a \r-t is escape-elni kell, ez majd a Qt-tól fog függeni) */
 
-#define ESCAPE_CHAR           (0x55)
-#define LINEFEED_SUBSTITUTE   (0x00)
+#define ESCAPE_CHAR     (0x55)
+#define LF_SUBSTITUTE   (0x00)
+#define CR_SUBSTITUTE   (0x01)
 
 void EscapeEncoder::Encode(const uint8_t* bin, size_t binSize, uint8_t* enc, size_t& encSize)
 {
@@ -23,7 +24,13 @@ void EscapeEncoder::Encode(const uint8_t* bin, size_t binSize, uint8_t* enc, siz
         {
             enc[iEnc] = ESCAPE_CHAR;
             iEnc++;
-            enc[iEnc] = LINEFEED_SUBSTITUTE;
+            enc[iEnc] = LF_SUBSTITUTE;
+        }
+        else if (bin[iBin] == '\r')
+        {
+            enc[iEnc] = ESCAPE_CHAR;
+            iEnc++;
+            enc[iEnc] = CR_SUBSTITUTE;
         }
         else if (bin[iBin] == ESCAPE_CHAR)
 		{
@@ -54,9 +61,13 @@ void EscapeEncoder::Decode(const uint8_t* enc, size_t encSize, uint8_t* bin, siz
 		{
 			iEnc++;
 
-            if (enc[iEnc] == LINEFEED_SUBSTITUTE)
+            if (enc[iEnc] == LF_SUBSTITUTE)
             {
                 bin[iBin] = '\n';
+            }
+            else if (enc[iEnc] == CR_SUBSTITUTE)
+            {
+                bin[iBin] = '\r';
             }
             else if (enc[iEnc] == ESCAPE_CHAR)
             {

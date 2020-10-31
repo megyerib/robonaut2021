@@ -20,6 +20,7 @@ public:
 	uint8_t GetCrc();
 	
 	static uint8_t GetBlockCrc(const uint8_t data[], size_t len);
+    static bool CheckBlockCrc(const uint8_t data[], size_t len);
 	
 private:
 	uint8_t crc;
