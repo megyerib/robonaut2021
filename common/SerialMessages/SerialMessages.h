@@ -35,7 +35,7 @@ typedef struct
 {
     smID id;
     uint32_t timestamp; // [us]
-    uint32_t value;
+    int32_t  value;
 }
 SM_DUMMY;
 
