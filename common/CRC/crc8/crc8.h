@@ -2,6 +2,7 @@
 #pragma once
 
 #include <cstdint>
+#include <cstddef>
 
 #define CRC8_8         (0)
 #define CRC8_MAXIM     (1)
@@ -19,8 +20,8 @@ public:
 	void PushByte(const uint8_t byte);
 	uint8_t GetCrc();
 	
-	static uint8_t GetBlockCrc(const uint8_t data[], size_t len);
-    static bool CheckBlockCrc(const uint8_t data[], size_t len);
+	static uint8_t GetBlockCrc(const void* data, size_t len);
+    static bool CheckBlockCrc(const void* data, size_t len);
 	
 private:
 	uint8_t crc;

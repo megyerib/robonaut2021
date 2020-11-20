@@ -227,22 +227,32 @@ uint8_t Crc8::GetCrc()
 	return crc;
 }
 
-uint8_t Crc8::GetBlockCrc(const uint8_t data[], size_t len)
+uint8_t Crc8::GetBlockCrc(const void* data, size_t len)
 {
+	const uint8_t* dataBytes = (const uint8_t*) data;
 	uint8_t crc = CRC8_INIT;
 
 	while (len--)
 	{
-		crc = crc8_table[crc ^ *data++];
+		crc = crc8_table[crc ^ *dataBytes++];
 	}
 
 	return crc;
 }
 
-bool Crc8::CheckBlockCrc(const uint8_t data[], size_t len)
+bool Crc8::CheckBlockCrc(const void* data, size_t len)
 {
-    uint8_t actualCrc = data[len - 1]; // Last byte
-    uint8_t calculatedCrc = GetBlockCrc(data, len - 1); // Exclude last byte
+	const uint8_t* dataBytes = (const uint8_t*) data;
 
-    return (actualCrc == calculatedCrc);
+	if (len > 0)
+	{
+		uint8_t actualCrc = dataBytes[len - 1]; // Last byte
+		uint8_t calculatedCrc = GetBlockCrc(dataBytes, len - 1); // Exclude last byte
+
+		return (actualCrc == calculatedCrc);
+	}
+	else
+	{
+		return true;
+	}
 }

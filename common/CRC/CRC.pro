@@ -4,8 +4,8 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += \
-        crc8.cpp \
+        crc8/crc8.cpp \
         main.cpp
 
 HEADERS += \
-        crc8.h
+        crc8/crc8.h

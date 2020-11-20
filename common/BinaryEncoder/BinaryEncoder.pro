@@ -4,9 +4,9 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += \
-    EscapeEncoder.cpp \
+    BinaryEncoder/EscapeEncoder.cpp \
     test.cpp
 
 HEADERS += \
-    BinaryEncoder.h \
-    EscapeEncoder.h
+    BinaryEncoder/BinaryEncoder.h \
+    BinaryEncoder/EscapeEncoder.h
