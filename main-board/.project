@@ -43,6 +43,11 @@
 			<locationURI>PARENT-1-PROJECT_LOC/common/stm32/CMSIS</locationURI>
 		</link>
 		<link>
+			<name>Lib/Controller</name>
+			<type>2</type>
+			<locationURI>PARENT-1-PROJECT_LOC/common/Controller/Controller</locationURI>
+		</link>
+		<link>
 			<name>Lib/FreeRTOS</name>
 			<type>2</type>
 			<locationURI>PARENT-1-PROJECT_LOC/common/stm32/FreeRTOS</locationURI>
@@ -61,6 +66,11 @@
 			<name>Lib/SerialMessages</name>
 			<type>2</type>
 			<locationURI>PARENT-1-PROJECT_LOC/common/SerialMessages</locationURI>
+		</link>
+		<link>
+			<name>Lib/base64</name>
+			<type>2</type>
+			<locationURI>PARENT-1-PROJECT_LOC/common/base64/base64</locationURI>
 		</link>
 		<link>
 			<name>Lib/crc8</name>

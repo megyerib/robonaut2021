@@ -1,6 +1,6 @@
 #include <cstdio>
 #include <cstdint>
-#include "crc8/crc8.h"
+#include "crc8.h"
 
 int main()
 {

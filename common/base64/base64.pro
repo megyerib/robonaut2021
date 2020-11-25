@@ -3,11 +3,11 @@ CONFIG += console c++11
 CONFIG -= app_bundle
 CONFIG -= qt
 
-INCLUDEPATH += crc8/
+INCLUDEPATH += base64
 
 SOURCES += \
-        crc8/crc8.cpp \
-        main.cpp
+	base64/base64.c \
+	main.c
 
 HEADERS += \
-        crc8/crc8.h
+    base64/base64.h
