@@ -11,7 +11,9 @@ Distance* Distance::GetInstance()
 
 float Distance::GetDistance(DistanceSensor sensor)
 {
-    float distance = 0.0f;
+	if (!InitDone) return 0;
+
+	float distance = 0.0f;
 
     switch (sensor)
     {
@@ -25,14 +27,17 @@ float Distance::GetDistance(DistanceSensor sensor)
             break;
         }
     }
+
     return distance;
 }
 
 void Distance::SetFrontServo(float angle)
 {
+	if (!InitDone) return;
+
 	angle *= 0.8f; // Magic value measured during calibration
 
-	float offset = 3.14159265358979323846f / 2.0f - 0.0389f;
+	float offset = 3.14159265358979323846f / 2.0f - 0.0389f; // TODO calc constant
     float servo_angle = angle + offset;
 
     srv_front->SetSteerAngle(servo_angle);
@@ -40,24 +45,25 @@ void Distance::SetFrontServo(float angle)
 
 void Distance::Process()
 {
-    tof_front->Process();
+    // Initialization includes waiting so it shall be done in the periodic process function
+
+	if (!InitDone)
+    {
+		InitPower();
+		InitServo();
+		InitTof(); // Includes waiting
+
+		InitDone = true;
+    }
+    else
+    {
+    	tof_front->Process();
+    }
 }
 
 Distance::Distance()
 {
-	InitPower();
 
-	srv_front = new Servo(eTIM8, TIM_CHANNEL_1);
-    srv_front->Enable();
-
-    tof_front = new TOF_L1(0x20,
-                           100,
-                           200,
-                           TOF_FRONT_XSDN_Port,
-                           TOF_FRONT_XSDN_Pin);
-    tof_front->Init();
-
-    SetFrontServo(1.57f);
 }
 
 void Distance::InitPower()
@@ -80,7 +86,25 @@ void Distance::InitPower()
 	HAL_GPIO_WritePin(GPIOC, TOF_POWER_EN_Pin, GPIO_PIN_SET);
 }
 
-void PowerEnable(bool en)
+void Distance::InitServo()
+{
+	srv_front = new Servo(eTIM8, TIM_CHANNEL_1);
+	srv_front->Enable();
+}
+
+void Distance::InitTof()
+{
+	tof_front = new TOF_L1(0x20,
+						   100,
+						   200,
+						   TOF_FRONT_XSDN_Port,
+						   TOF_FRONT_XSDN_Pin);
+	tof_front->Init();
+
+	SetFrontServo(0.0f);
+}
+
+void Distance::PowerEnable(bool en)
 {
 	HAL_GPIO_WritePin(GPIOC, TOF_POWER_EN_Pin, en ? GPIO_PIN_SET : GPIO_PIN_RESET);
 }

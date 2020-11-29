@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Uptime.h"
-
 #include "EncoderTimer.h"
 
 #define ENCODER_SAMPLING_PERIOD   10 /* ms */
@@ -26,7 +24,6 @@ public:
 
 private:
 	EncoderHw* enc;
-	Uptime* usTimer;
 
 	EncMeasPoint mPoints[ENCODER_MEASURE_POINTS];
 	size_t mPointIndex = 0;

@@ -1,6 +1,7 @@
 #include "Encoder.h"
 #include "Trace.h"
 #include "SerialMessages.h"
+#include "Uptime.h"
 
 #define INC_PER_M    (140331.0f)
 // The whole 32 bit counter range is more than 30 km
@@ -8,7 +9,6 @@
 Encoder::Encoder()
 {
 	enc      = EncoderHw::GetInstance();
-	usTimer  = Uptime::GetInstance();
 }
 
 Encoder* Encoder::GetInstance()
@@ -52,7 +52,7 @@ void Encoder::Process()
 	mPointIndex %= ENCODER_MEASURE_POINTS;
 
 	mPoints[mPointIndex].encVal = (int32_t) enc->GetCounterValue();
-	mPoints[mPointIndex].timVal = usTimer->GetTime();
+	mPoints[mPointIndex].timVal = UPTIME_us();
 	__enable_irq();
 
 	// Trace

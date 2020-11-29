@@ -2,7 +2,6 @@
 
 #include "ToF_4m_L1.h"
 #include "Servo.h"
-#include "Transmitter.h"
 
 #define DISTANCE_SAMPLING_CYCLE   50 /* ms */
 
@@ -17,13 +16,11 @@ DistanceSensor;
 class Distance
 {
 private:
-    Servo*   srv_front;
+    Servo*   srv_front = nullptr;
 
-    TOF_L1*  tof_front;
+    TOF_L1*  tof_front = nullptr;
     //TOF_L1*  tof_right;
     //TOF_L1*  tof_x;
-
-    Transmitter* trace;
 
 public:
 	static Distance* GetInstance();
@@ -32,8 +29,12 @@ public:
 	void Process();
 
 private:
+	bool InitDone = false;
+
 	Distance();
 
 	void InitPower();
+	void InitServo();
+	void InitTof(); // Includes waiting
 	void PowerEnable(bool en);
 };

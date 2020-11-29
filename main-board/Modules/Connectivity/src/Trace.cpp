@@ -5,10 +5,11 @@
 #include <cstring>
 #include "EscapeEncoder.h"
 #include "crc8.h"
-#include "../inc/Trace.h"
+#include "Trace.h"
 
-#define MALLOC_PORT(x)            malloc(x)
-#define FREE_PORT(x)              free(x)
+#define MALLOC_PORT(x)            pvPortMalloc(x)
+#define FREE_PORT(x)              vPortFree(x)
+
 #define TEXT_QUEUE_SIZE           32u
 #define BIN_QUEUE_SIZE            64u
 

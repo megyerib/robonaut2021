@@ -1,5 +1,6 @@
 #include "System.h"
 #include "TestTask.h"
+#include "DistanceTask.h"
 
 int main()
 {

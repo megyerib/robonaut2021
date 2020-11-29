@@ -50,8 +50,7 @@ TOF_L1::TOF_L1(uint8_t             const Addr,
 
 void TOF_L1::Init()
 {
-    vTaskDelay(100);
-    Restart();
+    ShutdownWithDelay();
 
     if (isAddressForgotten() == true)
     {
@@ -59,6 +58,7 @@ void TOF_L1::Init()
     }
 
     vTaskDelay(80);
+
     ConfigureDevice();
 }
 
@@ -76,10 +76,10 @@ void TOF_L1::Process()
         {
             uint16_t millimeter = RangingData.RangeMilliMeter;
 
-            // Write dummy variable
+            // Trace (dummy)
             SM_DUMMY msg;
 			msg.id = smDummy;
-			msg.timestamp = UPTIME();
+			msg.timestamp = UPTIME_us();
 			msg.value = millimeter;
 
 			TRACE_BIN(&msg, sizeof(msg));
@@ -167,21 +167,21 @@ bool TOF_L1::isAddressForgotten()
     return isForgotten;
 }
 
-void TOF_L1::Shutdown()
+void TOF_L1::ShutdownOn()
 {
     HAL_GPIO_WritePin(XSDN_Port, XSDN_Pin, GPIO_PIN_RESET);
 }
 
-void TOF_L1::Startup()
+void TOF_L1::ShutdownOff()
 {
     HAL_GPIO_WritePin(XSDN_Port, XSDN_Pin, GPIO_PIN_SET);
 }
 
-void TOF_L1::Restart()
+void TOF_L1::ShutdownWithDelay()
 {
-    Shutdown();
+    ShutdownOn();
     vTaskDelay(150);
-    Startup();
+    ShutdownOff();
 }
 
 void TOF_L1::ChangeAddress()

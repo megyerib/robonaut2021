@@ -52,9 +52,9 @@ public:
 private:
     void InitXsdnGpio();
     bool isAddressForgotten();
-    void Shutdown();
-    void Startup();
-    void Restart();
+    void ShutdownOn();
+    void ShutdownOff();
+    void ShutdownWithDelay();
     void ChangeAddress();
     bool isDeviceConnected();
     void ConfigureDevice();
