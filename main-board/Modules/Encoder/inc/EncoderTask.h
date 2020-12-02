@@ -1,18 +1,15 @@
 #pragma once
 
 #include "CyclicTask.h"
-#include "Encoder.h"
 
 class EncoderTask : public CyclicTask
 {
 public:
-	static EncoderTask* Init();
+    static EncoderTask& Init();
 
 private:
-	Encoder* encoder = nullptr;
-
 	EncoderTask();
 
-	void TaskInit() override;
-	void TaskFunction() override;
+    virtual void TaskInit() override;
+    virtual void TaskFunction() override;
 };

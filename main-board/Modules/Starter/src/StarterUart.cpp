@@ -16,9 +16,11 @@ StarterUart* StarterUart::GetInstance()
 
 int32_t StarterUart::Receive(void* buffer, size_t& size, size_t targetSize)
 {
+	size = 0;
+
 	if (buffer == nullptr)
 	{
-		return RECEIVE_BUFFER_NULL;
+		return RECEIVE_PARAM_ERROR;
 	}
 	if (targetSize < 1)
 	{
@@ -29,10 +31,6 @@ int32_t StarterUart::Receive(void* buffer, size_t& size, size_t targetSize)
 	{
 		*((uint8_t*)buffer) = huart.Instance->DR;
 		size = 1;
-	}
-	else
-	{
-		size = 0;
 	}
 
 	return RECEIVE_OK;

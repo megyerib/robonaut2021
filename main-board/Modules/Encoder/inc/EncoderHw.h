@@ -5,8 +5,8 @@
 class EncoderHw
 {
 public:
-	static EncoderHw* GetInstance();
-	uint32_t GetCounterValue();
+	static EncoderHw& GetInstance();
+	int32_t GetCounterValue();
 
 private:
 	TIM_HandleTypeDef htim;

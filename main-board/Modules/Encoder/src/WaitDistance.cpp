@@ -1,13 +1,13 @@
 #include "WaitDistance.h"
 
-WaitDistance::WaitDistance()
+WaitDistance::WaitDistance() : encoder(Encoder::GetInstance())
 {
-	encoder = Encoder::GetInstance();
+
 }
 
 void WaitDistance::Wait_m(float m)
 {
-	startDistance = encoder->GetDistance();
+	startDistance = encoder.GetDistance();
 	endDistance = startDistance + m;
 
 	positive = (m > 0);
@@ -21,11 +21,11 @@ bool WaitDistance::IsExpired()
 
 	if (positive)
 	{
-		ret = started && (endDistance <= encoder->GetDistance());
+		ret = started && (endDistance <= encoder.GetDistance());
 	}
 	else
 	{
-		ret = started && (endDistance >= encoder->GetDistance());
+		ret = started && (endDistance >= encoder.GetDistance());
 	}
 
 	return ret;
@@ -33,5 +33,5 @@ bool WaitDistance::IsExpired()
 
 float WaitDistance::GetDiff()
 {
-	return encoder->GetDistance() - startDistance;
+	return encoder.GetDistance() - startDistance;
 }

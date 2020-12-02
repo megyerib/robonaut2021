@@ -1,11 +1,12 @@
 #pragma once
 
-#include "EncoderTimer.h"
+#include <EncoderHw.h>
 
-#define ENCODER_SAMPLING_PERIOD   10 /* ms */
+#define ENC_SAMPLING_PERIOD_ms    (10)
 // The accurate timing values will be read from the us timer.
 
-#define ENCODER_MEASURE_POINTS     4
+#define ENC_AVGING_WINDOW         (4)
+#define ENC_SAMPLES               (ENC_AVGING_WINDOW + 1)
 
 typedef struct
 {
@@ -17,16 +18,19 @@ EncMeasPoint;
 class Encoder
 {
 public:
-	static Encoder* GetInstance();
+	static Encoder& GetInstance();
 	float GetDistance(); /* m */
 	float GetSpeed(); /* m/s */
 	void Process();
 
 private:
-	EncoderHw* enc;
+	float speed    = 0;
+	float distance = 0;
 
-	EncMeasPoint mPoints[ENCODER_MEASURE_POINTS];
-	size_t mPointIndex = 0;
+	EncoderHw& enc;
+
+	EncMeasPoint mPoints[ENC_SAMPLES];
+	size_t iMP = 0;
 
 	Encoder();
 };

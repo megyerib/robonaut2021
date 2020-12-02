@@ -1,10 +1,9 @@
 #include "Traction.h"
 #include "printf.h" /* Lightweight printf */
 
-Traction::Traction()
+Traction::Traction() : encoder(Encoder::GetInstance())
 {
-	uart = MotorUart::GetInstance();
-	encoder = Encoder::GetInstance();
+	uart       = MotorUart::GetInstance();
 	controller = new Pid_Controller(0.002f, 0.008f, 0.0f);
 	controller->Set_I_Limit(20.0f);
 
@@ -58,7 +57,7 @@ void Traction::SendDutyCycle(float d /* % [-1;+1] */)
 void Traction::Process()
 {
     // Speed control iteration
-	controller->Process(encoder->GetSpeed());
+	controller->Process(encoder.GetSpeed());
 
 	// Control value ramping
 	if ((controller->GetControlValue() - prevDutyCycle) > 0.01f)

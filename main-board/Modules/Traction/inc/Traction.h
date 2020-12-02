@@ -29,7 +29,7 @@ public:
 
 private:
 	MotorUart*      uart;
-	Encoder*        encoder;
+	Encoder&        encoder;
 	Pid_Controller* controller;
 
 	//float targetSpeed;

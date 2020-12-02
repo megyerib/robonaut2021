@@ -14,10 +14,10 @@ void MazeDetectorSM::Process()
 
 void MazeDetectorSM::NewSection()
 {
-	Encoder* e = Encoder::GetInstance();
+	Encoder& e = Encoder::GetInstance();
 
-	prevSectionLen = e->GetDistance() - sectionStart;
-	sectionStart = e->GetDistance();
+	prevSectionLen = e.GetDistance() - sectionStart;
+	sectionStart   = e.GetDistance();
 
 	/*char buf[30];
 	int strlen = sprintf(buf, "%d", (int)(prevSectionLen*100));

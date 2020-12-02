@@ -4,7 +4,7 @@
 #include <cstddef>
 
 #define RECEIVE_OK                        ( 0)
-#define RECEIVE_BUFFER_NULL               (-1)
+#define RECEIVE_PARAM_ERROR               (-1)
 #define RECEIVE_INSUFFICIENT_TARGET_SIZE  (-2)
 #define RECEIVE_INTERNAL_ERROR            (-3)
 

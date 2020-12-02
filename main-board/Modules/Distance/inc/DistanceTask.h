@@ -9,8 +9,8 @@ class DistanceTask : public CyclicTask
 
     DistanceTask();
 
-    void TaskInit() override;
-    void TaskFunction() override;
+    virtual void TaskInit() override;
+    virtual void TaskFunction() override;
 
 public:
     static DistanceTask* Init();

@@ -4,26 +4,29 @@
 
 typedef enum
 {
-	Go,
-	Countdown1,
-	Countdown2,
-	Countdown3,
-	Countdown4,
-	Countdown5,
-	NoSignal,
-	Error
+	stNothing = 0,
+	stCountdown,
+	stGate,
+	stError
 }
 StarterState;
+
+typedef struct
+{
+	StarterState state;
+	uint8_t      countdown;
+	uint8_t      gate;
+}
+StarterData;
 
 class Starter
 {
 public:
 	static Starter* GetInstance();
-	StarterState GetState();
+	StarterData GetState();
 
 private:
 	Receiver* uart;
-	StarterState state = NoSignal;
 
 	Starter();
 };

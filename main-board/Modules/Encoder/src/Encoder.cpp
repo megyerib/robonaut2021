@@ -6,60 +6,51 @@
 #define INC_PER_M    (140331.0f)
 // The whole 32 bit counter range is more than 30 km
 
-Encoder::Encoder()
+Encoder::Encoder() : enc(EncoderHw::GetInstance())
 {
-	enc      = EncoderHw::GetInstance();
+
 }
 
-Encoder* Encoder::GetInstance()
+Encoder& Encoder::GetInstance()
 {
 	static Encoder instance;
-	return &instance;
+	return instance;
 }
 
 float Encoder::GetDistance()
 {
-	return mPoints[mPointIndex].encVal / INC_PER_M;
+	return distance;
 }
 
-// The calculation won't be valid in the first 'ENCODER_MEASURE_POINTS' cycles but who cares?
+// The calculation won't be valid in the first 'ENC_SAMPLES' cycles
 float Encoder::GetSpeed()
 {
-	__disable_irq();
-	int32_t  enc_prev = mPoints[(mPointIndex + 1)%ENCODER_MEASURE_POINTS].encVal;
-	int32_t  enc_cur  = mPoints[mPointIndex].encVal;
-	uint32_t tim_prev = mPoints[(mPointIndex + 1)%ENCODER_MEASURE_POINTS].timVal;
-	uint32_t tim_cur  = mPoints[mPointIndex].timVal;
-	__enable_irq();
-
-	float d_s = (enc_cur - enc_prev) / INC_PER_M;  // m
-	float d_t = (tim_cur - tim_prev) / 1000000.0;  // s
-
-	if (d_t == 0)
-	{
-		return 0; // Div by 0
-	}
-	else
-	{
-		return d_s/d_t;
-	}
+	return speed;
 }
 
 void Encoder::Process()
 {
-	__disable_irq();
-	mPointIndex++;
-	mPointIndex %= ENCODER_MEASURE_POINTS;
+	iMP++;
+	iMP %= ENC_SAMPLES;
 
-	mPoints[mPointIndex].encVal = (int32_t) enc->GetCounterValue();
-	mPoints[mPointIndex].timVal = UPTIME_us();
-	__enable_irq();
+	mPoints[iMP].encVal = enc.GetCounterValue();
+	mPoints[iMP].timVal = UPTIME_us();
 
-	// Trace
-	/*SM_DUMMY msg;
-	msg.id = smDummy;
-	msg.timestamp = UPTIME();
-	msg.value = (GetSpeed() * 1000); // TODO make it more efficient
+	// Distance
+	distance = mPoints[iMP].encVal / INC_PER_M;
 
-	TRACE_BIN(&msg, sizeof(msg));*/
+	// Speed
+	size_t i1st = (iMP + 1) % ENC_SAMPLES;
+
+	float d_s = (mPoints[iMP].encVal - mPoints[i1st].encVal) / INC_PER_M;  // m
+	float d_t = (mPoints[iMP].timVal - mPoints[i1st].timVal) / 1000000.0;  // s
+
+	speed = (d_t != 0) ? (d_s / d_t) : 0;
+
+	// Trace (dummy)
+	SM_DUMMY msg;
+	msg.id        = smDummy;
+	msg.timestamp = UPTIME_us();
+	msg.value     = speed * 1000;
+	TRACE_BIN(&msg, sizeof(msg));
 }

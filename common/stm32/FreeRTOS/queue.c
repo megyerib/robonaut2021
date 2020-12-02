@@ -917,6 +917,8 @@ Queue_t * const pxQueue = ( Queue_t * ) xQueue;
 			return errQUEUE_FULL;
 		}
 	}
+
+	return pdFAIL; /* Function end reached without return */
 }
 /*-----------------------------------------------------------*/
 
@@ -1374,6 +1376,8 @@ Queue_t * const pxQueue = ( Queue_t * ) xQueue;
 			}
 		}
 	}
+
+	return pdFAIL; /* Function end reached without return */
 }
 /*-----------------------------------------------------------*/
 
@@ -1593,6 +1597,8 @@ Queue_t * const pxQueue = ( Queue_t * ) xQueue;
 			}
 		}
 	}
+
+	return pdFAIL; /* Function end reached without return */
 }
 /*-----------------------------------------------------------*/
 
@@ -1743,6 +1749,8 @@ Queue_t * const pxQueue = ( Queue_t * ) xQueue;
 			}
 		}
 	}
+
+	return pdFAIL; /* Function end reached without return */
 }
 /*-----------------------------------------------------------*/
 

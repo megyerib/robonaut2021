@@ -1,26 +1,27 @@
 #include "EncoderTask.h"
+#include "Encoder.h"
 
-#define PERIOD     ENCODER_SAMPLING_PERIOD
-#define PRIO       7
+#define PERIOD     ENC_SAMPLING_PERIOD_ms
+#define PRIO       3
 #define STACK      configMINIMAL_STACK_SIZE
 
-EncoderTask::EncoderTask() : CyclicTask((char*)"Encoder", ENCODER_SAMPLING_PERIOD, PRIO, STACK)
+EncoderTask::EncoderTask() : CyclicTask((char*)"Enc", PERIOD, PRIO, STACK)
 {
 
 }
 
-EncoderTask* EncoderTask::Init()
+EncoderTask& EncoderTask::Init()
 {
-	static EncoderTask instance;
-	return &instance;
+    static EncoderTask instance;
+    return instance;
 }
 
 void EncoderTask::TaskInit()
 {
-	encoder = Encoder::GetInstance();
+
 }
 
 void EncoderTask::TaskFunction()
 {
-	encoder->Process();
+	Encoder::GetInstance().Process();
 }

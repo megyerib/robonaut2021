@@ -66,6 +66,7 @@ void TOF_L1::Process()
 {
     status = VL53L1_StartMeasurement(Dev);
     status = VL53L1_WaitMeasurementDataReady(Dev);
+
     if(status == VL53L1_ERROR_NONE)
     {
         // DEB
@@ -77,26 +78,29 @@ void TOF_L1::Process()
             uint16_t millimeter = RangingData.RangeMilliMeter;
 
             // Trace (dummy)
-            SM_DUMMY msg;
+            /*SM_DUMMY msg;
 			msg.id = smDummy;
 			msg.timestamp = UPTIME_us();
 			msg.value = millimeter;
 
-			TRACE_BIN(&msg, sizeof(msg));
+			TRACE_BIN(&msg, sizeof(msg));*/
 
 
             if (millimeter > 300)
             {
-                //HAL_GPIO_WritePin(FREE1_GPIO_Port, FREE1_Pin, GPIO_PIN_SET);
+                // Turn on green LED
+            	//HAL_GPIO_WritePin(FREE1_GPIO_Port, FREE1_Pin, GPIO_PIN_SET);
             }
             else
             {
-                //HAL_GPIO_WritePin(FREE1_GPIO_Port, FREE1_Pin, GPIO_PIN_RESET);
+            	// Turn off green LED
+            	//HAL_GPIO_WritePin(FREE1_GPIO_Port, FREE1_Pin, GPIO_PIN_RESET);
             }
         }
         else
         {
-            //HAL_GPIO_WritePin(FREE1_GPIO_Port, FREE1_Pin, GPIO_PIN_RESET);
+        	// Turn off green LED
+        	//HAL_GPIO_WritePin(FREE1_GPIO_Port, FREE1_Pin, GPIO_PIN_RESET);
         }
         status = VL53L1_ClearInterruptAndStartMeasurement(Dev);
     }
