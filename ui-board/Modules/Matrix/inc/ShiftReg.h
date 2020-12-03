@@ -8,7 +8,7 @@
 class ShiftReg : public Transmitter
 {
 public:
-	static ShiftReg* GetInstance();
+	static ShiftReg& GetInstance();
 	virtual int32_t Transmit(const void* buffer, size_t size) override;
 	bool IsReady();
 

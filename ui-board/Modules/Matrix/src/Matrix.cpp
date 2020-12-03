@@ -1,6 +1,6 @@
+#include "Matrix.h"
 #include "ShiftReg.h"
 #include <cstring>
-#include "../inc/Matrix.h"
 
 static uint8_t imgBuf[8] = {0};
 
@@ -12,17 +12,15 @@ static struct
 }
 outBuf;
 
-static ShiftReg* sr;
-
 Matrix::Matrix()
 {
-	sr = ShiftReg::GetInstance();
+
 }
 
-Matrix* Matrix::GetInstance()
+Matrix& Matrix::GetInstance()
 {
 	static Matrix instance;
-	return &instance;
+	return instance;
 }
 
 void Matrix::DisplayImage(MATRIX_IMG& img)
@@ -76,13 +74,11 @@ void Matrix::Clear()
 
 void Matrix::Refresh()
 {
-	static uint32_t i = 0;
+	outBuf.row = imgBuf[rowToRefresh];
+	outBuf.col = ~(1 << rowToRefresh);
 
-	outBuf.row = imgBuf[i];
-	outBuf.col = ~(1 << i);
+	ShiftReg::GetInstance().Transmit(&outBuf, 3);
 
-	sr->Transmit(&outBuf, 3);
-
-	i++;
-	i %= 8;
+	rowToRefresh++;
+	rowToRefresh %= 8;
 }

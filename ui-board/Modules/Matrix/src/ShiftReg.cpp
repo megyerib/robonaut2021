@@ -1,5 +1,5 @@
-#include <string.h> /* memcpy */
-#include <ShiftReg.h>
+#include "ShiftReg.h"
+#include <cstring> /* memcpy */
 
 #define    MATRIX_LATCH_PIN         GPIO_PIN_0
 #define    MATRIX_OE_PIN            GPIO_PIN_1
@@ -22,10 +22,10 @@ ShiftReg::ShiftReg()
 	HAL_GPIO_WritePin(GPIOA, MATRIX_OE_PIN|LED_OE_PIN, GPIO_PIN_RESET);
 }
 
-ShiftReg* ShiftReg::GetInstance()
+ShiftReg& ShiftReg::GetInstance()
 {
 	static ShiftReg instance;
-	return &instance;
+	return instance;
 }
 
 void ShiftReg::InitSpiGpio()
@@ -130,10 +130,10 @@ void ShiftReg::TxCompleteCallback()
 
 extern "C" void SPI1_IRQHandler(void)
 {
-	ShiftReg::GetInstance()->HandleIrq();
+	ShiftReg::GetInstance().HandleIrq();
 }
 
 void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi)
 {
-	ShiftReg::GetInstance()->TxCompleteCallback();
+	ShiftReg::GetInstance().TxCompleteCallback();
 }

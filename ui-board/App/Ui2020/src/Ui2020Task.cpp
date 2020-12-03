@@ -25,8 +25,8 @@ void Ui2020Task::TaskInit()
 
 void Ui2020Task::TaskFunction()
 {
-	Matrix*   matrix  = Matrix::GetInstance();
-	Buttons*  buttons = Buttons::GetInstance();
+	Matrix&   matrix  = Matrix::GetInstance();
+	Buttons&  buttons = Buttons::GetInstance();
 	MainUart& uart    = MainUart::GetInstance();
 
 	bool buttonPushed = false;
@@ -42,22 +42,22 @@ void Ui2020Task::TaskFunction()
 	if (blinking)
 	{
 		// Set number
-		if (buttons->GetRisingEdge(ButtonRight) == true)
+		if (buttons.GetRisingEdge(ButtonRight) == true)
 		{
 			num++;
 			buttonPushed = true;
 		}
-		if (buttons->GetRisingEdge(ButtonLeft) == true)
+		if (buttons.GetRisingEdge(ButtonLeft) == true)
 		{
 			num--;
 			buttonPushed = true;
 		}
-		if (buttons->GetRisingEdge(ButtonUp) == true)
+		if (buttons.GetRisingEdge(ButtonUp) == true)
 		{
 			num += 10;
 			buttonPushed = true;
 		}
-		if (buttons->GetRisingEdge(ButtonDown) == true)
+		if (buttons.GetRisingEdge(ButtonDown) == true)
 		{
 			num -= 10;
 			buttonPushed = true;
@@ -77,19 +77,19 @@ void Ui2020Task::TaskFunction()
 	}
 
 	// Back button
-	if (buttons->GetRisingEdge(ButtonA) == true)
+	if (buttons.GetRisingEdge(ButtonA) == true)
 	{
 		blinking = true;
 		cntr = 0;
 		showNum = false;
-		buttons->ClearRisingEdges();
+		buttons.ClearRisingEdges();
 
 		txBuf = (uint8_t)255;
 		uart.Transmit(&txBuf, 1);
 	}
 
 	// Enter button
-	if (buttons->GetRisingEdge(ButtonB) == true)
+	if (buttons.GetRisingEdge(ButtonB) == true)
 	{
 		blinking = false;
 		showNum = true;
@@ -117,14 +117,14 @@ void Ui2020Task::TaskFunction()
 	// Display
 	if (showNum)
 	{
-		matrix->DisplayInt(num);
+		matrix.DisplayInt(num);
 	}
 	else
 	{
-		matrix->Clear();
+		matrix.Clear();
 	}
 
-	matrix->Refresh();
+	matrix.Refresh();
 
-	buttons->Process();
+	buttons.Process();
 }

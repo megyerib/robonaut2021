@@ -3,6 +3,8 @@
 #include "CyclicTask.h"
 #include <cstdint>
 
+// Standalone task to run the UI board with the 2020 app.
+
 #define PRIO                 2
 #define PERIOD               1
 #define STACK              128

@@ -1,16 +1,16 @@
 #include "Buttons.h"
 #include "stm32f0xx_hal.h"
 
-Buttons* Buttons::GetInstance()
+Buttons& Buttons::GetInstance()
 {
 	static Buttons instance;
-	return &instance;
+	return instance;
 }
 
 bool Buttons::GetValue(Button b)
 {
 	uint32_t mask = (uint32_t)b;
-	bool ret = ((filtered & mask) != 0);
+	bool ret = ((filteredValue & mask) != 0);
 
 	return ret;
 }
@@ -18,40 +18,40 @@ bool Buttons::GetValue(Button b)
 bool Buttons::GetRisingEdge(Button b)
 {
 	uint32_t mask = (uint32_t)b;
-	bool ret = ((risingEdge & b) != 0);
+	bool ret = ((risingEdges & b) != 0);
 
-	risingEdge &= (~mask); // Clear edge
+	risingEdges &= (~mask); // Clear edge
 
 	return ret;
 }
 
 void Buttons::Process()
 {
-	uint32_t prevFiltered = filtered;
+	uint32_t prevFiltered = filteredValue;
 
 	// Set index
-	index++;
-	index %= DEBOUNCING_FILTER_SIZE;
+	iMeas++;
+	iMeas %= DEBOUNCING_WINDOW_SIZE;
 
 	// Read
-	values[index] = ~(GPIOB->IDR); // Negate bc of low active logic
+	meas[iMeas] = ~(GPIOB->IDR); // Negate bc of low active logic
 
 	// Filter
 	uint32_t zeros = 0x00000000;
 	uint32_t ones  = 0xFFFFFFFF;
 
-	for (int i = 0; i < DEBOUNCING_FILTER_SIZE; i++)
+	for (int i = 0; i < DEBOUNCING_WINDOW_SIZE; i++)
 	{
-		zeros |= values[i];
-		ones  &= values[i];
+		zeros |= meas[i];
+		ones  &= meas[i];
 	}
 
-	filtered &= zeros;
-	filtered |= ones;
+	filteredValue &= zeros;
+	filteredValue |= ones;
 
 	// Detect rising edge
-	uint32_t newEdge = (~prevFiltered) & filtered;
-	risingEdge |= newEdge;
+	uint32_t newEdge = (~prevFiltered) & filteredValue;
+	risingEdges |= newEdge;
 }
 
 Buttons::Buttons()
@@ -76,5 +76,5 @@ void Buttons::InitGpio()
 
 void Buttons::ClearRisingEdges()
 {
-    risingEdge = 0;
+    risingEdges = 0;
 }

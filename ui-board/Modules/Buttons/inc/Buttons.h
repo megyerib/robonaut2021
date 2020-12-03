@@ -3,7 +3,7 @@
 #include <cstdint>
 #include "stm32f0xx_hal.h"
 
-#define DEBOUNCING_FILTER_SIZE  8
+#define DEBOUNCING_WINDOW_SIZE  8
 
 typedef enum
 {
@@ -21,7 +21,7 @@ Button;
 class Buttons
 {
 public:
-	static Buttons* GetInstance();
+	static Buttons& GetInstance();
 
 	bool GetValue(Button b);
 	bool GetRisingEdge(Button b);
@@ -29,12 +29,11 @@ public:
 	void Process();
 
 private:
-	uint32_t risingEdge = 0;
+	uint32_t filteredValue = 0x00000000; // Bitfield
+	uint32_t risingEdges   = 0x00000000; // Bitfield
 
-	uint32_t values[DEBOUNCING_FILTER_SIZE] = {0};
-	uint32_t index = 0;
-
-	uint32_t filtered = 0;
+	uint32_t meas[DEBOUNCING_WINDOW_SIZE] = {0};
+	uint32_t iMeas = 0;
 
 	Buttons();
 

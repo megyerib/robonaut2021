@@ -1,11 +1,11 @@
-#include "Ui2020Task.h"
+#include "UiTask.h"
 #include "System.h"
 
 int main(void)
 {
 	SYSTEM_INIT();
 
-	Ui2020Task::Init();
+	UiTask::Init();
 
 	OS_START();
 

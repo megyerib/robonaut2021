@@ -5,14 +5,15 @@
 class Matrix
 {
 public:
-	static Matrix* GetInstance();
+	static Matrix& GetInstance();
 
 	void DisplayImage(MATRIX_IMG& img);
 	void DisplayInt(int num);
 	void Clear();
-
-	static void Refresh();
+	void Refresh();
 
 private:
+	uint32_t rowToRefresh = 0;
+
 	Matrix();
 };
