@@ -17,7 +17,7 @@ private:
 	void TaskFunction() override;
 
 	int  num = 0;
-	bool blinking = false;
+	bool settingEnabled = false;
 	int cntr = 0;
 	bool showNum = true;
 	static uint8_t txBuf;

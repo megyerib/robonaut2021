@@ -10,8 +10,6 @@ uint8_t UiTask::txBuf;
 #define PERIOD              20
 #define STACK              configMINIMAL_STACK_SIZE
 
-#define BLINK_CNTR_PERIOD  200
-
 UiTask::UiTask() : CyclicTask((char*)"Ui", PERIOD, PRIO, STACK)
 {
 	Matrix::GetInstance();
@@ -38,98 +36,53 @@ void UiTask::TaskFunction()
 	Buttons&  buttons = Buttons::GetInstance();
 	MainUart& uart    = MainUart::GetInstance();
 
-	bool buttonPushed = false;
-
 	size_t size;
 	uart.Receive(&rxBuf, size, 1); // Receive 1 byte
-	if (size > 0 && !blinking)
+	if (size > 0 && !settingEnabled)
 	{
 		num = rxBuf;
 		num = (num <= 99) ? num : 99;
 	}
 
-	if (blinking)
+	if (settingEnabled)
 	{
 		// Set number
-		if (buttons.GetRisingEdge(ButtonRight) == true)
-		{
-			num++;
-			buttonPushed = true;
-		}
-		if (buttons.GetRisingEdge(ButtonLeft) == true)
-		{
-			num--;
-			buttonPushed = true;
-		}
-		if (buttons.GetRisingEdge(ButtonUp) == true)
-		{
-			num += 10;
-			buttonPushed = true;
-		}
-		if (buttons.GetRisingEdge(ButtonDown) == true)
-		{
-			num -= 10;
-			buttonPushed = true;
-		}
+		if (buttons.GetRisingEdge(ButtonRight) == true) num++;
+		if (buttons.GetRisingEdge(ButtonLeft)  == true) num--;
+		if (buttons.GetRisingEdge(ButtonUp)    == true) num += 10;
+		if (buttons.GetRisingEdge(ButtonDown)  == true) num -= 10;
 
-		if (buttonPushed)
-		{
-			if (num < 0)
-			{
-				num = 0;
-			}
-			else if (num > 99)
-			{
-				num = 99;
-			}
-		}
+
+		// Normalize number
+		num = (num < 0) ? 0 : ((num > 99) ? 99 : num);
 	}
+
+	matrix.DisplayInt(num);
 
 	// Back button
 	if (buttons.GetRisingEdge(ButtonA) == true)
 	{
-		blinking = true;
-		cntr = 0;
-		showNum = false;
-		buttons.ClearRisingEdges();
+		settingEnabled = true;
 
-		txBuf = (uint8_t)255;
+		matrix.SetBlinking(400);
+
+		buttons.ClearRisingEdges();          // Clear previous button pushes
+
+		txBuf = (uint8_t) 0xFF;              // Send pause sign
 		uart.Transmit(&txBuf, 1);
 	}
 
 	// Enter button
 	if (buttons.GetRisingEdge(ButtonB) == true)
 	{
-		blinking = false;
-		showNum = true;
+		settingEnabled = false;
 
-		// Clear Rx buffer
-		size_t size;
-		uart.Receive(&rxBuf, size, 1); // Receive 1 byte (dummy)
+		matrix.SetBlinking(NO_BLINKING);
 
-		txBuf = (uint8_t)num;
+		size_t size;                         // Clear Rx buffer
+		uart.Receive(&rxBuf, size, 1);       // Receive 1 byte (dummy)
+
+		txBuf = (uint8_t)num;                // Send number
 		uart.Transmit(&txBuf, 1);
-	}
-
-	// Count flashing
-	if (blinking)
-	{
-		cntr++;
-
-		if (cntr >= (BLINK_CNTR_PERIOD / PERIOD))
-		{
-			cntr = 0;
-			showNum = !showNum;
-		}
-	}
-
-	// Display
-	if (showNum)
-	{
-		matrix.DisplayInt(num);
-	}
-	else
-	{
-		matrix.Clear();
 	}
 }

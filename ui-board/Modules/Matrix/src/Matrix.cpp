@@ -72,9 +72,36 @@ void Matrix::Clear()
 	memset(imgBuf, 0x00, 8);
 }
 
+void Matrix::SetBlinking(uint32_t period_ms)
+{
+	blinkPeriod = period_ms;
+	blinkCntr   = 0;
+	imgVisible  = (period_ms == NO_BLINKING);
+
+		/*       Start here
+		 *     ______V       __...
+		 *    |      |      |
+		 *  __|      |______|
+		 */
+}
+
 void Matrix::Refresh()
 {
-	outBuf.row = imgBuf[rowToRefresh];
+	if (blinkPeriod != NO_BLINKING)
+	{
+		if (blinkCntr == blinkPeriod / 2)
+		{
+			imgVisible = !imgVisible;
+			blinkCntr = 0;
+		}
+		else
+		{
+			blinkCntr++;
+		}
+	}
+
+	// Display image if visible
+	outBuf.row = imgVisible ? imgBuf[rowToRefresh] : 0;
 	outBuf.col = ~(1 << rowToRefresh);
 
 	ShiftReg::GetInstance().Transmit(&outBuf, 3);
