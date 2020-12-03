@@ -1,7 +1,7 @@
 #include <DmaUartF0.h>
 #include <string.h>
 
-DmaUartF0::DmaUartF0(DMA_UART_CFG& cfg) : cfg(cfg)
+DmaUartF0::DmaUartF0(const DMA_UART_CFG& cfg) : cfg(cfg)
 {
 	InitGpio();
 	InitUart();

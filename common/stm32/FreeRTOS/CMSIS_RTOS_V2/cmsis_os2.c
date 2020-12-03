@@ -608,9 +608,9 @@ __NO_RETURN void osThreadExit (void) {
 }
 
 osStatus_t osThreadTerminate (osThreadId_t thread_id) {
-  TaskHandle_t hTask = (TaskHandle_t)thread_id;
   osStatus_t stat;
 #ifndef USE_FreeRTOS_HEAP_1
+  TaskHandle_t hTask = (TaskHandle_t)thread_id;
   eTaskState tstate;
 
   if (IS_IRQ()) {
@@ -1005,9 +1005,10 @@ uint32_t osTimerIsRunning (osTimerId_t timer_id) {
 }
 
 osStatus_t osTimerDelete (osTimerId_t timer_id) {
-  TimerHandle_t hTimer = (TimerHandle_t)timer_id;
   osStatus_t stat;
+
 #ifndef USE_FreeRTOS_HEAP_1
+  TimerHandle_t hTimer = (TimerHandle_t)timer_id;
   TimerCallback_t *callb;
 
   if (IS_IRQ()) {
@@ -1185,10 +1186,11 @@ uint32_t osEventFlagsWait (osEventFlagsId_t ef_id, uint32_t flags, uint32_t opti
 }
 
 osStatus_t osEventFlagsDelete (osEventFlagsId_t ef_id) {
-  EventGroupHandle_t hEventGroup = (EventGroupHandle_t)ef_id;
   osStatus_t stat;
 
 #ifndef USE_FreeRTOS_HEAP_1
+  EventGroupHandle_t hEventGroup = (EventGroupHandle_t)ef_id;
+
   if (IS_IRQ()) {
     stat = osErrorISR;
   }
@@ -1554,10 +1556,11 @@ uint32_t osSemaphoreGetCount (osSemaphoreId_t semaphore_id) {
 }
 
 osStatus_t osSemaphoreDelete (osSemaphoreId_t semaphore_id) {
-  SemaphoreHandle_t hSemaphore = (SemaphoreHandle_t)semaphore_id;
   osStatus_t stat;
 
 #ifndef USE_FreeRTOS_HEAP_1
+  SemaphoreHandle_t hSemaphore = (SemaphoreHandle_t)semaphore_id;
+
   if (IS_IRQ()) {
     stat = osErrorISR;
   }
@@ -1803,10 +1806,11 @@ osStatus_t osMessageQueueReset (osMessageQueueId_t mq_id) {
 }
 
 osStatus_t osMessageQueueDelete (osMessageQueueId_t mq_id) {
-  QueueHandle_t hQueue = (QueueHandle_t)mq_id;
   osStatus_t stat;
 
 #ifndef USE_FreeRTOS_HEAP_1
+  QueueHandle_t hQueue = (QueueHandle_t)mq_id;
+
   if (IS_IRQ()) {
     stat = osErrorISR;
   }
@@ -1831,11 +1835,13 @@ osStatus_t osMessageQueueDelete (osMessageQueueId_t mq_id) {
 /*---------------------------------------------------------------------------*/
 
 /* Callback function prototypes */
+#ifndef USE_FreeRTOS_HEAP_1
 extern void vApplicationIdleHook (void);
 extern void vApplicationTickHook (void);
 extern void vApplicationMallocFailedHook (void);
 extern void vApplicationDaemonTaskStartupHook (void);
 extern void vApplicationStackOverflowHook (TaskHandle_t xTask, signed char *pcTaskName);
+#endif
 
 /**
   Dummy implementation of the callback function vApplicationIdleHook().

@@ -58,7 +58,7 @@ public:
 	void HandleDmaTxIrq();
 
 protected:
-	explicit DmaUartF0(DMA_UART_CFG& cfg);
+	explicit DmaUartF0(const DMA_UART_CFG& cfg);
 
 	size_t rxBufIndex = 0;
 	const DMA_UART_CFG& cfg;

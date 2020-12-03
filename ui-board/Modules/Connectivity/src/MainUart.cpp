@@ -10,7 +10,7 @@
 
 static uint8_t rxBuffer[RX_BUF_SIZE];
 
-static DMA_UART_CFG uart_cfg =
+const DMA_UART_CFG uart_cfg =
 {
 	// Tx
 	.txEnabled     = true,
