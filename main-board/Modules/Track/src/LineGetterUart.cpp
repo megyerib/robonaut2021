@@ -1,7 +1,7 @@
 #include "LineGetterUart.h"
 #include <cstring>
 
-LineGetterUart::LineGetterUart(DMA_UART_CFG& cfg) : DmaUart(cfg)
+LineGetterUart::LineGetterUart(DMA_UART_CFG& cfg) : DmaUartF4(cfg)
 {
 
 }

@@ -18,7 +18,7 @@ System::System()
 	Clock_Config();
 }
 
-void System::Init()
+void System::GetInstance()
 {
 	static System instance; // Calls the constructor
 }

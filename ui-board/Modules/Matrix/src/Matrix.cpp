@@ -1,6 +1,6 @@
-#include "MatrixDisplay.h"
 #include "ShiftReg.h"
 #include <cstring>
+#include "../inc/Matrix.h"
 
 static uint8_t imgBuf[8] = {0};
 
@@ -14,23 +14,23 @@ outBuf;
 
 static ShiftReg* sr;
 
-MatrixDisplay::MatrixDisplay()
+Matrix::Matrix()
 {
 	sr = ShiftReg::GetInstance();
 }
 
-MatrixDisplay* MatrixDisplay::GetInstance()
+Matrix* Matrix::GetInstance()
 {
-	static MatrixDisplay instance;
+	static Matrix instance;
 	return &instance;
 }
 
-void MatrixDisplay::DisplayImage(MATRIX_IMG& img)
+void Matrix::DisplayImage(MATRIX_IMG& img)
 {
 	memcpy(imgBuf, &img, 8);
 }
 
-void MatrixDisplay::DisplayInt(int num)
+void Matrix::DisplayInt(int num)
 {
 	const MATRIX_IMG* numbers[10] =
 	{
@@ -69,12 +69,12 @@ void MatrixDisplay::DisplayInt(int num)
 	imgBuf[7] = 0;
 }
 
-void MatrixDisplay::Clear()
+void Matrix::Clear()
 {
 	memset(imgBuf, 0x00, 8);
 }
 
-void MatrixDisplay::Refresh()
+void Matrix::Refresh()
 {
 	static uint32_t i = 0;
 

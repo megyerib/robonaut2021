@@ -6,7 +6,7 @@ class System
 	void Clock_Config();
 
 public:
-	static void Init();
+	static void GetInstance();
 };
 
 // + SysTick handler in the source

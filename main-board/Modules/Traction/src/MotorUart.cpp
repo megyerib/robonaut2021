@@ -58,7 +58,7 @@ CLASS_NAME& CLASS_NAME::GetInstance()
 	return instance;
 }
 
-CLASS_NAME::CLASS_NAME() : DmaUart(uart_cfg)
+CLASS_NAME::CLASS_NAME() : DmaUartF4(uart_cfg)
 {
 
 }

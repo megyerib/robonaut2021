@@ -2,10 +2,10 @@
 
 #include "MatrixImg.h"
 
-class MatrixDisplay
+class Matrix
 {
 public:
-	static MatrixDisplay* GetInstance();
+	static Matrix* GetInstance();
 
 	void DisplayImage(MATRIX_IMG& img);
 	void DisplayInt(int num);
@@ -14,5 +14,5 @@ public:
 	static void Refresh();
 
 private:
-	MatrixDisplay();
+	Matrix();
 };

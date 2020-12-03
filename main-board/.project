@@ -28,11 +28,6 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>Lib/BaseClass</name>
-			<type>2</type>
-			<locationURI>PARENT-1-PROJECT_LOC/common/BaseClass</locationURI>
-		</link>
-		<link>
 			<name>Lib/BinaryEncoder</name>
 			<type>2</type>
 			<locationURI>PARENT-1-PROJECT_LOC/common/BinaryEncoder/BinaryEncoder</locationURI>
@@ -41,6 +36,11 @@
 			<name>Lib/CMSIS</name>
 			<type>2</type>
 			<locationURI>PARENT-1-PROJECT_LOC/common/stm32/CMSIS</locationURI>
+		</link>
+		<link>
+			<name>Lib/Comm</name>
+			<type>2</type>
+			<locationURI>PARENT-1-PROJECT_LOC/common/Comm</locationURI>
 		</link>
 		<link>
 			<name>Lib/Controller</name>
@@ -53,6 +53,11 @@
 			<locationURI>PARENT-1-PROJECT_LOC/common/stm32/FreeRTOS</locationURI>
 		</link>
 		<link>
+			<name>Lib/OS</name>
+			<type>2</type>
+			<locationURI>PARENT-1-PROJECT_LOC/common/OS</locationURI>
+		</link>
+		<link>
 			<name>Lib/STM32F4</name>
 			<type>2</type>
 			<locationURI>PARENT-1-PROJECT_LOC/common/stm32/STM32F4</locationURI>
@@ -61,11 +66,6 @@
 			<name>Lib/STM32F4xx_HAL</name>
 			<type>2</type>
 			<locationURI>PARENT-1-PROJECT_LOC/common/stm32/STM32F4xx_HAL</locationURI>
-		</link>
-		<link>
-			<name>Lib/SerialMessages</name>
-			<type>2</type>
-			<locationURI>PARENT-1-PROJECT_LOC/common/SerialMessages</locationURI>
 		</link>
 		<link>
 			<name>Lib/Track</name>

@@ -1,8 +1,7 @@
 #pragma once
 
 #include "stm32f4xx_hal.h"
-#include "Transmitter.h"
-#include "Receiver.h"
+#include "Transciever.h"
 
 typedef void(*ClkEn)(void); // Function pointer to lambda function
 
@@ -49,7 +48,7 @@ typedef struct
 }
 DMA_UART_CFG;
 
-class DmaUartF4 : public Transmitter, public Receiver
+class DmaUartF4 : public Transciever
 {
 public:
 	virtual int32_t Transmit(const void* buffer, size_t size) override;

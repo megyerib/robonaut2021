@@ -1,6 +1,8 @@
 #include "System.h"
 
 #include "stm32f0xx_hal.h"
+#include "FreeRTOS.h"
+#include "task.h"
 
 System::System()
 {
@@ -22,9 +24,15 @@ System::System()
 	Clock_Config();
 }
 
-void System::Init()
+System& System::GetInstance()
 {
-	static System instance; // Calls the constructor
+	static System instance;
+	return instance;
+}
+
+void System::OsStart()
+{
+	vTaskStartScheduler();
 }
 
 void System::Clock_Config()
@@ -78,8 +86,8 @@ extern "C" void SysTick_Handler(void)
 	HAL_IncTick();
 
 	// FreeRTOS
-	/*if (xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED)
+	if (xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED)
 	{
 		xPortSysTickHandler();
-	}*/
+	}
 }

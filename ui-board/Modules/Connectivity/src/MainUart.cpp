@@ -5,7 +5,7 @@
 
 // Common data
 #define CLASS_NAME           MainUart
-#define RX_BUF_SIZE            (200u)
+#define RX_BUF_SIZE             (50u)
 #define BAUDRATE            (115200u)
 
 static uint8_t rxBuffer[RX_BUF_SIZE];

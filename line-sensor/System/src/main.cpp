@@ -4,7 +4,7 @@
 
 int main(void)
 {
-	System::Init();
+	System::GetInstance();
 
 	LineDetectorLoop::Run();
 	//TestLoop::RunLineTest();
