@@ -1,8 +1,8 @@
 #pragma once
 
-#include "DmaUart.h"
+#include <DmaUartF4.h>
 
-class TraceUart : public DmaUart
+class TraceUart : public DmaUartF4
 {
 public:
 	static TraceUart& GetInstance();

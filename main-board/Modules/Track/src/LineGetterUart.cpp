@@ -8,7 +8,7 @@ LineGetterUart::LineGetterUart(DMA_UART_CFG& cfg) : DmaUart(cfg)
 
 int32_t LineGetterUart::Receive(void* buffer, size_t& size, size_t targetSize)
 {
-	UNUSED(targetSize); // TODO
+	UNUSED(targetSize);
 
 	uint8_t* buf = (uint8_t*) buffer;
 	size_t bufferEnd;

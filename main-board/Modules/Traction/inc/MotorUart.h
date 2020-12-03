@@ -1,11 +1,11 @@
 #pragma once
 
-#include "DmaUart.h"
+#include <DmaUartF4.h>
 
-class MotorUart : public DmaUart
+class MotorUart : public DmaUartF4
 {
 public:
-	static MotorUart* GetInstance();
+	static MotorUart& GetInstance();
 
 private:
 	MotorUart();

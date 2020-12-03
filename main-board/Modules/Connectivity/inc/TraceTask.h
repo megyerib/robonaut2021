@@ -6,7 +6,7 @@
 #include "Receiver.h"
 #include "EscapeEncoder.h"
 
-#define RX_TMP_BUF_LEN   (50u) /*TODO increase after tests*/
+#define RX_TMP_BUF_LEN   (200u)
 
 class TraceTask : public CyclicTask
 {

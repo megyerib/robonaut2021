@@ -33,9 +33,6 @@ TOF_L1::TOF_L1(uint8_t             const Addr,
 
     InitXsdnGpio();
 
-    // TODO: For the I2C bus
-    //HAL_GPIO_WritePin(GPIOC, TOF_XSDN3_Pin, GPIO_PIN_SET);
-
     Dev->I2cDevAddr      = Addr;
     Dev->I2cHandle       = i2c->GetHandle();
     Dev->comms_speed_khz = Speed;

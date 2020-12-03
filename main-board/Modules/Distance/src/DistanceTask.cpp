@@ -1,6 +1,6 @@
 #include "DistanceTask.h"
 
-#define DISTANCE_TASK_PRIO 3 /* TODO */
+#define DISTANCE_TASK_PRIO 3
 
 DistanceTask::DistanceTask() : CyclicTask((char*)"Distance", DISTANCE_SAMPLING_CYCLE, DISTANCE_TASK_PRIO, 1024)
 {

@@ -1,9 +1,12 @@
 #include "Traction.h"
-#include "printf.h" /* Lightweight printf */
+#include <cstring>
+#include "Encoder.h"
+#include "MotorUart.h"
 
-Traction::Traction() : encoder(Encoder::GetInstance())
+#define SATURATE(x, min, max)  ((x) = (x) > (max) ? (max) : ((x) < (min) ? (min) : (x)))
+
+Traction::Traction()
 {
-	uart       = MotorUart::GetInstance();
 	controller = new Pid_Controller(0.002f, 0.008f, 0.0f);
 	controller->Set_I_Limit(20.0f);
 
@@ -43,21 +46,62 @@ void Traction::SetDutyCycle(float d /* % [-1;+1] */)
 
 void Traction::SendDutyCycle(float d /* % [-1;+1] */)
 {
-	static uint8_t buf[10];
+	const size_t BUF_SIZE = 15; // 1 sign + 6 digits + 2 \r\n + safety
+	static uint8_t buf[BUF_SIZE]; // Static because it needs to be sent through UART
+	size_t bufSize;
 
 	int message = d * 100000;
-	int size;
 
-	// TODO lightweight print & remove printf.h
-	size = sprintf((char*)buf, "%d\r\n", message);
+	SATURATE(message, -100000, 100000);
 
-	uart->Transmit(buf, size);
+	PrintInt(buf, message, bufSize);
+
+	MotorUart::GetInstance().Transmit(buf, SATURATE(bufSize, 0, BUF_SIZE) );
+}
+
+void Traction::PrintInt(void* dst, int n, size_t& size)
+{
+	const size_t BUF_SIZE = 15;
+	uint8_t buf[BUF_SIZE];
+	bool negative = false;
+
+	buf[BUF_SIZE - 2] = '\r';
+	buf[BUF_SIZE - 1] = '\n';
+
+	size_t firstChar = 0;
+
+	if (n < 0)
+	{
+		negative = true;
+		n *= -1;
+	}
+
+	for (size_t i = BUF_SIZE - 3; i >= 0; i--)
+	{
+		buf[i] = '0' + (n % 10);
+		n /= 10;
+
+		if (n == 0)
+		{
+			firstChar = i;
+			break;
+		}
+	}
+
+	if (negative)
+	{
+		firstChar--;
+		buf[firstChar] = '-';
+	}
+
+	size = BUF_SIZE - firstChar;
+	memcpy(dst, &buf[firstChar], size);
 }
 
 void Traction::Process()
 {
     // Speed control iteration
-	controller->Process(encoder.GetSpeed());
+	controller->Process(Encoder::GetInstance().GetSpeed());
 
 	// Control value ramping
 	if ((controller->GetControlValue() - prevDutyCycle) > 0.01f)

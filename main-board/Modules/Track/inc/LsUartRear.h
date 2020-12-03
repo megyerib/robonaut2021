@@ -1,6 +1,6 @@
 #pragma once
 
-#include "DmaUart.h"
+#include <DmaUartF4.h>
 #include "LineGetterUart.h"
 
 class LsUartRear : public LineGetterUart

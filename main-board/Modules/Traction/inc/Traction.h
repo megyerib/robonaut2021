@@ -1,8 +1,7 @@
 #pragma once
 
-#include "MotorUart.h"
-#include "Encoder.h"
 #include "Pid_Controller.h"
+#include <cstddef> /* size_t */
 
 #define TRACTION_CONTROL_CYCLE   10 /* ms */
 
@@ -28,8 +27,6 @@ public:
 	void Process();
 
 private:
-	MotorUart*      uart;
-	Encoder&        encoder;
 	Pid_Controller* controller;
 
 	//float targetSpeed;
@@ -42,4 +39,5 @@ private:
 	Traction();
 
 	void SendDutyCycle(float d /* % [-1;+1] */);
+	void PrintInt(void* dst, int n, size_t& size);
 };

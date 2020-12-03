@@ -1,7 +1,7 @@
 #include <LastLineReader.h>
 #include <cstring>
 
-LastLineReader::LastLineReader(DmaUart* uart, size_t rxBufSize)
+LastLineReader::LastLineReader(DmaUartF4* uart, size_t rxBufSize)
 	: uart(uart),
 	  rxBufSize(rxBufSize)
 {

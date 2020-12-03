@@ -37,7 +37,7 @@ void Distance::SetFrontServo(float angle)
 
 	angle *= 0.8f; // Magic value measured during calibration
 
-	float offset = 3.14159265358979323846f / 2.0f - 0.0389f; // TODO calc constant
+	float offset = 1.531896f;
     float servo_angle = angle + offset;
 
     srv_front->SetSteerAngle(servo_angle);

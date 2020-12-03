@@ -1,6 +1,6 @@
 #pragma once
 
-#include "stm32f4xx_hal.h"
+#include "stm32f0xx_hal.h"
 #include "Transmitter.h"
 #include "Receiver.h"
 
@@ -9,47 +9,45 @@ typedef void(*ClkEn)(void); // Function pointer to lambda function
 typedef struct
 {
 	// Tx ------------------------------
-	bool                txEnabled;
+	bool                 txEnabled;
 
 	// Rx ------------------------------
-	bool                rxEnabled;
-	uint8_t*            rxBuf;
-	size_t              rxBufSize;
+	bool                 rxEnabled;
+	uint8_t*             rxBuf;
+	size_t               rxBufSize;
 
 	// GPIO ----------------------------
-	ClkEn               gpioTxClkEn;
-	GPIO_TypeDef*       gpioTxPort;
-	uint16_t            gpioTxPin;
+	ClkEn                gpioTxClkEn;
+	GPIO_TypeDef*        gpioTxPort;
+	uint16_t             gpioTxPin;
 
-	ClkEn               gpioRxClkEn;
-	GPIO_TypeDef*       gpioRxPort;
-	uint16_t            gpioRxPin;
+	ClkEn                gpioRxClkEn;
+	GPIO_TypeDef*        gpioRxPort;
+	uint16_t             gpioRxPin;
 
-	uint8_t             gpioAf;
+	uint8_t              gpioAf;
 
 	// DMA -----------------------------
-	ClkEn               dmaClkEn;
+	ClkEn                dmaClkEn;
 
-	DMA_Stream_TypeDef* dmaTxStream;
-	uint32_t            dmaTxChannel;
-	IRQn_Type           dmaTxIrq;
-	uint32_t            dmaTxNvicPrio;
+	DMA_Channel_TypeDef* dmaTxChannel;
+	IRQn_Type            dmaTxIrq;
+	uint32_t             dmaTxNvicPrio;
 
-	DMA_Stream_TypeDef* dmaRxStream;
-	uint32_t            dmaRxChannel;
-	IRQn_Type           dmaRxIrq;
-	uint32_t            dmaRxNvicPrio;
+	DMA_Channel_TypeDef* dmaRxChannel;
+	IRQn_Type            dmaRxIrq;
+	uint32_t             dmaRxNvicPrio;
 
 	// UART ----------------------------
-	ClkEn               uartClkEn;
-	USART_TypeDef*      uartInstance;
-	uint32_t            uartBaudRate;
-	IRQn_Type           uartIrq;
-	uint32_t            uartNvicPrio;
+	ClkEn                uartClkEn;
+	USART_TypeDef*       uartInstance;
+	uint32_t             uartBaudRate;
+	IRQn_Type            uartIrq;
+	uint32_t             uartNvicPrio;
 }
 DMA_UART_CFG;
 
-class DmaUart : public Transmitter, public Receiver
+class DmaUartF0 : public Transmitter, public Receiver
 {
 public:
 	virtual int32_t Transmit(const void* buffer, size_t size) override;
@@ -60,7 +58,7 @@ public:
 	void HandleDmaTxIrq();
 
 protected:
-	explicit DmaUart(DMA_UART_CFG& cfg);
+	explicit DmaUartF0(DMA_UART_CFG& cfg);
 
 	size_t rxBufIndex = 0;
 	const DMA_UART_CFG& cfg;

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "DmaUart.h"
+#include <DmaUartF4.h>
 
-class LineGetterUart : public DmaUart
+class LineGetterUart : public DmaUartF4
 {
 public:
 	virtual int32_t Receive(void* buffer, size_t& size, size_t targetSize) override;

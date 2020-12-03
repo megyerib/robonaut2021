@@ -1,7 +1,7 @@
-#include <DmaUart.h>
+#include <DmaUartF0.h>
 #include <string.h>
 
-DmaUart::DmaUart(DMA_UART_CFG& cfg) : cfg(cfg)
+DmaUartF0::DmaUartF0(DMA_UART_CFG& cfg) : cfg(cfg)
 {
 	InitGpio();
 	InitUart();
@@ -10,16 +10,16 @@ DmaUart::DmaUart(DMA_UART_CFG& cfg) : cfg(cfg)
 	HAL_UART_Receive_DMA(&huart, cfg.rxBuf, cfg.rxBufSize);
 }
 
-int32_t DmaUart::Transmit(const void* buffer, size_t size)
+int32_t DmaUartF0::Transmit(const void* buffer, size_t size)
 {
 	HAL_UART_Transmit_DMA(&huart, (uint8_t*)buffer, size);
 
 	return TRANSMIT_OK;
 }
 
-int32_t DmaUart::Receive(void* buffer, size_t& size, size_t targetSize)
+int32_t DmaUartF0::Receive(void* buffer, size_t& size, size_t targetSize)
 {
-	size_t end = cfg.rxBufSize - hdma_uart_rx.Instance->NDTR;
+	size_t end = cfg.rxBufSize - hdma_uart_rx.Instance->CNDTR;
 
 	if (rxBufIndex <= end)
 	{
@@ -64,7 +64,7 @@ int32_t DmaUart::Receive(void* buffer, size_t& size, size_t targetSize)
 	return RECEIVE_OK;
 }
 
-void DmaUart::copyToCircular(const void* src, size_t srcSize, void* buf, size_t& bufIndex, size_t bufSize)
+void DmaUartF0::copyToCircular(const void* src, size_t srcSize, void* buf, size_t& bufIndex, size_t bufSize)
 {
 	if ((bufIndex + srcSize) < bufSize)
 	{
@@ -83,22 +83,22 @@ void DmaUart::copyToCircular(const void* src, size_t srcSize, void* buf, size_t&
 	bufIndex %= bufSize;
 }
 
-void DmaUart::HandleUartIrq()
+void DmaUartF0::HandleUartIrq()
 {
 	HAL_UART_IRQHandler(&huart);
 }
 
-void DmaUart::HandleDmaRxIrq()
+void DmaUartF0::HandleDmaRxIrq()
 {
 	HAL_DMA_IRQHandler(&hdma_uart_rx);
 }
 
-void DmaUart::HandleDmaTxIrq()
+void DmaUartF0::HandleDmaTxIrq()
 {
 	HAL_DMA_IRQHandler(&hdma_uart_tx);
 }
 
-void DmaUart::InitUart()
+void DmaUartF0::InitUart()
 {
 	cfg.uartClkEn();
 
@@ -122,14 +122,14 @@ void DmaUart::InitUart()
 	// Transfer complete interrupt is necessary
 }
 
-void DmaUart::InitGpio()
+void DmaUartF0::InitGpio()
 {
 	GPIO_InitTypeDef GPIO_InitStruct = {0};
 
 	GPIO_InitStruct.Pin       = cfg.gpioTxPin;
 	GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
-	GPIO_InitStruct.Pull      = GPIO_NOPULL;
-	GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_VERY_HIGH;
+	GPIO_InitStruct.Pull      = GPIO_PULLUP;
+	GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_HIGH;
 	GPIO_InitStruct.Alternate = cfg.gpioAf;
 
 	if (cfg.txEnabled)
@@ -138,24 +138,23 @@ void DmaUart::InitGpio()
 		HAL_GPIO_Init(cfg.gpioTxPort, &GPIO_InitStruct);
 	}
 
+	GPIO_InitStruct.Pin       = cfg.gpioRxPin;
+
 	if (cfg.rxEnabled)
 	{
-		GPIO_InitStruct.Pin = cfg.gpioRxPin;
-
 		cfg.gpioRxClkEn();
 		HAL_GPIO_Init(cfg.gpioRxPort, &GPIO_InitStruct);
 	}
 }
 
-void DmaUart::InitDma()
+void DmaUartF0::InitDma()
 {
 	cfg.dmaClkEn();
 
 	// DMA Tx stream
 	if (cfg.txEnabled)
 	{
-		hdma_uart_tx.Instance                 = cfg.dmaTxStream;
-		hdma_uart_tx.Init.Channel             = cfg.dmaTxChannel;
+		hdma_uart_tx.Instance                 = cfg.dmaTxChannel;
 		hdma_uart_tx.Init.Direction           = DMA_MEMORY_TO_PERIPH;
 		hdma_uart_tx.Init.PeriphInc           = DMA_PINC_DISABLE;
 		hdma_uart_tx.Init.MemInc              = DMA_MINC_ENABLE;
@@ -163,13 +162,9 @@ void DmaUart::InitDma()
 		hdma_uart_tx.Init.MemDataAlignment    = DMA_MDATAALIGN_BYTE;
 		hdma_uart_tx.Init.Mode                = DMA_NORMAL;
 		hdma_uart_tx.Init.Priority            = DMA_PRIORITY_LOW;
-		hdma_uart_tx.Init.FIFOMode            = DMA_FIFOMODE_DISABLE;
 
 		HAL_DMA_Init(&hdma_uart_tx);
 		__HAL_LINKDMA(&huart, hdmatx, hdma_uart_tx);
-
-		// Set other registers
-		//CLEAR_BIT(hdma_uart_tx.Instance->CR, DMA_SxCR_HTIE); // Disable half transfer interrupt
 
 		HAL_NVIC_SetPriority(cfg.dmaTxIrq, cfg.dmaTxNvicPrio, 0);
 		HAL_NVIC_EnableIRQ(cfg.dmaTxIrq);
@@ -178,8 +173,7 @@ void DmaUart::InitDma()
 	// DMA Rx stream
 	if (cfg.rxEnabled)
 	{
-		hdma_uart_rx.Instance                 = cfg.dmaRxStream;
-		hdma_uart_rx.Init.Channel             = cfg.dmaRxChannel;
+		hdma_uart_rx.Instance                 = cfg.dmaRxChannel;
 		hdma_uart_rx.Init.Direction           = DMA_PERIPH_TO_MEMORY;
 		hdma_uart_rx.Init.PeriphInc           = DMA_PINC_DISABLE;
 		hdma_uart_rx.Init.MemInc              = DMA_MINC_ENABLE;
@@ -187,7 +181,6 @@ void DmaUart::InitDma()
 		hdma_uart_rx.Init.MemDataAlignment    = DMA_MDATAALIGN_BYTE;
 		hdma_uart_rx.Init.Mode                = DMA_CIRCULAR;
 		hdma_uart_rx.Init.Priority            = DMA_PRIORITY_LOW;
-		hdma_uart_rx.Init.FIFOMode            = DMA_FIFOMODE_DISABLE;
 
 		HAL_DMA_Init(&hdma_uart_rx);
 		__HAL_LINKDMA(&huart, hdmarx, hdma_uart_rx);

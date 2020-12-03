@@ -36,7 +36,6 @@ Servo::Servo(TimerInstance TIM, uint32_t Channel)
         }
     }
 
-    // TODO check input
     channel = Channel;
 
     Init();
@@ -353,11 +352,11 @@ void Servo::LoadCfg()
     }
     else if (type == ANALOG)
     {
-        config.Rad_min      = 49;   // TODO
+        config.Rad_min      = 49;
         config.Rad_30deg    = 49;
         config.Rad_90deg    = 85;
         config.Rad_150deg   = 121;
-        config.Rad_max      = 121;  // TODO
+        config.Rad_max      = 121;
 
         timCfg.Period       = 1249;
         timCfg.Prescaler    = 2879;
