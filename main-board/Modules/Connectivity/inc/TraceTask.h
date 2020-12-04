@@ -15,7 +15,7 @@ public:
 
 private:
 	EscapeEncoder   enc;
-	CommandReceiver crx;
+	CmdReceiver crx;
 	static uint8_t tmpBuf[RX_TMP_BUF_LEN];
 
 	TraceTask();

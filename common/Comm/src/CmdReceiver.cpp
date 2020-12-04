@@ -2,7 +2,7 @@
 #include <cstring>
 #include "crc8.h"
 
-CommandReceiver::CommandReceiver(
+CmdReceiver::CmdReceiver(
 		Receiver& receiver,
 		uint8_t* tmpBuf,
 		size_t tmpBufLen,
@@ -16,7 +16,7 @@ CommandReceiver::CommandReceiver(
 
 }
 
-int32_t CommandReceiver::Receive(void* buffer, size_t& size, size_t targetSize)
+int32_t CmdReceiver::Receive(void* buffer, size_t& size, size_t targetSize)
 {
 	size = 0;
 

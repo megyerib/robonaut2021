@@ -17,13 +17,6 @@
 #define TRACE_MAX_STRLEN  (200u)
 #define TRACE_MAX_ARGS    (4u)
 
-typedef struct
-{
-	size_t  len;
-	uint8_t data[];
-}
-BINARY_PACKET;
-
 class Trace
 {
 public:
@@ -43,6 +36,11 @@ private:
 
     std::unique_ptr<BinaryEncoder> encoder;
 
+    // Pointer queues
+    // The push operation needs to be atomic. The fastest way to ensure this is to disable
+    // interrupts. This way only a pointer needs to be added to the queue.
+    // There is a chance that the dynamic memory operations are slower but a proper test
+    // is needed to prove this.
     MessageBufferHandle_t textMsgBuf;
     MessageBufferHandle_t binMsgBuf;
 

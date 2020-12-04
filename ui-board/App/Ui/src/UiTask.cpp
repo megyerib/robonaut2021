@@ -1,8 +1,11 @@
+#include <MainUiMsg.h>
 #include "UiTask.h"
 #include "Matrix.h"
 #include "Buttons.h"
 #include "MainUart.h"
 #include "FastTask.h"
+#include <functional>
+#include "BinTrace.h"
 
 uint8_t UiTask::txBuf;
 
@@ -10,12 +13,9 @@ uint8_t UiTask::txBuf;
 #define PERIOD              20
 #define STACK              configMINIMAL_STACK_SIZE
 
-UiTask::UiTask() : CyclicTask((char*)"Ui", PERIOD, PRIO, STACK)
+UiTask::UiTask() : CyclicTask((char*)"Ui", PERIOD, PRIO, STACK),
+		           cmdProc(MainUart::GetInstance(), cmdProcBuf, CMD_PROC_BUF_LEN, &enc)
 {
-	Matrix::GetInstance();
-	Buttons::GetInstance();
-	MainUart::GetInstance();
-
 	FastTask::Init();
 }
 
@@ -34,16 +34,10 @@ void UiTask::TaskFunction()
 {
 	Matrix&   matrix  = Matrix::GetInstance();
 	Buttons&  buttons = Buttons::GetInstance();
-	MainUart& uart    = MainUart::GetInstance();
 
-	size_t size;
-	uart.Receive(&rxBuf, size, 1); // Receive 1 byte
-	if (size > 0 && !settingEnabled)
-	{
-		num = rxBuf;
-		num = (num <= 99) ? num : 99;
-	}
+	ProcessRxQueue();
 
+	// Buttons
 	if (settingEnabled)
 	{
 		// Set number
@@ -68,8 +62,8 @@ void UiTask::TaskFunction()
 
 		buttons.ClearRisingEdges();          // Clear previous button pushes
 
-		txBuf = (uint8_t) 0xFF;              // Send pause sign
-		uart.Transmit(&txBuf, 1);
+		U2M_SETTING_START msg;
+		TRACE_BIN(&msg, sizeof(msg));
 	}
 
 	// Enter button
@@ -79,10 +73,59 @@ void UiTask::TaskFunction()
 
 		matrix.SetBlinking(NO_BLINKING);
 
-		size_t size;                         // Clear Rx buffer
-		uart.Receive(&rxBuf, size, 1);       // Receive 1 byte (dummy)
+		ProcessRxQueue(); // Clear Rx buffer
 
-		txBuf = (uint8_t)num;                // Send number
-		uart.Transmit(&txBuf, 1);
+		U2M_SET_SECTION msg;
+		msg.section = (uint8_t)num;
+		TRACE_BIN(&msg, sizeof(msg));
+	}
+
+	BinTrace::GetInstance().Process();
+}
+
+#define TYPE_SIZE_ASSERT(x) if (size != sizeof(x)) return
+
+void UiTask::ProcessRxQueue()
+{
+	uint8_t buf[20];
+	size_t size;
+
+	while (true)
+	{
+		cmdProc.Receive(buf, size, 20);
+
+		if (size > 0)
+		{
+			ProcessRxMessage(buf, size);
+		}
+		else
+		{
+			break;
+		}
+	}
+}
+
+void UiTask::ProcessRxMessage(uint8_t buf[], size_t size)
+{
+	// Capturing lambdas can't be assigned to function pointers.
+	// https://stackoverflow.com/questions/28746744/passing-capturing-lambda-as-function-pointer/28746827
+	static const std::function<void()> MsgProc[m2uCnt] =
+	{
+		[m2uReset]      = [&](){ TYPE_SIZE_ASSERT(M2U_RESET);
+			                     NVIC_SystemReset();},
+
+		[m2uSetSection] = [&](){ TYPE_SIZE_ASSERT(M2U_SET_SECTION);
+			                     if (settingEnabled)
+									 num = buf[1];}
+	};
+
+	if (size > 0)
+	{
+		uint8_t ID = buf[0];
+
+		if (ID < m2uCnt)
+		{
+			MsgProc[ID]();
+		}
 	}
 }

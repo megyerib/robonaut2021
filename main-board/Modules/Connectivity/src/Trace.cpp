@@ -16,6 +16,13 @@
 uint8_t Trace::txBuffers[2][TX_BUF_LEN];
 size_t Trace::txBufLens[2];
 
+typedef struct
+{
+	size_t  len;
+	uint8_t data[];
+}
+BINARY_PACKET;
+
 static uint8_t uncodedBuf[200];
 
 Trace& Trace::GetInstance()

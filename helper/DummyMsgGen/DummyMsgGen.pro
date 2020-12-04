@@ -4,17 +4,17 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += \
-    ../../common/BinaryEncoder/EscapeEncoder.cpp \
-    ../../common/CRC/crc8.cpp \
+    ../../common/BinaryEncoder/BinaryEncoder/EscapeEncoder.cpp \
+    ../../common/CRC/crc8/crc8.cpp \
     main.cpp
 
 HEADERS += \
-    ../../common/BinaryEncoder/BinaryEncoder.h \
-    ../../common/BinaryEncoder/EscapeEncoder.h \
-    ../../common/CRC/crc8.h \
-    ../../common/SerialMessages/SerialMessages.h
+    ../../common/BinaryEncoder/BinaryEncoder/BinaryEncoder.h \
+    ../../common/BinaryEncode/BinaryEncoderr/EscapeEncoder.h \
+    ../../common/CRC/crc8/crc8.h \
+    ../../common/Comm/inc/SerialMessages.h
 
 INCLUDEPATH += \
-    ../../common/SerialMessages/ \
-    ../../common/CRC/ \
-    ../../common/BinaryEncoder/
+    ../../common/Comm/inc/ \
+    ../../common/CRC/crc8/ \
+    ../../common/BinaryEncoder/BinaryEncoder/
