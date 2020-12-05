@@ -38,7 +38,7 @@ void UiTask::TaskFunction()
 	ProcessRxQueue();
 
 	// Buttons
-	if (settingEnabled)
+	if (manSetEnabled)
 	{
 		// Set number
 		if (buttons.GetRisingEdge(ButtonRight) == true) num++;
@@ -56,7 +56,7 @@ void UiTask::TaskFunction()
 	// Back button
 	if (buttons.GetRisingEdge(ButtonA) == true)
 	{
-		settingEnabled = true;
+		manSetEnabled = true;
 
 		matrix.SetBlinking(400);
 
@@ -69,7 +69,7 @@ void UiTask::TaskFunction()
 	// Enter button
 	if (buttons.GetRisingEdge(ButtonB) == true)
 	{
-		settingEnabled = false;
+		manSetEnabled = false;
 
 		matrix.SetBlinking(NO_BLINKING);
 
@@ -115,7 +115,7 @@ void UiTask::ProcessRxMessage(uint8_t buf[], size_t size)
 			                     NVIC_SystemReset();},
 
 		[m2uSetSection] = [&](){ TYPE_SIZE_ASSERT(M2U_SET_SECTION);
-			                     if (settingEnabled)
+			                     if (!manSetEnabled)
 									 num = buf[1];}
 	};
 

@@ -44,6 +44,7 @@ typedef struct
 	uint32_t             uartBaudRate;
 	IRQn_Type            uartIrq;
 	uint32_t             uartNvicPrio;
+	bool                 uartSwapPins;
 }
 DMA_UART_CFG;
 

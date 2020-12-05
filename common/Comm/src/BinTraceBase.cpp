@@ -1,27 +1,16 @@
-#include "BinTrace.h"
-#include "EscapeEncoder.h"
+#include "BinTraceBase.h"
 #include "crc8.h"
 #include "stm32f0xx_hal.h"
-#include "MainUart.h"
 
-#define BIN_QUEUE_SIZE (50u)
-#define TX_BUF_LEN   (50u) // TODO calc size & baudrate
-static uint8_t transmitBuf[TX_BUF_LEN];
-
-BinTrace::BinTrace()
+BinTraceBase::BinTraceBase(Transmitter& tx, uint8_t* txBuf, size_t txBufSize, size_t binQSize, BinaryEncoder& enc) : tx(tx), enc(enc)
 {
-	binMsgBuf = xMessageBufferCreate(BIN_QUEUE_SIZE * sizeof(void*));
-	txBuf     = transmitBuf;
-	txBufLen  = 0;
+	binMsgBuf       = xMessageBufferCreate(binQSize * sizeof(void*));
+	this->txBuf     = txBuf;
+	this->txBufLen  = 0;
+	this->txBufMax  = txBufSize;
 }
 
-BinTrace& BinTrace::GetInstance()
-{
-	static BinTrace instance;
-	return instance;
-}
-
-void BinTrace::TraceBinary(bool from_isr, const void* buf, size_t size)
+void BinTraceBase::TraceBinary(bool from_isr, const void* buf, size_t size)
 {
 	if (size > 0)
 	{
@@ -40,7 +29,7 @@ void BinTrace::TraceBinary(bool from_isr, const void* buf, size_t size)
 	}
 }
 
-void BinTrace::Process()
+void BinTraceBase::Process()
 {
 	uint8_t tmpBuf[10];
 
@@ -56,7 +45,6 @@ void BinTrace::Process()
 
 			// Code & copy to Tx queue
 			size_t encSize;
-			EscapeEncoder enc;
 			enc.Encode(tmpBuf, size, &txBuf[txBufLen], encSize);
 			txBufLen += encSize;
 
@@ -72,7 +60,7 @@ void BinTrace::Process()
 
 	if (txBufLen > 0)
 	{
-		MainUart::GetInstance().Transmit(txBuf, txBufLen);
+		tx.Transmit(txBuf, txBufLen);
 		txBufLen = 0;
 	}
 }

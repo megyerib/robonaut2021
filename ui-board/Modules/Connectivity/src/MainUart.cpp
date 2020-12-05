@@ -48,6 +48,7 @@ const DMA_UART_CFG uart_cfg =
 	.uartBaudRate  = BAUDRATE,
 	.uartIrq       = USART1_IRQn,
 	.uartNvicPrio  = TRACE_UART_NVIC_PRIO,
+	.uartSwapPins  = false
 };
 
 // Don't touch ---------------------------------------------------------------------------------------------------------

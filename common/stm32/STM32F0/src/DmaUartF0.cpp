@@ -111,6 +111,12 @@ void DmaUartF0::InitUart()
 	huart.Init.HwFlowCtl    = UART_HWCONTROL_NONE;
 	huart.Init.OverSampling = UART_OVERSAMPLING_16;
 
+	if (cfg.uartSwapPins)
+	{
+		huart.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_SWAP_INIT;
+		huart.AdvancedInit.Swap           = UART_ADVFEATURE_SWAP_ENABLE;
+	}
+
 	HAL_UART_Init(&huart);
 
 	// Interrupts

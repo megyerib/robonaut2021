@@ -26,7 +26,7 @@ private:
 	uint8_t cmdProcBuf[CMD_PROC_BUF_LEN];
 
 	int  num = 0;
-	bool settingEnabled = false;
+	bool manSetEnabled = false; // Manual setting enabled (is flashing?)
 	static uint8_t txBuf;
 
 	void ProcessRxQueue();
