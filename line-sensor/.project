@@ -30,24 +30,55 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>Lib/BinaryEncoder</name>
+			<type>2</type>
+			<locationURI>copy_PARENT/common/BinaryEncoder/BinaryEncoder</locationURI>
+		</link>
+		<link>
 			<name>Lib/CMSIS</name>
 			<type>2</type>
-			<locationURI>PARENT-1-PROJECT_LOC/common/stm32/CMSIS</locationURI>
+			<locationURI>copy_PARENT/common/stm32/CMSIS</locationURI>
+		</link>
+		<link>
+			<name>Lib/Comm</name>
+			<type>2</type>
+			<locationURI>copy_PARENT/common/Comm</locationURI>
+		</link>
+		<link>
+			<name>Lib/FreeRTOS</name>
+			<type>2</type>
+			<locationURI>copy_PARENT/common/stm32/FreeRTOS</locationURI>
+		</link>
+		<link>
+			<name>Lib/OS</name>
+			<type>2</type>
+			<locationURI>copy_PARENT/common/OS</locationURI>
+		</link>
+		<link>
+			<name>Lib/STM32F0</name>
+			<type>2</type>
+			<locationURI>copy_PARENT/common/stm32/STM32F0</locationURI>
 		</link>
 		<link>
 			<name>Lib/STM32F0xx_HAL</name>
 			<type>2</type>
-			<locationURI>PARENT-1-PROJECT_LOC/common/stm32/STM32F0xx_HAL</locationURI>
+			<locationURI>copy_PARENT/common/stm32/STM32F0xx_HAL</locationURI>
 		</link>
 		<link>
 			<name>Lib/Track</name>
 			<type>2</type>
-			<locationURI>PARENT-1-PROJECT_LOC/common/Track</locationURI>
+			<locationURI>copy_PARENT/common/Track</locationURI>
 		</link>
 		<link>
-			<name>Lib/base64</name>
+			<name>Lib/crc8</name>
 			<type>2</type>
-			<locationURI>PARENT-1-PROJECT_LOC/common/base64/base64</locationURI>
+			<locationURI>copy_PARENT/common/CRC/crc8</locationURI>
 		</link>
 	</linkedResources>
+	<variableList>
+		<variable>
+			<name>copy_PARENT</name>
+			<value>$%7BPARENT-3-PROJECT_LOC%7D/Git/robonaut2021</value>
+		</variable>
+	</variableList>
 </projectDescription>
