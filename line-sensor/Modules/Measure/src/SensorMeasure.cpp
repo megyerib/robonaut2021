@@ -1,7 +1,6 @@
 #include "SensorMeasure.h"
 #include "stm32f0xx_hal.h"
 #include <string.h>
-#include "Stm32Gpio.h"
 #include "SensorCfg.h"
 
 ADC_HandleTypeDef SensorMeasure::handle;
@@ -13,11 +12,11 @@ SensorMeasure::SensorMeasure()
 	InitMux();
 }
 
-SensorMeasure* SensorMeasure::GetInstance()
+SensorMeasure& SensorMeasure::GetInstance()
 {
 	static SensorMeasure instance;
 
-	return &instance;
+	return instance;
 }
 
 void SensorMeasure::Measure(AdcInput input)
@@ -64,21 +63,21 @@ void SensorMeasure::InitMux()
 	__HAL_RCC_GPIOB_CLK_ENABLE();
 
 	/* Configure GPIO pins */
-	GPIO_InitStruct.Pin   = 1 << Stm32Gpio::GetPin(MUX_S0);
+	GPIO_InitStruct.Pin   = MUX_S0_pin;
 	GPIO_InitStruct.Mode  = GPIO_MODE_OUTPUT_PP;
 	GPIO_InitStruct.Pull  = GPIO_NOPULL;
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
 
-	HAL_GPIO_Init(Stm32Gpio::GetPort(MUX_S0), &GPIO_InitStruct);
+	HAL_GPIO_Init(MUX_S0_port, &GPIO_InitStruct);
 
-	GPIO_InitStruct.Pin   = 1 << Stm32Gpio::GetPin(MUX_S1);
-	HAL_GPIO_Init(Stm32Gpio::GetPort(MUX_S1), &GPIO_InitStruct);
+	GPIO_InitStruct.Pin   = MUX_S1_pin;
+	HAL_GPIO_Init(MUX_S1_port, &GPIO_InitStruct);
 
-	GPIO_InitStruct.Pin   = 1 << Stm32Gpio::GetPin(MUX_S2);
-	HAL_GPIO_Init(Stm32Gpio::GetPort(MUX_S2), &GPIO_InitStruct);
+	GPIO_InitStruct.Pin   = MUX_S2_pin;
+	HAL_GPIO_Init(MUX_S2_port, &GPIO_InitStruct);
 
-	GPIO_InitStruct.Pin   = 1 << Stm32Gpio::GetPin(MUX_E);
-	HAL_GPIO_Init(Stm32Gpio::GetPort(MUX_E), &GPIO_InitStruct);
+	GPIO_InitStruct.Pin   = MUX_E_pin;
+	HAL_GPIO_Init(MUX_E_port, &GPIO_InitStruct);
 }
 
 void SensorMeasure::InitAdcGpio()
@@ -155,7 +154,7 @@ void SensorMeasure::SetMux(AdcInput input)
 	// Propagation delay < 60 ns
 	// T_clk ~ 20 ns; a function call lasts longer than that
 
-	HAL_GPIO_WritePin(Stm32Gpio::GetPort(MUX_S2), 1 << Stm32Gpio::GetPin(MUX_S2), GPIO_PinState((input >> 2) & 1));
-	HAL_GPIO_WritePin(Stm32Gpio::GetPort(MUX_S1), 1 << Stm32Gpio::GetPin(MUX_S1), GPIO_PinState((input >> 1) & 1));
-	HAL_GPIO_WritePin(Stm32Gpio::GetPort(MUX_S0), 1 << Stm32Gpio::GetPin(MUX_S0), GPIO_PinState((input >> 0) & 1));
+	HAL_GPIO_WritePin(MUX_S2_port, MUX_S2_pin, GPIO_PinState((input >> 2) & 1));
+	HAL_GPIO_WritePin(MUX_S1_port, MUX_S1_pin, GPIO_PinState((input >> 1) & 1));
+	HAL_GPIO_WritePin(MUX_S0_port, MUX_S0_pin, GPIO_PinState((input >> 0) & 1));
 }

@@ -1,19 +1,19 @@
-#include "Display.h"
+#include <LedDriver.h>
 #include "SensorCfg.h"
 #include <stdint.h>
 
-Display::Display() : leds(LED_OE, LED_LE)
+LedDriver::LedDriver() : leds(LED_OE_port, LED_OE_pin, LED_LE_port, LED_LE_pin)
 {
 	Clear();
 }
 
-Display& Display::GetInstance()
+LedDriver& LedDriver::GetInstance()
 {
-	static Display instance;
+	static LedDriver instance;
 	return instance;
 }
 
-void Display::DisplayLinePos(LineInput l)
+void LedDriver::DisplayLinePos(LineInput l)
 {
 	uint32_t ledval = 0, i, ledpos = 0;
 
@@ -32,30 +32,30 @@ void Display::DisplayLinePos(LineInput l)
 	DisplayPattern(ledval);
 }
 
-void Display::DisplayPattern(uint32_t pattern)
+void LedDriver::DisplayPattern(uint32_t pattern)
 {
 #if (SENSOR_REV == 1)
 	uint32_t spi_buf[2];
 	spi_buf[0] = transformReg_Rev1(pattern);
-	leds.Display(spi_buf, GROUP_CNT * 2);
+	leds.LedDriver(spi_buf, GROUP_CNT * 2);
 #else
-	leds.Display(&pattern, GROUP_CNT);
+	leds.Send(&pattern, GROUP_CNT);
 #endif
 }
 
-uint8_t Display::mmToLedPos(int16_t mm)
+uint8_t LedDriver::mmToLedPos(int16_t mm)
 {
     return (MID_IR_POS_MM - mm) / IR_DIST_MM;
 }
 
-void Display::Clear()
+void LedDriver::Clear()
 {
 	uint32_t buf = 0;
 
-	leds.Display((uint8_t*)&buf, GROUP_CNT);
+	leds.Send((uint8_t*)&buf, GROUP_CNT);
 }
 
-uint32_t Display::transformReg_Rev1(uint32_t ledval)
+uint32_t LedDriver::transformReg_Rev1(uint32_t ledval)
 {
 	// Swap the two 16 bit halves
     uint16_t  tmp;

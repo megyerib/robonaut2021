@@ -1,19 +1,19 @@
-#include "SensorDriver.h"
+#include <IrDriver.h>
 #include "SensorCfg.h"
 #include <stdint.h>
 
-SensorDriver::SensorDriver() : sensors(TCRT_OE, TCRT_LE)
+IrDriver::IrDriver() : sensors(IR_OE_port, IR_OE_pin, IR_LE_port, IR_LE_pin)
 {
 
 }
 
-SensorDriver& SensorDriver::GetInstance()
+IrDriver& IrDriver::GetInstance()
 {
-	static SensorDriver instance;
+	static IrDriver instance;
 	return instance;
 }
 
-void SensorDriver::SetSensors(uint8_t groupSize, uint8_t index)
+void IrDriver::SetSensors(uint8_t groupSize, uint8_t index)
 {
 	uint32_t buffer = 0;
 
@@ -25,16 +25,16 @@ void SensorDriver::SetSensors(uint8_t groupSize, uint8_t index)
 	DisplayPattern(buffer);
 }
 
-void SensorDriver::DisplayPattern(uint32_t pattern)
+void IrDriver::DisplayPattern(uint32_t pattern)
 {
 #if (SENSOR_REV == 1)
 	pattern = transformReg_Rev1(pattern);
 #endif
 
-	sensors.Display(&pattern, GROUP_CNT);
+	sensors.Send(&pattern, GROUP_CNT);
 }
 
-uint32_t SensorDriver::transformReg_Rev1(uint32_t irval)
+uint32_t IrDriver::transformReg_Rev1(uint32_t irval)
 {
 	/*const uint8_t bit_order_lut[] =
 	{

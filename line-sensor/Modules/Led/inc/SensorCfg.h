@@ -1,5 +1,4 @@
 #pragma once
-#include "Stm32Gpio.h"
 
 // SENSOR CONFIGURATION CHECKER
 //
@@ -21,7 +20,7 @@
 // ADCs measuring order is reversed also the order of the measuring set is reverse
 
 #if (SENSOR_REV == 1)
-
+// TODO
 #define MUX_E    PB2
 #define TCRT_OE  PA8
 #define LED_LE   PA12
@@ -33,14 +32,23 @@
 
 #else
 
-#define MUX_E    PB0
-#define TCRT_OE  PB1
-#define LED_LE   PB2
-#define LED_OE   PB10
-#define TCRT_LE  PB11
-#define MUX_S2   PB12
-#define MUX_S1   PB13
-#define MUX_S0   PB14
+#define MUX_E_port    GPIOB
+#define IR_OE_port  GPIOB
+#define LED_LE_port   GPIOB
+#define LED_OE_port   GPIOB
+#define IR_LE_port  GPIOB
+#define MUX_S2_port   GPIOB
+#define MUX_S1_port   GPIOB
+#define MUX_S0_port   GPIOB
+
+#define MUX_E_pin    GPIO_PIN_0
+#define IR_OE_pin  GPIO_PIN_1
+#define LED_LE_pin   GPIO_PIN_2
+#define LED_OE_pin   GPIO_PIN_10
+#define IR_LE_pin  GPIO_PIN_11
+#define MUX_S2_pin   GPIO_PIN_12
+#define MUX_S1_pin   GPIO_PIN_13
+#define MUX_S0_pin   GPIO_PIN_14
 
 #endif
 

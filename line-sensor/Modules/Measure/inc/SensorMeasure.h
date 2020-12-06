@@ -24,7 +24,7 @@ typedef uint32_t AdcMeasType;
 class SensorMeasure
 {
 public:
-	static SensorMeasure* GetInstance();
+	static SensorMeasure& GetInstance();
 	void Measure(AdcInput input);
 	void GetMeasurements(AdcMeasType* dest);
 

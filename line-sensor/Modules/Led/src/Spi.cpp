@@ -1,6 +1,9 @@
-#include "../inc/Spi.h"
-
+#include "Spi.h"
 #include <string.h>
+
+#ifndef HAL_SPI_MODULE_ENABLED
+	#error Define HAL_SPI_MODULE_ENABLED in stm32xxxx_hal_conf.h
+#endif
 
 static SPI_HandleTypeDef* hspi1;
 SPI_HandleTypeDef Spi::handle;

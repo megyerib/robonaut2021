@@ -4,14 +4,17 @@
 #include "stm32f0xx_hal.h"
 
 
-ShiftReg::ShiftReg(GpioPin OE_Pin, GpioPin LE_Pin)
+ShiftReg::ShiftReg(GPIO_TypeDef* OE_Port,
+				   uint32_t      OE_Pin,
+				   GPIO_TypeDef* LE_Port,
+                   uint32_t      LE_Pin)
 {
 	spi = Spi::GetInstance();
 
-	this->LE_Pin  = 1 << Stm32Gpio::GetPin(LE_Pin);
-	this->OE_Pin  = 1 << Stm32Gpio::GetPin(OE_Pin);
-	this->LE_Port = Stm32Gpio::GetPort(LE_Pin);
-	this->OE_Port = Stm32Gpio::GetPort(OE_Pin);
+	this->LE_Pin  = LE_Pin;
+	this->OE_Pin  = OE_Pin;
+	this->LE_Port = LE_Port;
+	this->OE_Port = OE_Port;
 
 	GpioInit();
 
@@ -19,7 +22,7 @@ ShiftReg::ShiftReg(GpioPin OE_Pin, GpioPin LE_Pin)
 	HAL_GPIO_WritePin(this->LE_Port, this->LE_Pin, GPIO_PIN_RESET); // Low active  -> Reset
 }
 
-bool ShiftReg::Display(void* data, size_t size)
+bool ShiftReg::Send(void* data, size_t size)
 {
 	bool ret = false;
 

@@ -5,18 +5,18 @@
 
 // TODO interface is OK but the whole module needs refactoring
 
-class Display
+class LedDriver
 {
 	ShiftReg leds;
 
 public:
-	static Display& GetInstance();
+	static LedDriver& GetInstance();
 	void DisplayLinePos(LineInput l);
 	void DisplayPattern(uint32_t pattern);
 	void Clear();
 
 private:
-	Display();
+	LedDriver();
 
 	uint8_t mmToLedPos(int16_t mm);
 	uint32_t transformReg_Rev1(uint32_t ledval);

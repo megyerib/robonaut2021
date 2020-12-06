@@ -1,6 +1,6 @@
+#include <IrDriver.h>
 #include <KRTask.h>
-#include "Display.h"
-#include "SensorDriver.h"
+#include <LedDriver.h>
 
 #define PRIO                 3
 #define PERIOD              25
@@ -31,12 +31,12 @@ void KRTask::TaskInit()
 void KRTask::TaskFunction()
 {
 	// LED (Knight Rider)
-	Display::GetInstance().DisplayPattern(ledPattern);
+	LedDriver::GetInstance().DisplayPattern(ledPattern);
 	KnightRiderCycle(ledPattern, ledDirLeft);
 
 	// IR (only 1)
 	KnightRiderCycle(irPattern, irDirLeft);
-	SensorDriver::GetInstance().DisplayPattern(irPattern);
+	IrDriver::GetInstance().DisplayPattern(irPattern);
 }
 
 void KRTask::KnightRiderCycle(uint32_t& pattern, bool& dirLeft)
