@@ -50,6 +50,7 @@
 									<listOptionValue builtIn="false" value="SENSOR_SIZE=32"/>
 									<listOptionValue builtIn="false" value="SENSOR_REV=2"/>
 									<listOptionValue builtIn="false" value="INVERT=0"/>
+									<listOptionValue builtIn="false" value="HSE_OSCILLATOR=1"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths.598474478" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/Lib/CMSIS/Include}&quot;"/>
@@ -81,6 +82,7 @@
 									<listOptionValue builtIn="false" value="SENSOR_SIZE=32"/>
 									<listOptionValue builtIn="false" value="SENSOR_REV=2"/>
 									<listOptionValue builtIn="false" value="INVERT=0"/>
+									<listOptionValue builtIn="false" value="HSE_OSCILLATOR=1"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.cpp.compiler.option.includepaths.1621941308" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.cpp.compiler.option.includepaths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/Lib/CMSIS/Include}&quot;"/>
@@ -225,6 +227,7 @@
 									<listOptionValue builtIn="false" value="SENSOR_SIZE=32"/>
 									<listOptionValue builtIn="false" value="STM32F030xx"/>
 									<listOptionValue builtIn="false" value="INVERT=0"/>
+									<listOptionValue builtIn="false" value="HSE_OSCILLATOR=1"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths.1661409825" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/Lib/CMSIS/Include}&quot;"/>
@@ -256,6 +259,7 @@
 									<listOptionValue builtIn="false" value="SENSOR_SIZE=32"/>
 									<listOptionValue builtIn="false" value="STM32F030xx"/>
 									<listOptionValue builtIn="false" value="INVERT=0"/>
+									<listOptionValue builtIn="false" value="HSE_OSCILLATOR=1"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.cpp.compiler.option.includepaths.108506191" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.cpp.compiler.option.includepaths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/Lib/CMSIS/Include}&quot;"/>
