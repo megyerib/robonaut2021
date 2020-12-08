@@ -32,7 +32,7 @@ private:
     // Actually used buffers
     uint8_t txBufNum;
     uint8_t* txBuf;
-    size_t* txBufLen;
+    size_t* txBufIndex;
 
     std::unique_ptr<BinaryEncoder> encoder;
 

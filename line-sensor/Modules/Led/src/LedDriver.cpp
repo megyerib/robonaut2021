@@ -55,6 +55,11 @@ void LedDriver::Clear()
 	leds.Send((uint8_t*)&buf, GROUP_CNT);
 }
 
+void LedDriver::Enable(bool en)
+{
+	leds.Enable(en);
+}
+
 uint32_t LedDriver::transformReg_Rev1(uint32_t ledval)
 {
 	// Swap the two 16 bit halves

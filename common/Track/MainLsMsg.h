@@ -6,16 +6,18 @@
 typedef enum
 {
 	m2lReset = 0,
+	m2lCfg,
 
-	m2uCnt
+	m2lCnt
 }
 MAIN_TO_UI_MSG;
 
 typedef enum
 {
 	l2mLineData = 0,
+	l2mSensorData,
 
-	u2mCnt
+	l2mCnt
 }
 UI_TO_MAIN_MSG;
 
@@ -25,9 +27,20 @@ UI_TO_MAIN_MSG;
 
 typedef struct
 {
-	uint8_t ID;
+	uint8_t ID = m2lReset;
 }
 M2L_RESET;
+
+typedef struct
+{
+	uint8_t ID = m2lCfg;
+	uint8_t LineDataEn   : 1;
+	uint8_t SensorDataEn : 1;
+	uint8_t LedEn        : 1;
+	uint8_t MeasEn       : 1;
+	uint8_t              : 4; // Padding
+}
+M2L_CFG;
 
 // UI to Main ------------------------------------------------------------------
 
@@ -37,6 +50,14 @@ typedef struct
 	LineInput line;
 }
 L2M_LINE_DATA;
+
+typedef struct
+{
+	uint8_t  ID = l2mSensorData;
+	uint8_t  size;
+	uint16_t data[];
+}
+L2M_SENSOR_DATA;
 
 // -----------------------------------------------------------------------------
 

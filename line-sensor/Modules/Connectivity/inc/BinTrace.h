@@ -2,8 +2,8 @@
 
 #include "BinTraceBase.h"
 
-#define MSG_BUF_SIZE  (32u)
-#define TX_BUF_SIZE   (32u)
+#define MSG_BUF_SIZE  (100u)
+#define TX_BUF_SIZE   (100u)
 
 #define TRACE_BIN(buf, size) BinTrace::GetInstance().TraceBinary(false, (buf), (size))
 

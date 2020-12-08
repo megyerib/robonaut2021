@@ -35,7 +35,7 @@ Trace::Trace()
 {
 	txBufNum = 0;
 	txBuf    = (uint8_t*) &txBuffers[txBufNum];
-	txBufLen = &txBufLens[txBufNum];
+	txBufIndex = &txBufLens[txBufNum];
 
 	txBufLens[0] = 0;
 	txBufLens[1] = 0;
@@ -159,12 +159,12 @@ void Trace::ProcessBinary()
 			// Code & copy to Tx queue
 			EscapeEncoder enc;
 			size_t encSize;
-			enc.Encode(uncodedBuf, size, &txBuf[*txBufLen], encSize);
-			*txBufLen += encSize;
+			enc.Encode(uncodedBuf, size, &txBuf[*txBufIndex], encSize, TX_BUF_LEN - *txBufIndex);
+			*txBufIndex += encSize;
 
 			// Line ending
-			txBuf[*txBufLen] = '\n';
-			(*txBufLen)++;
+			txBuf[*txBufIndex] = '\n';
+			(*txBufIndex)++;
 
 			// Free buffer
 			FREE_PORT(packet);
@@ -232,12 +232,12 @@ void Trace::ProcessText()
 			// Code & copy to Tx queue
 			EscapeEncoder enc;
 			size_t encSize;
-			enc.Encode(uncodedBuf, uncLen, &txBuf[*txBufLen], encSize);
-			*txBufLen += encSize;
+			enc.Encode(uncodedBuf, uncLen, &txBuf[*txBufIndex], encSize, TX_BUF_LEN - *txBufIndex);
+			*txBufIndex += encSize;
 
 			// Line ending
-			txBuf[*txBufLen] = '\n';
-			(*txBufLen)++;
+			txBuf[*txBufIndex] = '\n';
+			(*txBufIndex)++;
 
 			// Free buffer
 			FREE_PORT(printfBuf);
@@ -255,16 +255,16 @@ void Trace::ProcessText()
 
 void Trace::Process()
 {
-	if (*txBufLen > 0)
+	if (*txBufIndex > 0)
 	{
 		// Send buffer, switch to the another one
-		TraceUart::GetInstance().Transmit(txBuf, *txBufLen);
+		TraceUart::GetInstance().Transmit(txBuf, *txBufIndex);
 
 		txBufNum ^= 1; // 0 <-> 1
 		txBuf = (uint8_t*) &txBuffers[txBufNum];
-		txBufLen = &txBufLens[txBufNum];
+		txBufIndex = &txBufLens[txBufNum];
 
-		*txBufLen = 0;
+		*txBufIndex = 0;
 	}
 
 	// Process binary messages

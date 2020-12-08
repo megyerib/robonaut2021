@@ -1,6 +1,7 @@
 #pragma once
 
 #include "MazeDetectorSM.h"
+#include "CmdReceiver.h"
 
 #define LINE_SAMPLING_CYCLE    5 /* ms */
 #define LINE_CNT_FILTER_SIZE   3
@@ -39,10 +40,13 @@ private:
 	LineData front = {0};
 	LineData rear  = {0};
 
+	CmdReceiver cmdProcFront;
+	CmdReceiver cmdProcRear;
+
 	TrackDetector();
 
 	// Process:
-	bool GetLineData(LineData& line);
+	bool ProcessRx(LineData& line);
 	void FilterCnt(LineData& line);
 
 	void EvalRaceTrackType();

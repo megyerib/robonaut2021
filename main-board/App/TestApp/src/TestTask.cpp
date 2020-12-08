@@ -6,6 +6,7 @@
 #include "DistanceTask.h"
 #include "TraceTask.h"
 #include "EncoderTask.h"
+#include "TrackTask.h"
 
 #define PRIO       6
 #define PERIOD    20
@@ -29,6 +30,7 @@ void TestTask::TaskInit()
 	TraceTask::Init();
 	DistanceTask::Init();
 	EncoderTask::Init();
+	TrackTask::Init();
 
 	Steering::GetInstance()->SetMode(Free);
 	Traction::GetInstance()->SetMode(tmode_Manual);

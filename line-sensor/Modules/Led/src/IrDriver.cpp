@@ -2,7 +2,7 @@
 #include "SensorCfg.h"
 #include <stdint.h>
 
-IrDriver::IrDriver() : sensors(IR_OE_port, IR_OE_pin, IR_LE_port, IR_LE_pin)
+IrDriver::IrDriver() : ir(IR_OE_port, IR_OE_pin, IR_LE_port, IR_LE_pin)
 {
 
 }
@@ -31,7 +31,12 @@ void IrDriver::DisplayPattern(uint32_t pattern)
 	pattern = transformReg_Rev1(pattern);
 #endif
 
-	sensors.Send(&pattern, GROUP_CNT);
+	ir.Send(&pattern, GROUP_CNT);
+}
+
+void IrDriver::Enable(bool en)
+{
+	ir.Enable(en);
 }
 
 uint32_t IrDriver::transformReg_Rev1(uint32_t irval)

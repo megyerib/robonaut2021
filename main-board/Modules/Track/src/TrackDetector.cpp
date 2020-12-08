@@ -1,24 +1,55 @@
+#include <LsFrontUart.h>
+#include <LsRearUart.h>
 #include "TrackDetector.h"
 #include <cstddef>
-#include "base64.h" /* Change encoding & remove */
 #include <cstdlib>
 #include "WaitDistance.h"
-
-#include "LsUartFront.h"
-#include "LsUartRear.h"
-#include "LastLineReader.h"
-#include "LineGetterUart.h"
 #include <cstring>
+#include "EscapeEncoder.h"
+#include "Trace.h"
+#include "MainLsMsg.h"
+#include "BinTraceBase.h"
 
 #define NEAR_FAR_THRESHOLD_MM    70
 
 #define DEBUG_TRACK               0
 
-TrackDetector::TrackDetector() :
-	frontStm(front)
+#define CMD_PROC_BUF_LEN  300
+
+static uint8_t cmdProcBufFront[CMD_PROC_BUF_LEN];
+static uint8_t cmdProcBufRear[CMD_PROC_BUF_LEN];
+
+static EscapeEncoder enc;
+
+TrackDetector::TrackDetector() : frontStm(front),
+                                 cmdProcFront(LsFrontUart::GetInstance(), cmdProcBufFront, CMD_PROC_BUF_LEN, &enc),
+								 cmdProcRear(LsRearUart::GetInstance(), cmdProcBufRear, CMD_PROC_BUF_LEN, &enc)
 {
-	front.receiver = LsUartFront::GetInstance();
-	rear.receiver  = LsUartRear ::GetInstance();
+	front.receiver = &cmdProcFront;
+	rear.receiver  = &cmdProcRear;
+
+	M2L_RESET reset;
+
+	M2L_CFG cfg;
+	cfg.LedEn        = 1;
+	cfg.LineDataEn   = 1;
+	cfg.MeasEn       = 1;
+	cfg.SensorDataEn = 1;
+
+	// TODO do this nicely
+	static uint8_t txBuf[10];
+
+	EscapeEncoder enc;
+	BinTraceBase frontTrace(
+		LsFrontUart::GetInstance(),
+		txBuf,
+		10,
+		10,
+		enc
+	);
+
+	frontTrace.TraceBinary(false, &cfg, sizeof(cfg));
+	frontTrace.Process();
 }
 
 TrackDetector* TrackDetector::GetInstance()
@@ -132,35 +163,32 @@ bool TrackDetector::IsFork(TrackType track)
     return track_is_fork;
 }
 
-bool TrackDetector::GetLineData(LineData& line)
+// Put line data into line.input
+bool TrackDetector::ProcessRx(LineData& line)
 {
-	uint8_t base64_buf[50];
-	size_t  base64_size;
-	bool ret = false;
+	bool lineReceived = false; // Don't signal if only other types were received
+	static uint8_t buf[70];
+	size_t size;
 
-	line.receiver->Receive(base64_buf, base64_size, 50);
-
-	while (base64_size > 0)
+	while (true)
 	{
-		if (base64_size == 11)
+		line.receiver->Receive(buf, size, 70);
+
+		if (size == 0) break;
+
+		if (buf[0] == l2mLineData && size == sizeof(L2M_LINE_DATA))
 		{
-			uint8_t decoded_buf[11];
-			size_t  decoded_size;
-
-			base64_decode(base64_buf, decoded_buf, base64_size, &decoded_size);
-
-			if (decoded_size == sizeof(LineInput))
-			{
-				line.input = *((LineInput*) decoded_buf);
-				ret = true;
-				break;
-			}
+			L2M_LINE_DATA* msg = (L2M_LINE_DATA*) buf;
+			line.input = msg->line;
+			lineReceived = true;
 		}
-
-		line.receiver->Receive(base64_buf, base64_size, 50);
+		else if (buf[0] == l2mSensorData)
+		{
+			TRACE_BIN(buf, size);
+		}
 	}
 
-	return ret;
+	return lineReceived;
 }
 
 void TrackDetector::GetNearest(LineData& line)
@@ -269,7 +297,7 @@ void TrackDetector::Process()
 #endif
 
 	// Front
-	while (GetLineData(front) == true)
+	while (ProcessRx(front) == true)
 	{
 #if DEBUG_TRACK		// Change trace
 		LineType  prevLineType = front.lType;
@@ -308,7 +336,7 @@ void TrackDetector::Process()
 	}
 
 	// Rear
-	while (GetLineData(rear) == true)
+	while (ProcessRx(rear) == true)
 	{
 		FilterCnt(rear);
 		GetNearest(rear);

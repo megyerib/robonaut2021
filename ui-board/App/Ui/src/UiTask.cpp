@@ -1,4 +1,4 @@
-#include <MainUiMsg.h>
+#include "MainUiMsg.h"
 #include "UiTask.h"
 #include "Matrix.h"
 #include "Buttons.h"
@@ -83,8 +83,6 @@ void UiTask::TaskFunction()
 	BinTrace::GetInstance().Process();
 }
 
-#define TYPE_SIZE_ASSERT(x) if (size != sizeof(x)) return
-
 void UiTask::ProcessRxQueue()
 {
 	uint8_t buf[20];
@@ -104,6 +102,8 @@ void UiTask::ProcessRxQueue()
 		}
 	}
 }
+
+#define TYPE_SIZE_ASSERT(x) if (size != sizeof(x)) return
 
 void UiTask::ProcessRxMessage(uint8_t buf[], size_t size)
 {

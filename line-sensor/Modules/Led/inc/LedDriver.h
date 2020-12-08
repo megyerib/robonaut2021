@@ -14,6 +14,7 @@ public:
 	void DisplayLinePos(LineInput l);
 	void DisplayPattern(uint32_t pattern);
 	void Clear();
+	void Enable(bool en);
 
 private:
 	LedDriver();

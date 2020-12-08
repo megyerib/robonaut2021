@@ -12,6 +12,7 @@ public:
 	         uint32_t      LE_Pin);
 
 	bool Send(void* data, size_t size);
+	void Enable(bool en);
 
 private:
 	Spi* spi;

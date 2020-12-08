@@ -54,7 +54,7 @@ int32_t CmdReceiver::Receive(void* buffer, size_t& size, size_t targetSize)
 
 	if ((tmpBufFirst + encFrameSize < tmpBufLast) && (tmpBuf[tmpBufFirst + encFrameSize] == '\n'))
 	{
-		encoder->Decode(&tmpBuf[tmpBufFirst], encFrameSize, (uint8_t*)buffer, size);
+		encoder->Decode(&tmpBuf[tmpBufFirst], encFrameSize, (uint8_t*)buffer, size, targetSize);
 
 		tmpBufFirst += encFrameSize + 1;
 

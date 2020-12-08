@@ -4,10 +4,11 @@
 #include "crc8.h"
 #include "EscapeEncoder.h"
 #include <cmath>
+#include "MainLsMsg.h"
 
 #define FILE_NAME  "test.txt"
 #define HEX_FILE_NAME  "test_hex.txt"
-#define BUF_LEN    (30u)      /* Length of every buffer in this example */
+#define BUF_LEN    (100u)      /* Length of every buffer in this example */
 
 // Print a Serial Message (SM) into the FILE_NAME file
 // Also adds CRC
@@ -24,13 +25,29 @@ void generateTestFile();
 // Reads the test files, decodes the lines and calculates CRC
 void processTestFile();
 
+// Reads line sensor data raw output from file and convert them to csv
+void processLineFile(char* src, char* dst);
+
+void dumpBuffer(uint8_t buf[], size_t len);
+
 int main()
 {
-    uint8_t reset[3] = {0};
-    printSM_hex(stdout, reset, 1);
+    // Random line sensor command generation
+    /*M2L_CFG cfg_msg;
 
-    uint8_t setNum[3] = {1, 20};
-    printSM_hex(stdout, setNum, 2);
+    cfg_msg.LedEn = 0;
+    cfg_msg.LineDataEn = 0;
+    cfg_msg.MeasEn = 1;
+    cfg_msg.SensorDataEn = 0;
+
+    printSM_hex(stdout, &cfg_msg, sizeof(cfg_msg));
+
+    cfg_msg.LedEn = 1;
+    printSM_hex(stdout, &cfg_msg, sizeof(cfg_msg));
+
+    cfg_msg.SensorDataEn = 1;
+    printSM_hex(stdout, &cfg_msg, sizeof(cfg_msg));*/
+    processLineFile("white-line.txt", "white-line.csv");
 
     //generateTestFile();
     //processTestFile();
@@ -109,7 +126,7 @@ void processTestFile()
                 size_t decBufLen;
 
                 // Decode line
-                enc->Decode(line, lineLen, decBuf, decBufLen);
+                enc->Decode(line, lineLen, decBuf, decBufLen, BUF_LEN);
 
                 // Process data (Check CRC for example)
                 if (Crc8::CheckBlockCrc(decBuf, decBufLen))
@@ -135,6 +152,97 @@ void processTestFile()
     fclose(f);
 }
 
+void processLineFile(char* src, char* dst)
+{
+    // Open file
+    FILE *f      = fopen(src, "rb");
+    FILE *csv = fopen(dst, "w");
+    size_t lineNum = 1;
+
+    if (f == NULL || csv == NULL)
+    {
+        return;
+    }
+
+    size_t lineLen = 0;
+    EscapeEncoder enc;
+    uint8_t line[BUF_LEN];
+    bool discardLine = false;
+
+    while (1)
+    {
+        size_t cnt;
+        cnt = fread(&line[lineLen], 1, 1, f);
+
+        if (cnt != 0) // The data was read, EOF hasn't been reached
+        {
+            if (line[lineLen] != '\n')
+            {
+                if (lineLen < BUF_LEN)
+                {
+                    lineLen++;
+                }
+                else
+                {
+                    discardLine = true;
+                }
+            }
+            else // Line end reached
+            {
+                uint8_t decBuf[BUF_LEN];
+                size_t decBufLen;
+                L2M_SENSOR_DATA* msg = (L2M_SENSOR_DATA*) decBuf;
+
+                if (lineLen > 0)
+                {
+                    lineLen--;
+                }
+
+                // Decode line
+                if (!discardLine)
+                {
+                    enc.Decode(line, lineLen, decBuf, decBufLen, BUF_LEN);
+                }
+
+                // Process data
+                if (discardLine)
+                {
+                    printf("Line too long! (>%llu; line %llu)\n", lineLen, lineNum);
+                }
+                else if (msg->ID != l2mSensorData || decBufLen != 66)
+                {
+                    printf("Invalid line (%llu; line %llu): ", decBufLen, lineNum);
+                    dumpBuffer(decBuf, decBufLen);
+                }
+                else
+                {
+                    fprintf(csv, "%d", msg->data[0]);
+
+                    for (int i = 1; i < msg->size; i++)
+                    {
+                        fprintf(csv, ";%d", msg->data[i]);
+                    }
+
+                    fprintf(csv, "\n");
+                }
+
+                // Reset line length, proceed to the next one
+                lineLen = 0;
+                discardLine = false;
+                lineNum++;
+            }
+        }
+        else // EOF has been reached
+        {
+            break;
+        }
+    }
+
+    // Close file
+    fclose(f);
+    fclose(csv);
+}
+
 void printSM(FILE* f, void* msg, size_t len)
 {
     // 1 Add CRC
@@ -150,7 +258,7 @@ void printSM(FILE* f, void* msg, size_t len)
     size_t encBufLen;
     BinaryEncoder* enc = new EscapeEncoder;
 
-    enc->Encode(srcBuf, srcBufLen, encBuf, encBufLen);
+    enc->Encode(srcBuf, srcBufLen, encBuf, encBufLen, BUF_LEN);
 
     // 3 Add '\n'
     encBuf[encBufLen] = '\n';
@@ -178,7 +286,7 @@ void printSM_hex(FILE* f, void* msg, size_t len)
     size_t encBufLen;
     BinaryEncoder* enc = new EscapeEncoder;
 
-    enc->Encode(srcBuf, srcBufLen, encBuf, encBufLen);
+    enc->Encode(srcBuf, srcBufLen, encBuf, encBufLen, BUF_LEN);
 
     // 3 Add '\n'
     encBuf[encBufLen] = '\n';
@@ -210,4 +318,23 @@ void printText(FILE* f, char* str)
     memcpy(message->text, str, len);
 
     printSM(f, message, len + 1);
+}
+
+void dumpBuffer(uint8_t buf[], size_t len)
+{
+    if (len > 0)
+    {
+        printf("%d", buf[0]);
+
+        for (size_t i = 0; i < len; i++)
+        {
+            printf(";%d", buf[i]);
+        }
+
+        printf("\n");
+    }
+    else
+    {
+        printf("Empty buffer\n");
+    }
 }

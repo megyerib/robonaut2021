@@ -17,8 +17,8 @@ int main()
     uint8_t decoded[20];
     size_t decodedSize;
 
-    encoder->Encode(testString, testStringSize, encoded, encodedSize);
-    encoder->Decode(encoded, encodedSize, decoded, decodedSize);
+    encoder->Encode(testString, testStringSize, encoded, encodedSize, 20);
+    encoder->Decode(encoded, encodedSize, decoded, decodedSize, 20);
 
     hexDump(testString, testStringSize);
     hexDump(encoded, encodedSize);

@@ -4,12 +4,13 @@
 
 class IrDriver
 {
-	ShiftReg sensors;
+	ShiftReg ir;
 
 public:
 	static IrDriver& GetInstance();
 	void SetSensors(uint8_t groupSize, uint8_t index);
 	void DisplayPattern(uint32_t pattern);
+	void Enable(bool en);
 
 private:
 	IrDriver();

@@ -18,8 +18,8 @@ ShiftReg::ShiftReg(GPIO_TypeDef* OE_Port,
 
 	GpioInit();
 
-	HAL_GPIO_WritePin(this->OE_Port, this->OE_Pin, GPIO_PIN_RESET); // High active -> Set
-	HAL_GPIO_WritePin(this->LE_Port, this->LE_Pin, GPIO_PIN_RESET); // Low active  -> Reset
+	HAL_GPIO_WritePin(this->OE_Port, this->OE_Pin, GPIO_PIN_RESET); // Low active -> Set
+	HAL_GPIO_WritePin(this->LE_Port, this->LE_Pin, GPIO_PIN_RESET); // High active  -> Reset
 }
 
 bool ShiftReg::Send(void* data, size_t size)
@@ -39,6 +39,11 @@ bool ShiftReg::Send(void* data, size_t size)
 	}
 
 	return ret;
+}
+
+void ShiftReg::Enable(bool en)
+{
+	HAL_GPIO_WritePin(this->OE_Port, this->OE_Pin, en ? GPIO_PIN_RESET : GPIO_PIN_SET); // Low active
 }
 
 void ShiftReg::GpioInit()
