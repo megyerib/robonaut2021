@@ -16,7 +16,7 @@ private:
 	Q1Task();
 
 	Car*      car       = nullptr;
-	Remote*   remote    = nullptr;
+	Remote&   remote;
 	Traction* motor     = nullptr;
 	Steering* steering  = nullptr;
 

@@ -4,12 +4,12 @@
 
 class TestTask : public CyclicTask
 {
+public:
+	static TestTask& Init();
+
 private:
 	TestTask();
 
 	void TaskInit() override;
 	void TaskFunction() override;
-
-public:
-	static TestTask& Init();
 };

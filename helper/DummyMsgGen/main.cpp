@@ -47,7 +47,7 @@ int main()
 
     cfg_msg.SensorDataEn = 1;
     printSM_hex(stdout, &cfg_msg, sizeof(cfg_msg));*/
-    processLineFile("white-line.txt", "white-line.csv");
+    processLineFile("floor-black.txt", "floor-black.csv");
 
     //generateTestFile();
     //processTestFile();

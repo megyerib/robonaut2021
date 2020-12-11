@@ -32,13 +32,11 @@ Steering::Steering()
 	front.controller = new Pd_Controller(0.5f, 0.1f);
 	front.line       = 0.0f;
 	front.angle      = 0.0f;
-	front.servo->Enable();
 
 	rear.servo       = new Servo(eTIM12, TIM_CHANNEL_1);
 	rear.controller  = new Pd_Controller(0.5f, 0.1f);
 	rear.line        = 0.0f;
 	rear.angle       = 0.0f;
-	rear.servo->Enable();
 
 	mode = SteeringMode::Off;
 }
@@ -140,8 +138,6 @@ void Steering::Process()
     {
 		case Off:
 		{
-			front.servo->Disable();
-			rear.servo->Disable();
 			break;
 		}
     	case SingleLineFollow_Slow:

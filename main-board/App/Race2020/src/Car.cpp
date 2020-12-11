@@ -96,10 +96,10 @@ void Car::Reset_To_FailedOvertake()         // TODO test and review
     carProp.targetSpeed = CAR_SPEED_STRAIGHT;
 }
 
-Car::Car() : encoder(Encoder::GetInstance())
+Car::Car() : encoder(Encoder::GetInstance()),
+             remote(Remote::GetInstance())
 {
     radio         = Starter::GetInstance();
-    remote        = Remote::GetInstance();
     wheels        = Steering::GetInstance();
     motor         = Traction::GetInstance();
     lineSensor    = TrackDetector::GetInstance();
@@ -713,7 +713,7 @@ void Car::CheckDeadmanSwitch()
 {
 	if (USE_DEADMAN_SWITCH)
 	{
-		if (remote->GetValue(RemoteChannel::ThrottleCh) < 0.1f)
+		if (remote.GetValue(RemoteChannel::chThrottle) < 0.1f)
 		{
 			// No throttle
 			motor->SetMode(tmode_Manual);

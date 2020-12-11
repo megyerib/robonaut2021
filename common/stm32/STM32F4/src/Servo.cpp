@@ -41,16 +41,6 @@ Servo::Servo(TimerInstance TIM, uint32_t Channel)
     Init();
 }
 
-void Servo::Enable(void)
-{
-    enabled = true;
-}
-
-void Servo::Disable(void)
-{
-    enabled = false;
-}
-
 //! Servo Anlge:
 //!                 1.57 rad
 //!          2.09 rad  |  0.52 rad
@@ -79,7 +69,7 @@ void  Servo::SetSteerAngle(float rad)
         validCompareValue = compareValue;
     }
 
-    SetTimerCompareValue(validCompareValue);
+    SetPulseWidth_us(validCompareValue);
 }
 
 float Servo::GetSteerAngle(void)
@@ -106,31 +96,16 @@ void Servo::SetCalibration(uint8_t min,
     config.Rad_max    = max;
 }
 
-uint32_t Servo::SaturateCompareValue(uint32_t compare)
+void Servo::SetPulseWidth_us(uint32_t pulseWidth)
 {
-    uint32_t validCompareValue;
+    uint32_t compareValue = pulseWidth - 1;
 
-    if(compare > timCfg.Period)
-    {
-        validCompareValue = timCfg.Period;
-    }
-    else if(compare < 0)
-    {
-        validCompareValue = 0;
-    }
-    else
-    {
-        validCompareValue = compare;
-    }
+	if(compareValue > timCfg.Period)
+	{
+		compareValue = timCfg.Period;
+	}
 
-    return validCompareValue;
-}
-
-void Servo::SetTimerCompareValue(uint32_t compareValue)
-{
-    uint32_t validCompareValue = SaturateCompareValue(compareValue);
-
-    __HAL_TIM_SET_COMPARE(htim, channel, validCompareValue);
+    __HAL_TIM_SET_COMPARE(htim, channel, compareValue);
 }
 
 uint32_t Servo::GetTimerCompareValue(void)
@@ -147,7 +122,7 @@ void Servo::Init()
 
         /* TIM12 interrupt Init */
         HAL_NVIC_SetPriority(TIM8_BRK_TIM12_IRQn, 5, 0);
-        HAL_NVIC_EnableIRQ(TIM8_BRK_TIM12_IRQn);
+        HAL_NVIC_EnableIRQ(TIM8_BRK_TIM12_IRQn); // TODO Why do we have interrupt?
     }
     else if (type == ANALOG)
     {
@@ -158,7 +133,7 @@ void Servo::Init()
         HAL_NVIC_SetPriority(TIM8_BRK_TIM12_IRQn, 5, 0);
         HAL_NVIC_EnableIRQ(TIM8_BRK_TIM12_IRQn);
         HAL_NVIC_SetPriority(TIM8_CC_IRQn, 5, 0);
-        HAL_NVIC_EnableIRQ(TIM8_CC_IRQn);
+        HAL_NVIC_EnableIRQ(TIM8_CC_IRQn); // TODO Why do we have interrupt?
     }
     else
     {
@@ -167,8 +142,6 @@ void Servo::Init()
 
     InitTimer();
     InitGPIOs();
-
-    enabled = false;
 
     LoadCfg();
 
@@ -191,9 +164,9 @@ void Servo::InitTimer()
         TIM_OC_InitTypeDef      sConfigOC = {0};
 
         htim->Instance                   = TIM12;
-        htim->Init.Prescaler             = 1439;
+        htim->Init.Prescaler             = 90-1; // APB1 (90 MHz)
         htim->Init.CounterMode           = TIM_COUNTERMODE_UP;
-        htim->Init.Period                = 249;
+        htim->Init.Period                = 4000-1; // 4000 us
         htim->Init.ClockDivision         = TIM_CLOCKDIVISION_DIV1;
         htim->Init.AutoReloadPreload     = TIM_AUTORELOAD_PRELOAD_DISABLE;
         if (HAL_TIM_Base_Init(htim) != HAL_OK)
@@ -236,9 +209,9 @@ void Servo::InitTimer()
         TIM_BreakDeadTimeConfigTypeDef  sBreakDeadTimeConfig = {0};
 
         htim->Instance                  = TIM8;
-        htim->Init.Prescaler            = 2879;
+        htim->Init.Prescaler            = 180-1; // APB2 (180 MHz)
         htim->Init.CounterMode          = TIM_COUNTERMODE_UP;
-        htim->Init.Period               = 1249;
+        htim->Init.Period               = 20000-1; // 20000 us
         htim->Init.ClockDivision        = TIM_CLOCKDIVISION_DIV1;
         htim->Init.RepetitionCounter    = 0;
         htim->Init.AutoReloadPreload    = TIM_AUTORELOAD_PRELOAD_DISABLE;
@@ -341,25 +314,25 @@ void Servo::LoadCfg()
 {
     if (type == DIGITAL)
     {
-        config.Rad_min      = 62;
-        config.Rad_30deg    = 76;
-        config.Rad_90deg    = 88;
-        config.Rad_150deg   = 114;
-        config.Rad_max      = 118;
+        config.Rad_min      = 62*16;
+        config.Rad_30deg    = 76*16;
+        config.Rad_90deg    = 88*16;
+        config.Rad_150deg   = 114*16;
+        config.Rad_max      = 118*16;
 
-        timCfg.Period       = 249;
-        timCfg.Prescaler    = 1439;
+        timCfg.Period       = 4000 - 1; // old: 250 - 1
+        timCfg.Prescaler    = 90 - 1;   // old: 1440 - 1
     }
     else if (type == ANALOG)
     {
-        config.Rad_min      = 49;
-        config.Rad_30deg    = 49;
-        config.Rad_90deg    = 85;
-        config.Rad_150deg   = 121;
-        config.Rad_max      = 121;
+        config.Rad_min      = 49*16;
+        config.Rad_30deg    = 49*16;
+        config.Rad_90deg    = 85*16;
+        config.Rad_150deg   = 121*16;
+        config.Rad_max      = 121*16;
 
-        timCfg.Period       = 1249;
-        timCfg.Prescaler    = 2879;
+        timCfg.Period       = 20000 - 1; // old: 1250 - 1
+        timCfg.Prescaler    = 180 - 1;   // old: 2880 - 1
     }
     else
     {

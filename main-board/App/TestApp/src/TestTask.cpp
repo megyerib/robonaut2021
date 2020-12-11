@@ -38,8 +38,8 @@ void TestTask::TaskInit()
 
 void TestTask::TaskFunction()
 {
-	float steer    = Remote::GetInstance()->GetValue(SteeringCh);
-	float throttle = Remote::GetInstance()->GetValue(ThrottleCh);
+	float steer    = Remote::GetInstance().GetValue(chSteering);
+	float throttle = Remote::GetInstance().GetValue(chThrottle);
 
 	Steering::GetInstance()->SetAngleManual(-0.8*steer, 0); // Front; rear
 	Traction::GetInstance()->SetDutyCycle(0.2*throttle);

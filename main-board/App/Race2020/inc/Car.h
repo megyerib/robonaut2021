@@ -102,7 +102,7 @@ public:
 private:
     Encoder&        encoder;
     Starter*        radio;
-    Remote*         remote;
+    Remote&         remote;
     Steering*       wheels;
     Traction*       motor;
     TrackDetector*  lineSensor;

@@ -7,7 +7,8 @@
 #define RC_THROTTLE_THRESHOLD    (0.1f)
 #define RC_THROTTLE_FUN_FACTOR   (0.4f)
 
-Q1Task::Q1Task() : CyclicTask((char*)"Q1", CYCLE_TIME, MAIN_TASK_PRIO, 1024)
+Q1Task::Q1Task() : CyclicTask((char*)"Q1", CYCLE_TIME, MAIN_TASK_PRIO, 1024),
+                   remote(Remote::GetInstance())
 {
 
 }
@@ -21,16 +22,15 @@ Q1Task* Q1Task::Init()
 void Q1Task::TaskInit()
 {
 	car      = Car::GetInstance();
-	remote   = Remote::GetInstance();
 	motor    = Traction::GetInstance();
 	steering = Steering::GetInstance();
 }
 
 void Q1Task::TaskFunction()
 {
-	float      throttle   = remote->GetValue(ThrottleCh);
-	float      steerAngle = remote->GetValue(SteeringCh);
-	RemoteMode mode       = remote->GetMode();
+	float      throttle   = remote.GetValue(chThrottle);
+	float      steerAngle = remote.GetValue(chSteering);
+	RemoteMode mode       = remote.GetMode();
 
 	if (mode == RemMode1)
 	{

@@ -5,10 +5,10 @@
 
 typedef enum
 {
-	SteeringCh = 0,
-	ThrottleCh,
+	chSteering = 0,
+	chThrottle,
 
-	CH_Num
+	chNum
 }
 RemoteChannel;
 
@@ -32,7 +32,7 @@ RemoteCal;
 class Remote
 {
 public:
-	static Remote* GetInstance();
+	static Remote& GetInstance();
 	float GetValue(RemoteChannel ch); /* [-1; +1] */
 	RemoteMode GetMode();
 
@@ -44,9 +44,9 @@ public:
 	void CalibrationProcess();
 
 private:
-	RemoteCal calData[CH_Num]  = {0};
-	bool calInProgress[CH_Num] = {false};
-	bool calStarted[CH_Num] = {false};
+	RemoteCal calData[chNum]  = {0};
+	bool calInProgress[chNum] = {false};
+	bool calStarted[chNum] = {false};
 	RemoteHw* remoteHw;
 
 	Remote();

@@ -89,7 +89,6 @@ void Distance::InitPower()
 void Distance::InitServo()
 {
 	srv_front = new Servo(eTIM8, TIM_CHANNEL_1);
-	srv_front->Enable();
 }
 
 void Distance::InitTof()

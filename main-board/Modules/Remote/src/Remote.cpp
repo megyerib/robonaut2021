@@ -4,29 +4,29 @@
 #define CALIB_THRESHOLD 50 /* us */
 #define ABS(x) (((x) < 0) ? -(x) : (x))
 
-const RemoteHwChannel chTable[CH_Num] =
+const RemoteHwChannel chTable[chNum] =
 {
-	[SteeringCh] = RemCh1,
-	[ThrottleCh] = RemCh2
+	[chSteering] = RemCh1,
+	[chThrottle] = RemCh2
 };
 
 Remote::Remote()
 {
 	remoteHw = RemoteHw::GetInstance();
 
-	calData[SteeringCh].min = 995;
-	calData[SteeringCh].mid = 1509;
-	calData[SteeringCh].max = 2110;
+	calData[chSteering].min = 995;
+	calData[chSteering].mid = 1509;
+	calData[chSteering].max = 2110;
 
-	calData[ThrottleCh].min = 1001;
-	calData[ThrottleCh].mid = 1503;
-	calData[ThrottleCh].max = 2080;
+	calData[chThrottle].min = 1001;
+	calData[chThrottle].mid = 1503;
+	calData[chThrottle].max = 2080;
 }
 
-Remote* Remote::GetInstance()
+Remote& Remote::GetInstance()
 {
 	static Remote instance;
-	return &instance;
+	return instance;
 }
 
 float Remote::GetValue(RemoteChannel ch)
@@ -119,9 +119,9 @@ void Remote::SetCalibrationValues(RemoteChannel ch, RemoteCal& cal)
 
 void Remote::CalibrationProcess()
 {
-	static RemoteCal tmpData[CH_Num];
+	static RemoteCal tmpData[chNum];
 
-	for (int ch = 0; ch < CH_Num; ch++)
+	for (int ch = 0; ch < chNum; ch++)
 	{
 		if (calInProgress[ch])
 		{

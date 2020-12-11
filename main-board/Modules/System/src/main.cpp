@@ -1,12 +1,14 @@
 #include "System.h"
+
 #include "TestTask.h"
 #include "DistanceTask.h"
+#include "CalibrationTask.h"
 
 int main()
 {
 	SYSTEM_INIT();
 
-	TestTask::Init();
+	CalibrationTask::Init();
 
 	OS_START();
 
