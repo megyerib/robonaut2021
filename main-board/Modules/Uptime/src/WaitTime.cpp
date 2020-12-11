@@ -26,3 +26,8 @@ bool WaitTime::IsExpired()
 {
 	return (started && (endTime <= UPTIME_us()));
 }
+
+void WaitTime::Stop()
+{
+	started = false;
+}

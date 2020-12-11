@@ -15,8 +15,6 @@ TrackTask* TrackTask::Init()
 void TrackTask::TaskInit()
 {
 	detector = TrackDetector::GetInstance();
-
-
 }
 
 void TrackTask::TaskFunction()

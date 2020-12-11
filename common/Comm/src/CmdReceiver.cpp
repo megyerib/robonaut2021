@@ -19,6 +19,7 @@ CmdReceiver::CmdReceiver(
 int32_t CmdReceiver::Receive(void* buffer, size_t& size, size_t targetSize)
 {
 	size = 0;
+	int32_t ret = RECEIVE_OK;
 
 	// Receive raw data
 	size_t receivedSize;
@@ -65,8 +66,9 @@ int32_t CmdReceiver::Receive(void* buffer, size_t& size, size_t targetSize)
 		else
 		{
 			size = 0;
+			ret = RECEIVE_CRC_ERROR;
 		}
 	}
 
-	return RECEIVE_OK;
+	return ret;
 }

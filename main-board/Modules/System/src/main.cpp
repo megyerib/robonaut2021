@@ -8,7 +8,7 @@ int main()
 {
 	SYSTEM_INIT();
 
-	CalibrationTask::Init();
+	TestTask::Init();
 
 	OS_START();
 

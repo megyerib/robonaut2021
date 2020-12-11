@@ -48,9 +48,9 @@ void Encoder::Process()
 	speed = (d_t != 0) ? (d_s / d_t) : 0;
 
 	// Trace (dummy)
-	SM_DUMMY msg;
+	/*SM_DUMMY msg;
 	msg.id        = smDummy;
 	msg.timestamp = UPTIME_us();
 	msg.value     = speed * 1000;
-	TRACE_BIN(&msg, sizeof(msg));
+	TRACE_BIN(&msg, sizeof(msg));*/
 }

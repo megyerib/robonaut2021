@@ -1,5 +1,6 @@
 #include "CalibrationTask.h"
 #include "Remote.h"
+#include "TraceTask.h"
 #include "Trace.h"
 #include "TractionTask.h"
 #include "math.h"
@@ -28,6 +29,9 @@ CalibrationTask& CalibrationTask::Init()
 void CalibrationTask::TaskInit()
 {
 	TractionTask::Init();
+	TraceTask::Init();
+
+	sensorServo.SetSteerAngle(1.57f);
 }
 
 void CalibrationTask::TaskFunction()
@@ -36,26 +40,25 @@ void CalibrationTask::TaskFunction()
 
 	float steering  = remote.GetValue(chSteering);
 	float throttle  = remote.GetValue(chThrottle);
-	RemoteMode mode = remote.GetMode();
+	//RemoteMode mode = remote.GetMode();
 
 	if (fabs(steering) > 0.1f)
 	{
-		if (mode == RemMode1)
-		{
-			sensorCompare += steering * 10;
-			SATURATE(sensorCompare, 1000, 2000);
-		}
-		else
-		{
-			steeringCompare += steering * 10;
-			SATURATE(steeringCompare, 1000, 2000);
-		}
+		steeringCompare -= steering * 10; // Reverse
+		SATURATE(steeringCompare, 1000, 2000);
+
+		wait.Wait_s(1);
 	}
 
-	// TODO Trace
+	if (wait.IsExpired())
+	{
+		PRINTF("Steering: %d", steeringCompare);
+		//PRINTF("Sensor:   %d", sensorCompare);
+		wait.Stop();
+	}
 
 	Traction::GetInstance()->SetDutyCycle(throttle * THROTTLE_FUN_FACTOR);
 
 	steeringServo.SetPulseWidth_us(steeringCompare);
-	sensorServo.SetPulseWidth_us(sensorCompare);
+	//sensorServo.SetPulseWidth_us(sensorCompare);
 }

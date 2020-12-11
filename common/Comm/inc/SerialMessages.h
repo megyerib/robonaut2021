@@ -13,6 +13,8 @@ typedef enum
 {
     smText = 0,
     smDummy,
+	smTelemetry,
+	smCfg,
 
     smNum
 }
@@ -25,7 +27,7 @@ SM_ID;
 // 0x00 Text
 typedef struct
 {
-    smID id;
+    smID id = smText;
     char text[];
 }
 SM_TEXT;
@@ -33,10 +35,30 @@ SM_TEXT;
 // 0x01 Dummy
 typedef struct
 {
-    smID id;
+    smID     id = smDummy;
     uint32_t timestamp; // [us]
     int32_t  value;
 }
 SM_DUMMY;
+
+// 0x02 Telemetry
+typedef struct
+{
+	smID     id = smTelemetry;
+	uint8_t  type = 0x00; // Speed
+	uint32_t timestamp;  // [us]
+	uint32_t speed;      // [mm/s]
+	uint32_t distance;   // [mm]
+}
+SM_TM_SPEED;
+
+typedef struct
+{
+	smID     id = smTelemetry;
+	uint8_t  type = 0x01; // Remote
+	uint32_t timestamp;  // [us]
+	uint8_t  channel[3];
+}
+SM_TM_REMOTE;
 
 #pragma pack(pop)

@@ -1,7 +1,7 @@
 #include "ToF_4m_L1.h"
 #include "FreeRTOS.h"
 #include "task.h"
-#include "trace.h"
+#include "Trace.h"
 #include "SerialMessages.h"
 #include "Uptime.h"
 
@@ -98,6 +98,7 @@ void TOF_L1::Process()
         {
         	// Turn off green LED
         	//HAL_GPIO_WritePin(FREE1_GPIO_Port, FREE1_Pin, GPIO_PIN_RESET);
+        	PRINTF("ToF error");
         }
         status = VL53L1_ClearInterruptAndStartMeasurement(Dev);
     }

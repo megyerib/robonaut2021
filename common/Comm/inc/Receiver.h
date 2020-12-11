@@ -7,6 +7,7 @@
 #define RECEIVE_PARAM_ERROR               (-1)
 #define RECEIVE_INSUFFICIENT_TARGET_SIZE  (-2)
 #define RECEIVE_INTERNAL_ERROR            (-3)
+#define RECEIVE_CRC_ERROR                 (-4)
 
 class Receiver
 {

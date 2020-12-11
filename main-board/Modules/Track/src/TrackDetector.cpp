@@ -28,7 +28,7 @@ TrackDetector::TrackDetector() : frontStm(front),
 	front.receiver = &cmdProcFront;
 	rear.receiver  = &cmdProcRear;
 
-	M2L_RESET reset;
+	/*M2L_RESET reset;
 
 	M2L_CFG cfg;
 	cfg.LedEn        = 1;
@@ -49,7 +49,7 @@ TrackDetector::TrackDetector() : frontStm(front),
 	);
 
 	frontTrace.TraceBinary(false, &cfg, sizeof(cfg));
-	frontTrace.Process();
+	frontTrace.Process();*/
 }
 
 TrackDetector* TrackDetector::GetInstance()
@@ -172,7 +172,12 @@ bool TrackDetector::ProcessRx(LineData& line)
 
 	while (true)
 	{
-		line.receiver->Receive(buf, size, 70);
+		int32_t rxStatus = line.receiver->Receive(buf, size, 70);
+
+		if (rxStatus == RECEIVE_CRC_ERROR)
+		{
+			PRINTF("Line Rx CRC error");
+		}
 
 		if (size == 0) break;
 

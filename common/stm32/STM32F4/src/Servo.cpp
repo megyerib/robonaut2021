@@ -314,22 +314,22 @@ void Servo::LoadCfg()
 {
     if (type == DIGITAL)
     {
-        config.Rad_min      = 62*16;
-        config.Rad_30deg    = 76*16;
-        config.Rad_90deg    = 88*16;
-        config.Rad_150deg   = 114*16;
-        config.Rad_max      = 118*16;
+        config.Rad_min      = 1107;
+        config.Rad_30deg    = 1107; // not 30°
+        config.Rad_90deg    = 1495;
+        config.Rad_150deg   = 1750; // not 150°
+        config.Rad_max      = 1750;
 
         timCfg.Period       = 4000 - 1; // old: 250 - 1
         timCfg.Prescaler    = 90 - 1;   // old: 1440 - 1
     }
     else if (type == ANALOG)
     {
-        config.Rad_min      = 49*16;
-        config.Rad_30deg    = 49*16;
-        config.Rad_90deg    = 85*16;
-        config.Rad_150deg   = 121*16;
-        config.Rad_max      = 121*16;
+        config.Rad_min      = 1000;
+        config.Rad_30deg    = 882;
+        config.Rad_90deg    = 1549;
+        config.Rad_150deg   = 2216;
+        config.Rad_max      = 2000;
 
         timCfg.Period       = 20000 - 1; // old: 1250 - 1
         timCfg.Prescaler    = 180 - 1;   // old: 2880 - 1

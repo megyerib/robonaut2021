@@ -51,6 +51,7 @@ public:
 	void SetAngleManual(float front_angle /* rad */, float rear_angle /* rad */); // For Free mode
 	float GetFrontAngle();
 	void Process();
+	// TODO sensors on
 
 private:
 	SteeringMode mode;
