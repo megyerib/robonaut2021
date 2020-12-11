@@ -28,10 +28,12 @@ typedef enum
 	SingleLine_Race_Turn,
 	SingleLine_Race_Accel,
 
-	Free,             // Angles are set manually
+	Manual,
 	SteeringReverse
 	// ...
 } SteeringMode;
+
+// TODO names
 
 typedef struct
 {

@@ -42,7 +42,7 @@ void Q1Task::TaskFunction()
 	if (mode == RemMode2)
 	{
 	    motor->SetMode(tmode_Manual);
-	    steering->SetMode(Free);
+	    steering->SetMode(Manual);
 		RcRun(throttle, steerAngle);
 	}
 }

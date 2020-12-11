@@ -20,8 +20,11 @@
 #define SINGLE_RACE_DECEL_P     ( 19.0f)
 #define SINGLE_RACE_DECEL_D     (190.0f)
 
-#define FRONT_OFFSET    ( 0.194f)
-#define REAR_OFFSET     (-0.474f)
+//#define FRONT_OFFSET    ( 0.194f)
+//#define REAR_OFFSET     (-0.474f)
+
+#define FRONT_OFFSET    0
+#define REAR_OFFSET     0
 
 
 Steering::Steering()
@@ -29,7 +32,7 @@ Steering::Steering()
 	InitEnablePin();
 
 	front.servo      = new Servo(eTIM12, TIM_CHANNEL_2);
-	front.controller = new Pd_Controller(0.5f, 0.1f);
+	front.controller = new Pd_Controller(0.6f, 0.14f);
 	front.line       = 0.0f;
 	front.angle      = 0.0f;
 
@@ -180,7 +183,7 @@ void Steering::Process()
             SetRearAngle(-front.controller->GetControlValue());
     	    break;
     	}
-        case Free:
+        case Manual:
         {
         	SetFrontAngle(front.angle);
         	SetRearAngle(rear.angle);

@@ -221,6 +221,24 @@ void TrackDetector::GetNearest(LineData& line)
 	}
 }
 
+void TrackDetector::GetMiddle(LineData& line)
+{
+	if (line.input.cnt == 1)
+	{
+		line.chosenIndex = 0;
+		line.pos         = line.input.lines[0] / 1000.0; // mm -> m
+	}
+	else if (line.input.cnt == 3)
+	{
+		line.chosenIndex = 1;
+		line.pos         = line.input.lines[1] / 1000.0; // mm -> m
+	}
+	else
+	{
+		GetNearest(line);
+	}
+}
+
 void TrackDetector::FilterCnt(LineData& line)
 {
 	if (line.prevCnt == line.input.cnt)
@@ -310,7 +328,8 @@ void TrackDetector::Process()
 #endif
 
 		FilterCnt(front);
-		GetNearest(front);
+		//GetNearest(front);
+		GetMiddle(front);
 		EvalLineType(front);
 
 		if (mode == Maze)

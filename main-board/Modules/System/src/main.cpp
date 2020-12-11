@@ -3,6 +3,7 @@
 #include "TestTask.h"
 #include "DistanceTask.h"
 #include "CalibrationTask.h"
+#include "RcTask.h"
 
 int main()
 {

@@ -545,7 +545,7 @@ void Car::Maneuver_ChangeLane()
         case LineSwitch_SM::PrepareForLaneChanging:
         {
             exitType = carProp.track;
-            carProp.wheel_mode = SteeringMode::Free;
+            carProp.wheel_mode = SteeringMode::Manual;
 
             if (exitType == TrackType::Exit)
             {
@@ -572,7 +572,7 @@ void Car::Maneuver_ChangeLane()
             if (delayDistance->IsExpired() == true)
             {
                 delayDistance->Wait_m(MAZE_EXIT_WAIT_DIST);
-                carProp.wheel_mode = SteeringMode::Free;
+                carProp.wheel_mode = SteeringMode::Manual;
                 switchState = LineSwitch_SM::right_LeaveLine;
                 PRINTF("Exit: R back");
             }
@@ -582,7 +582,7 @@ void Car::Maneuver_ChangeLane()
         case LineSwitch_SM::right_LeaveLine:
         {
             // Special case. Mode is changed manually.
-            carProp.wheel_mode = SteeringMode::Free;
+            carProp.wheel_mode = SteeringMode::Manual;
             wheels->SetAngleManual(MAZE_EXIT_WHEEL_ANGLE, MAZE_EXIT_WHEEL_ANGLE+0.2f);
             carProp.targetSpeed = MAZE_EXIT_SPEED;
 
@@ -596,7 +596,7 @@ void Car::Maneuver_ChangeLane()
         }
         case LineSwitch_SM::right_SearchLineOnRight:
         {
-            carProp.wheel_mode = SteeringMode::Free;
+            carProp.wheel_mode = SteeringMode::Manual;
             wheels->SetAngleManual(MAZE_EXIT_WHEEL_ANGLE, MAZE_EXIT_WHEEL_ANGLE);
             carProp.targetSpeed = MAZE_EXIT_SPEED;
 
@@ -624,7 +624,7 @@ void Car::Maneuver_ChangeLane()
             if (delayDistance->IsExpired() == true)
             {
                 delayDistance->Wait_m(-MAZE_EXIT_REV_WAIT_DIST_1);
-                carProp.wheel_mode = SteeringMode::Free;
+                carProp.wheel_mode = SteeringMode::Manual;
                 switchState = LineSwitch_SM::rev_Y_Reverse1;
                 PRINTF("Exit: Y turn back");
             }
@@ -632,14 +632,14 @@ void Car::Maneuver_ChangeLane()
         }
         case LineSwitch_SM::rev_Y_Reverse1:
         {
-            carProp.wheel_mode = SteeringMode::Free;
+            carProp.wheel_mode = SteeringMode::Manual;
             wheels->SetAngleManual(MAZE_EXIT_WHEEL_ANGLE, -MAZE_EXIT_WHEEL_ANGLE);
             carProp.targetSpeed = -MAZE_EXIT_SPEED;
 
             if (delayDistance->IsExpired() == true)
             {
                 delayDistance->Wait_m(MAZE_EXIT_REV_WAIT_DIST_2);
-                carProp.wheel_mode = SteeringMode::Free;
+                carProp.wheel_mode = SteeringMode::Manual;
                 switchState = LineSwitch_SM::rev_Y_TurnLeft;
                 PRINTF("Exit: Y turn left");
             }
@@ -647,14 +647,14 @@ void Car::Maneuver_ChangeLane()
         }
         case LineSwitch_SM::rev_Y_TurnLeft:
         {
-            carProp.wheel_mode = SteeringMode::Free;
+            carProp.wheel_mode = SteeringMode::Manual;
             wheels->SetAngleManual(-MAZE_EXIT_WHEEL_ANGLE, MAZE_EXIT_WHEEL_ANGLE);
             carProp.targetSpeed = MAZE_EXIT_SPEED;
 
             if (delayDistance->IsExpired() == true)
             {
                 delayDistance->Wait_m(-MAZE_EXIT_REV_WAIT_DIST_3);
-                carProp.wheel_mode = SteeringMode::Free;
+                carProp.wheel_mode = SteeringMode::Manual;
                 switchState = LineSwitch_SM::rev_Y_LeaveLine;
                 PRINTF("Exit: Y rev 2");
             }
@@ -662,14 +662,14 @@ void Car::Maneuver_ChangeLane()
         }
         case LineSwitch_SM::rev_Y_Reverse2:
         {
-            carProp.wheel_mode = SteeringMode::Free;
+            carProp.wheel_mode = SteeringMode::Manual;
             wheels->SetAngleManual(MAZE_EXIT_WHEEL_ANGLE, -MAZE_EXIT_WHEEL_ANGLE);
             carProp.targetSpeed = -MAZE_EXIT_SPEED;
 
             if (delayDistance->IsExpired() == true)
             {
                 delayDistance->Wait_m(MAZE_EXIT_REV_WAIT_DIST_4);
-                carProp.wheel_mode = SteeringMode::Free;
+                carProp.wheel_mode = SteeringMode::Manual;
                 switchState = LineSwitch_SM::rev_Y_LeaveLine;
                 PRINTF("Exit: Y search line");
             }
@@ -677,7 +677,7 @@ void Car::Maneuver_ChangeLane()
         }
         case LineSwitch_SM::rev_Y_LeaveLine:
         {
-            carProp.wheel_mode = SteeringMode::Free;
+            carProp.wheel_mode = SteeringMode::Manual;
             wheels->SetAngleManual(MAZE_EXIT_WHEEL_ANGLE/2, 0);
             carProp.targetSpeed = MAZE_EXIT_SPEED;
 

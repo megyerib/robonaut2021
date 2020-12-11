@@ -36,6 +36,9 @@ void TestTask::TaskInit()
 	EncoderTask::Init();
 	TrackTask::Init();
 
+	// TODO szóljon be, ha nem raktuk be semmilyen módba.
+
+	TrackDetector::GetInstance()->SetMode(Speedrun);
 	Steering::GetInstance()->SetMode(SingleLineFollow_Slow);
 	Traction::GetInstance()->SetMode(tmode_Manual);
 }
@@ -63,7 +66,7 @@ void TestTask::TaskFunction()
 	// Trace line
 	SM_DUMMY msg;
 	msg.timestamp = UPTIME_us();
-	msg.value = frontLine * 100;
+	msg.value = frontLine * 1000.0;
 
 	TRACE_BIN(&msg, sizeof(msg));
 

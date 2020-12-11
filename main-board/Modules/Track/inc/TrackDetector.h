@@ -55,5 +55,6 @@ private:
 
 	void EvalLineType(LineData& line);
 	void GetNearest(LineData& line);
+	void GetMiddle(LineData& line);
 	void GetChosenOne(LineData& line, LineDirection dir);
 };
