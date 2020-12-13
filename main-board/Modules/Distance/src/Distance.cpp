@@ -35,9 +35,7 @@ void Distance::SetFrontServo(float angle)
 {
 	if (!InitDone) return;
 
-	angle *= 0.8f; // Magic value measured during calibration
-
-	float offset = 1.531896f;
+	float offset = 1.57f;
     float servo_angle = angle + offset;
 
     srv_front->SetSteerAngle(servo_angle);
@@ -88,7 +86,7 @@ void Distance::InitPower()
 
 void Distance::InitServo()
 {
-	srv_front = new Servo(eTIM8, TIM_CHANNEL_1);
+	srv_front = new Servo(srvSensor);
 }
 
 void Distance::InitTof()

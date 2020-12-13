@@ -12,4 +12,6 @@ private:
 
 	void TaskInit() override;
 	void TaskFunction() override;
+
+	float GetSensorAngle(float line);
 };

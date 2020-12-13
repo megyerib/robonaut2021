@@ -14,8 +14,8 @@
 #define SATURATE(x, min, max)  ((x) = (x) > (max) ? (max) : ((x) < (min) ? (min) : (x)))
 
 CalibrationTask::CalibrationTask() : CyclicTask((char*)"Calib", PERIOD, PRIO, STACK),
-                                     steeringServo(eTIM12, TIM_CHANNEL_2),
-									 sensorServo(eTIM8, TIM_CHANNEL_1)
+                                     steeringServo(srvFront),
+									 sensorServo(srvSensor)
 {
 
 }

@@ -107,10 +107,10 @@ uint32_t StddevEval::max4_pos(int32_t arg1, int32_t arg2, int32_t arg3, int32_t 
     return (uint32_t) max;
 }
 
-int16_t StddevEval::ledPosToMm(uint8_t ledPos)
+int16_t StddevEval::ledPosToUnit(uint8_t ledPos)
 {
-    int16_t mm = (ledPos * IR_DIST_MM) - MID_IR_POS_MM;
-    return mm;
+    int16_t unit = (ledPos * IR_DIST_UNIT) - MID_IR_POS_UNIT;
+    return unit;
 }
 
 int32_t StddevEval::evalWeightedMean(uint32_t arr[SENSOR_SIZE], uint32_t i)
@@ -125,9 +125,9 @@ int32_t StddevEval::evalWeightedMean(uint32_t arr[SENSOR_SIZE], uint32_t i)
 	//              *
 	// arr        | 0 | 1 | 2 | ...
 
-	w1 = padded[i+0] * ledPosToMm(i-1);
-	w2 = padded[i+1] * ledPosToMm(i+0);
-	w3 = padded[i+2] * ledPosToMm(i+1);
+	w1 = padded[i+0] * ledPosToUnit(i-1);
+	w2 = padded[i+1] * ledPosToUnit(i+0);
+	w3 = padded[i+2] * ledPosToUnit(i+1);
 
 	div = padded[i+0] + padded[i+1] + padded[i+2];
 

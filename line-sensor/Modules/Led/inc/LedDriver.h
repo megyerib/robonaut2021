@@ -19,6 +19,6 @@ public:
 private:
 	LedDriver();
 
-	uint8_t mmToLedPos(int16_t mm);
+	uint8_t unitToLedPos(int16_t unit);
 	uint32_t transformReg_Rev1(uint32_t ledval);
 };

@@ -16,7 +16,6 @@ TOF_L1::TOF_L1()
     Dev->comms_speed_khz = 100;
     Dev->comms_type      = 1;
 
-    status              = VL53L1_ERROR_NONE;
     timingBudget_ms     = 200;
 
     XSDN_Port           = TOF_FRONT_XSDN_Port;
@@ -38,7 +37,6 @@ TOF_L1::TOF_L1(uint8_t             const Addr,
     Dev->comms_speed_khz = Speed;
     Dev->comms_type      = 1;
 
-    status          = VL53L1_ERROR_NONE;
     timingBudget_ms = TB_ms;
 
     XSDN_Port = XsdnPort;
@@ -61,7 +59,10 @@ void TOF_L1::Init()
 
 void TOF_L1::Process()
 {
-    status = VL53L1_StartMeasurement(Dev);
+	VL53L1_RangingMeasurementData_t RangingData;
+	VL53L1_Error status;
+
+	status = VL53L1_StartMeasurement(Dev);
     status = VL53L1_WaitMeasurementDataReady(Dev);
 
     if(status == VL53L1_ERROR_NONE)
@@ -72,7 +73,12 @@ void TOF_L1::Process()
         status = VL53L1_GetRangingMeasurementData(Dev, &RangingData);
         if (status == VL53L1_ERROR_NONE)
         {
-            uint16_t millimeter = RangingData.RangeMilliMeter;
+            if (RangingData.RangeMilliMeter >= 0) // Valid range
+            {
+            	distance_mm = RangingData.RangeMilliMeter;
+            }
+            // TODO find out why do invalid measurements happen
+
 
             // Trace (dummy)
             /*SM_DUMMY msg;
@@ -81,23 +87,9 @@ void TOF_L1::Process()
 			msg.value = millimeter;
 
 			TRACE_BIN(&msg, sizeof(msg));*/
-
-
-            if (millimeter > 300)
-            {
-                // Turn on green LED
-            	//HAL_GPIO_WritePin(FREE1_GPIO_Port, FREE1_Pin, GPIO_PIN_SET);
-            }
-            else
-            {
-            	// Turn off green LED
-            	//HAL_GPIO_WritePin(FREE1_GPIO_Port, FREE1_Pin, GPIO_PIN_RESET);
-            }
         }
         else
         {
-        	// Turn off green LED
-        	//HAL_GPIO_WritePin(FREE1_GPIO_Port, FREE1_Pin, GPIO_PIN_RESET);
         	PRINTF("ToF error");
         }
         status = VL53L1_ClearInterruptAndStartMeasurement(Dev);
@@ -115,7 +107,7 @@ void TOF_L1::Process()
 
 uint16_t TOF_L1::GetDistance_mm(void)
 {
-    return RangingData.RangeMilliMeter;
+    return distance_mm;
 }
 
 void TOF_L1::Calibrate_Offset_300mm(void)
@@ -195,7 +187,7 @@ void TOF_L1::ChangeAddress()
 
     if (isDeviceConnected() == true)
     {
-        status = VL53L1_SetDeviceAddress(Dev, newAddr);
+        VL53L1_SetDeviceAddress(Dev, newAddr);
         Dev->I2cDevAddr = newAddr;
     }
 }
@@ -206,7 +198,7 @@ bool TOF_L1::isDeviceConnected()
     uint16_t wordData = 0x00;
 
     // Test I2C interface.
-    status = VL53L1_RdWord(Dev, 0x010F, &wordData);
+    VL53L1_Error status = VL53L1_RdWord(Dev, 0x010F, &wordData);
     if ((status == VL53L1_ERROR_NONE) && (wordData == 0xEACC))
     {
         deviceIsconnected = true;
@@ -215,9 +207,11 @@ bool TOF_L1::isDeviceConnected()
     return deviceIsconnected;
 }
 
-void TOF_L1::ConfigureDevice()
+VL53L1_Error TOF_L1::ConfigureDevice()
 {
-    if (isDeviceConnected() == true)
+	VL53L1_Error status;
+
+	if (isDeviceConnected() == true)
     {
         status = VL53L1_WaitDeviceBooted(Dev);
         status = VL53L1_DataInit(Dev);
@@ -231,5 +225,7 @@ void TOF_L1::ConfigureDevice()
     {
         status = VL53L1_ERROR_CONTROL_INTERFACE;
     }
+
+	return status;
 }
 

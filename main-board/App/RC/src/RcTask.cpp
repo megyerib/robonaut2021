@@ -37,6 +37,6 @@ void RcTask::TaskFunction()
 
 	float steerAngle = (steer * -60.0) * (3.1416f / 180.0f); // Max 60°; rad
 
-	Steering::GetInstance()->SetAngleManual(steerAngle, 0); // Front; rear
+	Steering::GetInstance()->SetAngleManual(steerAngle);
 	Traction::GetInstance()->SetDutyCycle(throttle * THROTTLE_FUN_FACTOR);
 }

@@ -14,21 +14,16 @@
 
 typedef enum
 {
-	Off,
-	DualLineFollow_Slow,
-	DualLineFollow_Fast,
+	Manual,
+
 	SingleLineFollow_Fast,
 	SingleLineFollow_Slow,
-
-	DualLine_Race_Straight,
-	DualLine_Race_Turn,
 
 	SingleLine_Race_Straight,
 	SingleLine_Race_Decel,
 	SingleLine_Race_Turn,
 	SingleLine_Race_Accel,
 
-	Manual,
 	SteeringReverse
 	// ...
 } SteeringMode;
@@ -50,7 +45,7 @@ public:
 	static Steering* GetInstance();
 	void SetMode(SteeringMode mode);
 	void SetLine(float front_line /* m */, float rear_line /* m */); // For LineFollow modes
-	void SetAngleManual(float front_angle /* rad */, float rear_angle /* rad */); // For Free mode
+	void SetAngleManual(float front_angle /* rad */); // For Free mode
 	float GetFrontAngle();
 	void Process();
 	// TODO sensors on
@@ -59,12 +54,10 @@ private:
 	SteeringMode mode;
 
 	Wheel front;
-	Wheel rear;
 
 	Steering();
 
 	void SetFrontAngle(float angle /* rad */);
-	void SetRearAngle(float angle /* rad */);
 
 	void InitEnablePin();
 };

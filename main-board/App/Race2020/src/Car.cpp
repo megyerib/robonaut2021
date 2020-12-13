@@ -200,7 +200,7 @@ void Car::BasicLabyrinth_StateMachine()
         }
         case la_Turn:
         {
-            carProp.wheel_mode = DualLineFollow_Slow;
+            carProp.wheel_mode = SingleLineFollow_Slow; // DualLineFollow_Slow;
             carProp.lineFollow_Front = lineSensor->GetFrontLine(SelectLineDirection(nextTurn));
             carProp.lineFollow_Rear = -carProp.lineFollow_Front;
             carProp.targetSpeed      = MAZE_FORWARD_SLOW_SPEED;
@@ -386,7 +386,7 @@ void Car::RoadSegment_StateMachine()
         }
         case RoadSegment_SM::rs_Turn:
         {
-            carProp.wheel_mode = SteeringMode::DualLine_Race_Turn;
+            carProp.wheel_mode = SteeringMode::SingleLine_Race_Turn;  //DualLine_Race_Turn;
             if (carProp.state == RaceState::sp_Lap1){        carProp.targetSpeed = CAR_SPEED_TURN;      }
             else if (carProp.state == RaceState::sp_Lap2){   carProp.targetSpeed = CAR_SPEED_TURN_L2;   }
             else if (carProp.state == RaceState::sp_Lap3){   carProp.targetSpeed = CAR_SPEED_TURN_L3;   }
@@ -482,7 +482,7 @@ void Car::Maneuver_Reverse()
     {
         case Reversing_SM::PrepareForReversing:
         {
-            carProp.wheel_mode = SteeringMode::DualLineFollow_Slow;
+            carProp.wheel_mode = SteeringMode::SingleLineFollow_Slow; //DualLineFollow_Slow;
             carProp.lineFollow_Front = lineSensor->GetFrontLine();
             carProp.lineFollow_Rear  = lineSensor->GetRearLine();
 
@@ -493,7 +493,7 @@ void Car::Maneuver_Reverse()
         }
         case Reversing_SM::Reversing:
         {
-            carProp.wheel_mode = SteeringMode::DualLineFollow_Slow;
+            carProp.wheel_mode = SteeringMode::SingleLineFollow_Slow; // DualLineFollow_Slow;
             carProp.lineFollow_Front = 0;
             carProp.lineFollow_Rear  = lineSensor->GetRearLine();
             carProp.targetSpeed      = MAZE_REVERSE_SPEED;
@@ -564,7 +564,7 @@ void Car::Maneuver_ChangeLane()
         }
         case LineSwitch_SM::right_Prep:
         {
-            carProp.wheel_mode = SteeringMode::DualLineFollow_Slow;
+            carProp.wheel_mode = SteeringMode::SingleLineFollow_Slow; // DualLineFollow_Slow;
             carProp.lineFollow_Front = 0;
             carProp.lineFollow_Rear  = lineSensor->GetRearLine();
             carProp.targetSpeed      = -MAZE_FORWARD_SPEED;
@@ -583,7 +583,7 @@ void Car::Maneuver_ChangeLane()
         {
             // Special case. Mode is changed manually.
             carProp.wheel_mode = SteeringMode::Manual;
-            wheels->SetAngleManual(MAZE_EXIT_WHEEL_ANGLE, MAZE_EXIT_WHEEL_ANGLE+0.2f);
+            wheels->SetAngleManual(MAZE_EXIT_WHEEL_ANGLE); //, MAZE_EXIT_WHEEL_ANGLE+0.2f);
             carProp.targetSpeed = MAZE_EXIT_SPEED;
 
             if (delayDistance->IsExpired() == true && !carProp.lineDetected)
@@ -597,7 +597,7 @@ void Car::Maneuver_ChangeLane()
         case LineSwitch_SM::right_SearchLineOnRight:
         {
             carProp.wheel_mode = SteeringMode::Manual;
-            wheels->SetAngleManual(MAZE_EXIT_WHEEL_ANGLE, MAZE_EXIT_WHEEL_ANGLE);
+            wheels->SetAngleManual(MAZE_EXIT_WHEEL_ANGLE); //, MAZE_EXIT_WHEEL_ANGLE);
             carProp.targetSpeed = MAZE_EXIT_SPEED;
 
             // Wait until 1 line
@@ -633,7 +633,7 @@ void Car::Maneuver_ChangeLane()
         case LineSwitch_SM::rev_Y_Reverse1:
         {
             carProp.wheel_mode = SteeringMode::Manual;
-            wheels->SetAngleManual(MAZE_EXIT_WHEEL_ANGLE, -MAZE_EXIT_WHEEL_ANGLE);
+            wheels->SetAngleManual(MAZE_EXIT_WHEEL_ANGLE); // , -MAZE_EXIT_WHEEL_ANGLE);
             carProp.targetSpeed = -MAZE_EXIT_SPEED;
 
             if (delayDistance->IsExpired() == true)
@@ -648,7 +648,7 @@ void Car::Maneuver_ChangeLane()
         case LineSwitch_SM::rev_Y_TurnLeft:
         {
             carProp.wheel_mode = SteeringMode::Manual;
-            wheels->SetAngleManual(-MAZE_EXIT_WHEEL_ANGLE, MAZE_EXIT_WHEEL_ANGLE);
+            wheels->SetAngleManual(-MAZE_EXIT_WHEEL_ANGLE); // , MAZE_EXIT_WHEEL_ANGLE);
             carProp.targetSpeed = MAZE_EXIT_SPEED;
 
             if (delayDistance->IsExpired() == true)
@@ -663,7 +663,7 @@ void Car::Maneuver_ChangeLane()
         case LineSwitch_SM::rev_Y_Reverse2:
         {
             carProp.wheel_mode = SteeringMode::Manual;
-            wheels->SetAngleManual(MAZE_EXIT_WHEEL_ANGLE, -MAZE_EXIT_WHEEL_ANGLE);
+            wheels->SetAngleManual(MAZE_EXIT_WHEEL_ANGLE); // , -MAZE_EXIT_WHEEL_ANGLE);
             carProp.targetSpeed = -MAZE_EXIT_SPEED;
 
             if (delayDistance->IsExpired() == true)
@@ -678,7 +678,7 @@ void Car::Maneuver_ChangeLane()
         case LineSwitch_SM::rev_Y_LeaveLine:
         {
             carProp.wheel_mode = SteeringMode::Manual;
-            wheels->SetAngleManual(MAZE_EXIT_WHEEL_ANGLE/2, 0);
+            wheels->SetAngleManual(MAZE_EXIT_WHEEL_ANGLE/2); // , 0);
             carProp.targetSpeed = MAZE_EXIT_SPEED;
 
             // Wait until 1 line

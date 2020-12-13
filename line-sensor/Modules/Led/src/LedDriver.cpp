@@ -19,7 +19,7 @@ void LedDriver::DisplayLinePos(LineInput l)
 
 	for (i = 0; i < l.cnt; i++)
 	{
-		ledpos = mmToLedPos(l.lines[i]);
+		ledpos = unitToLedPos(l.lines[i]);
 
 		ledval |= 0b11 << ledpos;
 	}
@@ -43,9 +43,9 @@ void LedDriver::DisplayPattern(uint32_t pattern)
 #endif
 }
 
-uint8_t LedDriver::mmToLedPos(int16_t mm)
+uint8_t LedDriver::unitToLedPos(int16_t unit)
 {
-    return (MID_IR_POS_MM - mm) / IR_DIST_MM;
+    return (MID_IR_POS_UNIT - unit) / IR_DIST_UNIT;
 }
 
 void LedDriver::Clear()

@@ -10,7 +10,7 @@
 #include "MainLsMsg.h"
 #include "BinTraceBase.h"
 
-#define NEAR_FAR_THRESHOLD_MM    70
+#define NEAR_FAR_THRESHOLD_UNIT    (0.07f * UNIT_TO_M)
 
 #define DEBUG_TRACK               0
 
@@ -129,7 +129,7 @@ void TrackDetector::GetChosenOne(LineData& line, LineDirection dir)
 	}
 
 	line.chosenIndex = index;
-	line.pos = line.input.lines[index] / 1000.0f;
+	line.pos = line.input.lines[index] * UNIT_TO_M;
 }
 
 float TrackDetector::GetFrontLine(LineDirection const dir)
@@ -200,14 +200,14 @@ void TrackDetector::GetNearest(LineData& line)
 {
 	if (line.input.cnt > 0)
 	{
-		int32_t prevLine = (int32_t)(line.pos * 1000);
+		float prevLine = line.pos;
 
-		int32_t minDiff = abs(line.input.lines[0] - prevLine);
+		float minDiff = abs(line.input.lines[0] * UNIT_TO_M - prevLine);
 		uint16_t minDiffIndex = 0;
 
 		for (int i = 1; i < line.input.cnt; i++)
 		{
-			uint16_t diff = abs(line.input.lines[i] - prevLine);
+			float diff = abs(line.input.lines[i] * UNIT_TO_M - prevLine);
 
 			if (diff < minDiff)
 			{
@@ -217,7 +217,7 @@ void TrackDetector::GetNearest(LineData& line)
 		}
 
 		line.chosenIndex = minDiffIndex;
-		line.pos        = line.input.lines[minDiffIndex] / 1000.0; // mm -> m
+		line.pos        = line.input.lines[minDiffIndex] * UNIT_TO_M;
 	}
 }
 
@@ -226,12 +226,12 @@ void TrackDetector::GetMiddle(LineData& line)
 	if (line.input.cnt == 1)
 	{
 		line.chosenIndex = 0;
-		line.pos         = line.input.lines[0] / 1000.0; // mm -> m
+		line.pos         = line.input.lines[0] * UNIT_TO_M;
 	}
 	else if (line.input.cnt == 3)
 	{
 		line.chosenIndex = 1;
-		line.pos         = line.input.lines[1] / 1000.0; // mm -> m
+		line.pos         = line.input.lines[1] * UNIT_TO_M;
 	}
 	else
 	{
@@ -397,7 +397,7 @@ void TrackDetector::EvalLineType(LineData& line)
 	{
 		case 2:
 		{
-			if (abs(line.input.lines[0] - line.input.lines[1]) < NEAR_FAR_THRESHOLD_MM)
+			if (abs(line.input.lines[0] - line.input.lines[1]) < NEAR_FAR_THRESHOLD_UNIT)
 			{
 				type = lt_2Near;
 			}
@@ -409,8 +409,8 @@ void TrackDetector::EvalLineType(LineData& line)
 		}
 		case 3:
 		{
-			if (abs(line.input.lines[0] - line.input.lines[1]) < NEAR_FAR_THRESHOLD_MM ||
-				abs(line.input.lines[1] - line.input.lines[2]) < NEAR_FAR_THRESHOLD_MM )
+			if (abs(line.input.lines[0] - line.input.lines[1]) < NEAR_FAR_THRESHOLD_UNIT ||
+				abs(line.input.lines[1] - line.input.lines[2]) < NEAR_FAR_THRESHOLD_UNIT )
 			{
 				type = lt_3Near;
 			}

@@ -31,17 +31,12 @@ Steering::Steering()
 {
 	InitEnablePin();
 
-	front.servo      = new Servo(eTIM12, TIM_CHANNEL_2);
+	front.servo      = new Servo(srvFront);
 	front.controller = new Pd_Controller(0.6f, 0.14f);
 	front.line       = 0.0f;
 	front.angle      = 0.0f;
 
-	rear.servo       = new Servo(eTIM12, TIM_CHANNEL_1);
-	rear.controller  = new Pd_Controller(0.5f, 0.1f);
-	rear.line        = 0.0f;
-	rear.angle       = 0.0f;
-
-	mode = SteeringMode::Off;
+	mode = SteeringMode::Manual;
 }
 
 Steering* Steering::GetInstance()
@@ -56,21 +51,12 @@ void Steering::SetMode(SteeringMode mode)
 
     switch (mode)
     {
-        case DualLineFollow_Slow:
-        {
-           rear.controller->Set_P_Term(SINGLE_SLOW_P);
-           rear.controller->Set_D_Term(SINGLE_SLOW_D);
-           front.controller->Set_P_Term(SINGLE_SLOW_P);
-           front.controller->Set_D_Term(SINGLE_SLOW_D);
-           break;
-        }
         case SingleLineFollow_Slow:
         {
             front.controller->Set_P_Term(SINGLE_SLOW_P);
             front.controller->Set_D_Term(SINGLE_SLOW_D);
             break;
         }
-        case DualLineFollow_Fast:
         case SingleLineFollow_Fast:
         {
             front.controller->Set_P_Term(SINGLE_FAST_P);
@@ -78,7 +64,6 @@ void Steering::SetMode(SteeringMode mode)
             break;
         }
         case SingleLine_Race_Turn:
-        case DualLine_Race_Turn:
         {
             front.controller->Set_P_Term(SINGLE_RACE_TURN_P);
             front.controller->Set_D_Term(SINGLE_RACE_TURN_D);
@@ -90,7 +75,6 @@ void Steering::SetMode(SteeringMode mode)
             front.controller->Set_D_Term(SINGLE_RACE_ACCEL_D);
             break;
         }
-        case DualLine_Race_Straight:
         case SingleLine_Race_Straight:
         {
             front.controller->Set_P_Term(SINGLE_RACE_STRAIGHT_P);
@@ -111,10 +95,9 @@ void Steering::SetMode(SteeringMode mode)
     }
 }
 
-void Steering::SetLine(float front_line, float rear_line)
+void Steering::SetLine(float front_line, float rear_line) // TODO add line with angle
 {
     front.line = front_line;
-    rear.line  = rear_line;
 }
 
 //! Steering wheel:
@@ -126,23 +109,18 @@ void Steering::SetLine(float front_line, float rear_line)
 //!                 \ | /
 //!  1.57 rad________\|/________-1.57 rad
 //!  Left end                   Right end
-void Steering::SetAngleManual(float front_angle, float rear_angle)
+void Steering::SetAngleManual(float front_angle)
 {
 	//SetFrontAngle(front_angle);
 	//SetRearAngle(rear_angle);
 
 	front.angle = front_angle;
-	rear.angle = rear_angle;
 }
 
 void Steering::Process()
 {
     switch (mode)
     {
-		case Off:
-		{
-			break;
-		}
     	case SingleLineFollow_Slow:
     	case SingleLineFollow_Fast:
     	case SingleLine_Race_Straight:
@@ -153,40 +131,11 @@ void Steering::Process()
             front.controller->Process(front.line);
 
             SetFrontAngle(front.controller->GetControlValue());
-            SetRearAngle(0.0f);
             break;
         }
-    	case DualLineFollow_Slow:
-    	case DualLine_Race_Straight:
-    	{
-            front.controller->Process(front.line);
-            rear.controller->Process(rear.line);
-
-            SetFrontAngle(front.controller->GetControlValue());
-            SetRearAngle(rear.controller->GetControlValue());
-    	    break;
-    	}
-    	case DualLineFollow_Fast:
-    	{
-    	    front.controller->Process(front.line);
-    	    //rear.controller->Process(rear.line);
-
-    	    SetFrontAngle(front.controller->GetControlValue());
-    	    SetRearAngle(-front.controller->GetControlValue());
-    	    break;
-    	}
-    	case DualLine_Race_Turn:
-    	{
-    	    front.controller->Process(front.line);
-
-            SetFrontAngle(front.controller->GetControlValue());
-            SetRearAngle(-front.controller->GetControlValue());
-    	    break;
-    	}
         case Manual:
         {
         	SetFrontAngle(front.angle);
-        	SetRearAngle(rear.angle);
 
             break;
         }
@@ -202,15 +151,6 @@ void Steering::SetFrontAngle(float angle /* rad */)
 	float servo_angle   = (angle + offset) * scale;
 
 	front.servo->SetSteerAngle(servo_angle);
-}
-
-void Steering::SetRearAngle(float angle /* rad */)
-{
-	float offset        = PI/2.0f + REAR_OFFSET;
-	float scale         = 1.0f;
-	float servo_angle   = (angle + offset) * scale;
-
-	rear.servo->SetSteerAngle(servo_angle);
 }
 
 float Steering::GetFrontAngle()

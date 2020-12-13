@@ -58,5 +58,5 @@ void Q1Task::RcRun(float throttle, float steerAngle)
 		motor->SetDutyCycle(0);
 	}
 
-	steering->SetAngleManual(-steerAngle, steerAngle);
+	steering->SetAngleManual(-steerAngle); // , steerAngle);
 }

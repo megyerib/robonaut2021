@@ -27,9 +27,9 @@ private:
     VL53L1_Dev_t    dev;
     VL53L1_DEV      Dev = &dev;
 
-    VL53L1_Error    status;
     uint32_t        timingBudget_ms;
-    VL53L1_RangingMeasurementData_t RangingData;
+
+    uint16_t        distance_mm;
 
     GPIO_TypeDef*   XSDN_Port;
     uint16_t        XSDN_Pin;
@@ -57,5 +57,5 @@ private:
     void ShutdownWithDelay();
     void ChangeAddress();
     bool isDeviceConnected();
-    void ConfigureDevice();
+    VL53L1_Error ConfigureDevice();
 };
