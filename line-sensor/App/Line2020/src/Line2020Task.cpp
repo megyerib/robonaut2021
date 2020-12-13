@@ -9,12 +9,14 @@
 #include "MainLsMsg.h"
 #include <functional>
 #include "MainUart.h"
+#include "LineFilter.h"
 
 #define PRIO                 2
 #define PERIOD               1
 #define STACK              128
 
 #define RX_CYCLE            10
+#define FILTER_SIZE          5 /* Don't change it */
 
 Line2020Task::Line2020Task() : CyclicTask((char*)"Line2020", PERIOD, PRIO, STACK),
                                cmdProc(MainUart::GetInstance(), cmdProcBuf, CMD_PROC_BUF_LEN, &enc)
@@ -43,6 +45,9 @@ void Line2020Task::TaskFunction()
 	static AdcMeasType measurements[SENSOR_SIZE];
 	static uint32_t cycle = 0;
 
+	static LineInput meas[FILTER_SIZE];
+	static size_t measIndex = 0;
+
 	adc.Measure((AdcInput)(cycle+0));
 	adc.Measure((AdcInput)(cycle+IR_GROUP_SIZE));
 
@@ -51,14 +56,17 @@ void Line2020Task::TaskFunction()
 		adc.GetMeasurements(measurements);
 
 		eval.Feed(measurements);
-		LineInput l = eval.GetLine();
+		meas[measIndex] = eval.GetLine();
 
-		LedDriver::GetInstance().DisplayLinePos(l);
+		LineInput resultLine = FilterLines(meas, measIndex);
+		measIndex = (measIndex + 1) % FILTER_SIZE;
+
+		LedDriver::GetInstance().DisplayLinePos(resultLine);
 
 		if (lineDataEn && measEn)
 		{
 			L2M_LINE_DATA msg;
-			msg.line = l;
+			msg.line = resultLine;
 			TRACE_BIN(&msg, sizeof(msg));
 		}
 
