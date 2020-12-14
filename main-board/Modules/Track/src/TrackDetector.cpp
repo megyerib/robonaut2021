@@ -239,7 +239,7 @@ void TrackDetector::GetMiddle(LineData& line)
 	}
 }
 
-void TrackDetector::FilterCnt(LineData& line)
+void TrackDetector::FilterCnt(LineData& line) // TODO remove (this task is done by the line sensor)
 {
 	if (line.prevCnt == line.input.cnt)
 	{

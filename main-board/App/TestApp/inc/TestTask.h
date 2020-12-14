@@ -14,4 +14,7 @@ private:
 	void TaskFunction() override;
 
 	float GetSensorAngle(float line);
+
+	void Follow();
+	void FastLap();
 };

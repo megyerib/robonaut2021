@@ -1,8 +1,11 @@
 #include "Steering.h"
+#include "SerialMessages.h"
+#include "Trace.h"
+#include "Uptime.h"
 
 #define PI 3.1415926535f
 
-#define SINGLE_SLOW_P   ( 20.0f)
+#define SINGLE_SLOW_P   ( 15.0f)
 #define SINGLE_SLOW_D   (200.0f)
 
 #define SINGLE_FAST_P   ( 20.0f)
@@ -20,19 +23,13 @@
 #define SINGLE_RACE_DECEL_P     ( 19.0f)
 #define SINGLE_RACE_DECEL_D     (190.0f)
 
-//#define FRONT_OFFSET    ( 0.194f)
-//#define REAR_OFFSET     (-0.474f)
-
-#define FRONT_OFFSET    0
-#define REAR_OFFSET     0
-
 
 Steering::Steering()
 {
 	InitEnablePin();
 
 	front.servo      = new Servo(srvFront);
-	front.controller = new Pd_Controller(0.6f, 0.14f);
+	front.controller = new Pd_Controller(0, 0); // Set P and D in the macros
 	front.line       = 0.0f;
 	front.angle      = 0.0f;
 
@@ -130,7 +127,9 @@ void Steering::Process()
         {
             front.controller->Process(front.line);
 
-            SetFrontAngle(front.controller->GetControlValue());
+            float angle = front.controller->GetControlValue();
+
+            SetFrontAngle(angle);
             break;
         }
         case Manual:
@@ -146,7 +145,7 @@ void Steering::Process()
 
 void Steering::SetFrontAngle(float angle /* rad */)
 {
-	float offset        = PI/2.0f + FRONT_OFFSET;
+	float offset        = PI/2.0f;
 	float scale         = 1.0f;
 	float servo_angle   = (angle + offset) * scale;
 

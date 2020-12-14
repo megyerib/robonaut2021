@@ -62,3 +62,5 @@ typedef struct
 SM_TM_REMOTE;
 
 #pragma pack(pop)
+
+#define TRACE_DUMMY(x) {SM_DUMMY msg; msg.timestamp = UPTIME_us(); msg.value = (x); TRACE_BIN(&msg, sizeof(msg));}

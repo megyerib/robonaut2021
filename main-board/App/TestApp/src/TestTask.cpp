@@ -13,8 +13,8 @@
 #include "Trace.h"
 #include "Distance.h"
 
-#define PRIO       6
-#define PERIOD    5
+#define PRIO        5
+#define PERIOD      5
 #define STACK    1024
 
 TestTask::TestTask() : CyclicTask((char*)"Test", PERIOD, PRIO, STACK)
@@ -40,60 +40,13 @@ void TestTask::TaskInit()
 	// TODO szóljon be, ha nem raktuk be semmilyen módba.
 
 	TrackDetector::GetInstance()->SetMode(Speedrun);
-	Steering::GetInstance()->SetMode(SingleLineFollow_Slow);
+	Steering::GetInstance()->SetMode(SingleLine_Race_Straight);
 	Traction::GetInstance()->SetMode(tmode_Manual);
 }
 
-#define CONST_MOTOR_D  20
-
 void TestTask::TaskFunction()
 {
-	float frontLine = TrackDetector::GetInstance()->GetFrontLine();
-
-	//float steer    = Remote::GetInstance().GetValue(chSteering);
-	float throttle = Remote::GetInstance().GetValue(chThrottle);
-
-	Steering::GetInstance()->SetLine(frontLine, 0);
-
-	// Steering::GetInstance()->SetAngleManual(-0.8*steer, 0); // Front; rear
-
-	Distance* dstSensor = Distance::GetInstance();
-
-	float sensorAngle = GetSensorAngle(frontLine);
-
-	dstSensor->SetFrontServo(sensorAngle);
-	float dist = dstSensor->GetDistance(ToF_Front);
-
-	float d = 0;
-
-	if (throttle > 0.15f)
-	{
-		if (dist < 0.5f)
-		{
-			d = 0;
-		}
-		else if (dist < 1.5f)
-		{
-			d = (dist - 0.5f) * 0.15f;
-		}
-		else
-		{
-			d = 0.15f;
-		}
-	}
-	else
-	{
-		d = 0.0f;
-	}
-
-	// Trace line
-	SM_DUMMY msg;
-	msg.timestamp = UPTIME_us();
-	msg.value = d * 100.0;
-
-	TRACE_BIN(&msg, sizeof(msg));
-
-	Traction::GetInstance()->SetDutyCycle(d);
+	Follow();
 }
 
 float TestTask::GetSensorAngle(float line)
@@ -108,4 +61,85 @@ float TestTask::GetSensorAngle(float line)
 	}
 
 	return ret;
+}
+
+void TestTask::Follow()
+{
+	float frontLine = TrackDetector::GetInstance()->GetFrontLine();
+
+	float throttle = Remote::GetInstance().GetValue(chThrottle);
+
+	Steering* steering = Steering::GetInstance();
+	steering->SetLine(frontLine, 0);
+
+	Distance* dstSensor = Distance::GetInstance();
+
+	//float sensorAngle = GetSensorAngle(frontLine);
+
+	dstSensor->SetFrontServo(steering->GetFrontAngle()*0.5f);
+	float dist = dstSensor->GetDistance(ToF_Front);
+
+	TRACE_DUMMY(dist * 1000);
+
+	float d = 0;
+
+	if (throttle > 0.15f)
+	{
+		if (dist < 0.5f)
+		{
+			d = 0;
+		}
+		else if (dist < 1.5f)
+		{
+			d = (dist - 0.5) * 0.15f;
+		}
+		else
+		{
+			d = 0.15f;
+		}
+	}
+	else
+	{
+		d = 0.0f;
+	}
+
+	Traction::GetInstance()->SetDutyCycle(d);
+}
+
+void TestTask::FastLap()
+{
+	static bool straight = true;
+
+	TrackType roadSignal = TrackDetector::GetInstance()->GetTrackType();
+
+	if (straight == true && roadSignal == Braking)
+	{
+		PRINTF("Braking");
+		straight = false;
+	}
+	if (straight == false && roadSignal == Acceleration)
+	{
+		PRINTF("Accel");
+		straight = true;
+	}
+
+	float frontLine = TrackDetector::GetInstance()->GetFrontLine();
+	//TRACE_DUMMY(frontLine * 1000);
+
+	float throttle = Remote::GetInstance().GetValue(chThrottle);
+
+	Steering::GetInstance()->SetLine(frontLine, 0);
+
+	float d = 0;
+
+	if (throttle > 0.15f)
+	{
+		d = 0.15f;
+	}
+	else
+	{
+		d = 0.0f;
+	}
+
+	Traction::GetInstance()->SetDutyCycle(d);
 }
