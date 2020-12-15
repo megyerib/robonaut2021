@@ -46,7 +46,7 @@ void TestTask::TaskInit()
 
 void TestTask::TaskFunction()
 {
-	Follow();
+	FastLap();
 }
 
 float TestTask::GetSensorAngle(float line)
@@ -68,6 +68,10 @@ void TestTask::Follow()
 	float frontLine = TrackDetector::GetInstance()->GetFrontLine();
 
 	float throttle = Remote::GetInstance().GetValue(chThrottle);
+	float remSteering = Remote::GetInstance().GetValue(chSteering);
+	bool remoteMode = Remote::GetInstance().GetMode();
+
+	//TRACE_REMOTE(throttle * 100, remSteering * 100, remoteMode * 100);
 
 	Steering* steering = Steering::GetInstance();
 	steering->SetLine(frontLine, 0);
@@ -78,8 +82,6 @@ void TestTask::Follow()
 
 	dstSensor->SetFrontServo(steering->GetFrontAngle()*0.5f);
 	float dist = dstSensor->GetDistance(ToF_Front);
-
-	TRACE_DUMMY(dist * 1000);
 
 	float d = 0;
 
@@ -124,7 +126,7 @@ void TestTask::FastLap()
 	}
 
 	float frontLine = TrackDetector::GetInstance()->GetFrontLine();
-	//TRACE_DUMMY(frontLine * 1000);
+	TRACE_DUMMY(frontLine * 1000000);
 
 	float throttle = Remote::GetInstance().GetValue(chThrottle);
 

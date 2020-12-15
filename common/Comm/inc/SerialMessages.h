@@ -57,10 +57,11 @@ typedef struct
 	smID     id = smTelemetry;
 	uint8_t  type = 0x01; // Remote
 	uint32_t timestamp;  // [us]
-	uint8_t  channel[3];
+	int8_t  channel[3];
 }
 SM_TM_REMOTE;
 
 #pragma pack(pop)
 
-#define TRACE_DUMMY(x) {SM_DUMMY msg; msg.timestamp = UPTIME_us(); msg.value = (x); TRACE_BIN(&msg, sizeof(msg));}
+#define TRACE_DUMMY(x) SM_DUMMY msg; msg.timestamp = UPTIME_us(); msg.value = (x); TRACE_BIN(&msg, sizeof(msg))
+#define TRACE_REMOTE(x, y, z) SM_TM_REMOTE msg; msg.timestamp = UPTIME_us(); msg.channel[0] = (x); msg.channel[1] = (y); msg.channel[z] = (x);TRACE_BIN(&msg, sizeof(msg))

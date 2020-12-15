@@ -5,7 +5,7 @@
 #include "ShiftReg.h"
 #include "StddevEval.h"
 #include "BinTrace.h"
-#include "SensorSettings.h"
+#include "SensorCfg.h"
 #include "MainLsMsg.h"
 #include <functional>
 #include "MainUart.h"

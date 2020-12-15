@@ -41,7 +41,12 @@ LineInput StddevEval::GetLine()
 		{
 			if (lineCnt < MAXLINES)
 			{
-				ret.lines[lineCnt] = evalWeightedMean(filtered, i);
+				int16_t line = evalWeightedMean(filtered, i);
+				line = compensateNonLin(line); // Compensate non-linearity
+
+				ret.lines[lineCnt] = line;
+
+
 			}
 
 			lineCnt++;
@@ -183,4 +188,43 @@ uint32_t StddevEval::standardDeviation(uint32_t* data, uint32_t num, uint32_t av
     var = sqsum / num;
 
     return sqrt(var);
+}
+
+int StddevEval::invChar(int x)
+{
+    if (x < 859)
+    {
+        return -0.000368623124867018f * (x - 859) * (x - 859) + 272;
+    }
+    if (x < 1059)
+    {
+        return 0.020375f * (x - 859) * (x - 859) + 272;
+    }
+    if (x < 1249)
+    {
+        return -0.020375f * (x - 1249) * (x - 1249) + 1836;
+    }
+    else
+    {
+        return 0.000368623124867018f * (x - 1249) * (x - 1249) + 1836;
+    }
+}
+
+int StddevEval::compensateNonLin(int x)
+{
+    int negative = (x < 0);
+
+    if (negative)
+        x *= -1;
+
+    int base = (x / 2108) * 2108;
+
+    int offset = x % 2108;
+
+    int ret = base + invChar(offset);
+
+    if (negative)
+        ret *= -1;
+
+    return ret;
 }

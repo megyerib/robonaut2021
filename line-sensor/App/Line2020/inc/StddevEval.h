@@ -22,4 +22,8 @@ private:
 	 // Math
 	 uint32_t mean(uint32_t* data, uint32_t num);
 	 uint32_t standardDeviation(uint32_t* data, uint32_t num, uint32_t avg);
+
+	 // Inverse characteristics (see ls-characteristics.xlsx)
+	 int invChar(int x);
+	 int compensateNonLin(int x);
 };

@@ -126,10 +126,13 @@ void Steering::Process()
     	case SingleLine_Race_Turn:
         {
             front.controller->Process(front.line);
+            //TRACE_DUMMY(front.line * 1000);
 
             float angle = front.controller->GetControlValue();
+            //TRACE_DUMMY(angle * 180 / PI);
 
             SetFrontAngle(angle);
+
             break;
         }
         case Manual:

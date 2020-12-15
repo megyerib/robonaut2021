@@ -80,6 +80,7 @@
 #define GROUP_CNT           4
 #endif
 
+#define IR_GROUP_SIZE    4   /* Every Nth IR LED is illuminated in a single iteration */
 
 #define IR_DIST_UNIT        2108    /* TODO link Excel */                          /* X distance of the IR sensors */
 #define MID_IR_POS_UNIT     (IR_DIST_UNIT*(SENSOR_SIZE-1)/2)  /* Distance from the leftmost sensor to the middle of the sensor*/
