@@ -12,6 +12,8 @@
 #include "Uptime.h"
 #include "Trace.h"
 #include "Distance.h"
+#include "Encoder.h"
+#include "WaitDistance.h"
 
 #define PRIO        5
 #define PERIOD      5
@@ -68,10 +70,6 @@ void TestTask::Follow()
 	float frontLine = TrackDetector::GetInstance()->GetFrontLine();
 
 	float throttle = Remote::GetInstance().GetValue(chThrottle);
-	float remSteering = Remote::GetInstance().GetValue(chSteering);
-	bool remoteMode = Remote::GetInstance().GetMode();
-
-	//TRACE_REMOTE(throttle * 100, remSteering * 100, remoteMode * 100);
 
 	Steering* steering = Steering::GetInstance();
 	steering->SetLine(frontLine, 0);
@@ -110,33 +108,90 @@ void TestTask::Follow()
 
 void TestTask::FastLap()
 {
-	static bool straight = true;
+	static enum
+	{
+		sStraight,
+		eWaitForBraking,
+		sBraking,
+		sTurn
+	}
+	FastLapState = sStraight;
+
+	static float maxThrottle = 0.2f;
+	static WaitDistance waitDst;
 
 	TrackType roadSignal = TrackDetector::GetInstance()->GetTrackType();
+	float speed = Encoder::GetInstance().GetSpeed();
 
-	if (straight == true && roadSignal == Braking)
+	switch (FastLapState)
 	{
-		PRINTF("Braking");
-		straight = false;
-	}
-	if (straight == false && roadSignal == Acceleration)
-	{
-		PRINTF("Accel");
-		straight = true;
+		case sStraight:
+		{
+			if (roadSignal == Braking)
+			{
+				waitDst.Wait_m(2.0f);
+				FastLapState = eWaitForBraking;
+			}
+
+			break;
+		}
+		case eWaitForBraking:
+		{
+			if (waitDst.IsExpired())
+			{
+				PRINTF("Braking");
+				maxThrottle = 0.0f;
+				FastLapState = sBraking;
+			}
+			break;
+		}
+		case sBraking:
+		{
+			if (speed < 2.0f)
+			{
+				PRINTF("Turning");
+				maxThrottle = 0.2f;
+				FastLapState = sTurn;
+			}
+
+			Steering::GetInstance()->SetMode(SingleLine_Race_Turn);
+
+			break;
+		}
+		case sTurn:
+		{
+			if (roadSignal == Acceleration)
+			{
+				PRINTF("Accel");
+				maxThrottle = 0.35f;
+				Steering::GetInstance()->SetMode(SingleLine_Race_Straight);
+				FastLapState = sStraight;
+			}
+		}
 	}
 
-	float frontLine = TrackDetector::GetInstance()->GetFrontLine();
-	TRACE_DUMMY(frontLine * 1000000);
+	static float frontLines[3];
+	static size_t iFrontLine = 0;
 
-	float throttle = Remote::GetInstance().GetValue(chThrottle);
+	frontLines[iFrontLine] = TrackDetector::GetInstance()->GetFrontLine();
+	iFrontLine++;
+	iFrontLine %= 3;
+
+	float frontLine = (frontLines[0] + frontLines[1] + frontLines[2]) / 3;
+
+	TRACE_DUMMY(speed * 1000);
+
+	//TRACE_DUMMY(frontLine * 1000000);
+
+	float remThr = Remote::GetInstance().GetValue(chThrottle);
 
 	Steering::GetInstance()->SetLine(frontLine, 0);
 
 	float d = 0;
 
-	if (throttle > 0.15f)
+	if (remThr > 0.15f)
 	{
-		d = 0.15f;
+		d = maxThrottle;
 	}
 	else
 	{

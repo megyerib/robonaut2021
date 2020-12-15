@@ -11,8 +11,8 @@
 #define SINGLE_FAST_P   ( 20.0f)
 #define SINGLE_FAST_D   (200.0f)
 
-#define SINGLE_RACE_TURN_P      ( 19.0f)    // 20
-#define SINGLE_RACE_TURN_D      (190.0f)    // 200
+#define SINGLE_RACE_TURN_P      ( 14.0f)    // 20
+#define SINGLE_RACE_TURN_D      (100.0f)    // 200
 
 #define SINGLE_RACE_ACCEL_P     ( 19.0f)
 #define SINGLE_RACE_ACCEL_D     (190.0f)
