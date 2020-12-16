@@ -2,7 +2,7 @@
 
 #include <EncoderHw.h>
 
-#define ENC_SAMPLING_PERIOD_ms    (10)
+#define ENC_SAMPLING_PERIOD_ms    (5)
 // The accurate timing values will be read from the us timer.
 
 #define ENC_AVGING_WINDOW         (4)
@@ -24,7 +24,8 @@ public:
 	void Process();
 
 private:
-	float speed    = 0;
+	float speeds[5] = {0}; // TODO macro
+	size_t iSpeed = 0;
 	float distance = 0;
 
 	EncoderHw& enc;

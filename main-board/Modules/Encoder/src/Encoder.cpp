@@ -25,7 +25,12 @@ float Encoder::GetDistance()
 // The calculation won't be valid in the first 'ENC_SAMPLES' cycles
 float Encoder::GetSpeed()
 {
-	return speed;
+	float sum = 0;
+
+	for (size_t i = 0; i < 5; i++)
+		sum += speeds[i];
+
+	return sum / 5.0f; // TODO macros
 }
 
 void Encoder::Process()
@@ -45,7 +50,9 @@ void Encoder::Process()
 	float d_s = (mPoints[iMP].encVal - mPoints[i1st].encVal) / INC_PER_M;  // m
 	float d_t = (mPoints[iMP].timVal - mPoints[i1st].timVal) / 1000000.0;  // s
 
-	speed = (d_t != 0) ? (d_s / d_t) : 0;
+	speeds[iSpeed] = (d_t != 0) ? (d_s / d_t) : 0;
+	iSpeed++;
+	iSpeed %= 5; // TODO macro
 
 	// Trace (dummy)
 	/*SM_DUMMY msg;

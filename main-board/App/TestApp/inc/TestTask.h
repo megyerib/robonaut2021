@@ -17,4 +17,7 @@ private:
 
 	void Follow();
 	void FastLap();
+	void SpeedTest();
+
+	float SpeedPI(float v, bool reset);
 };

@@ -48,7 +48,7 @@ void TestTask::TaskInit()
 
 void TestTask::TaskFunction()
 {
-	FastLap();
+	SpeedTest();
 }
 
 float TestTask::GetSensorAngle(float line)
@@ -78,7 +78,7 @@ void TestTask::Follow()
 
 	//float sensorAngle = GetSensorAngle(frontLine);
 
-	dstSensor->SetFrontServo(steering->GetFrontAngle()*0.5f);
+	dstSensor->SetFrontServo(steering->GetFrontAngle());
 	float dist = dstSensor->GetDistance(ToF_Front);
 
 	float d = 0;
@@ -104,6 +104,9 @@ void TestTask::Follow()
 	}
 
 	Traction::GetInstance()->SetDutyCycle(d);
+
+	float speed = Encoder::GetInstance().GetSpeed();
+	TRACE_DUMMY(speed * 1000);
 }
 
 void TestTask::FastLap()
@@ -199,4 +202,60 @@ void TestTask::FastLap()
 	}
 
 	Traction::GetInstance()->SetDutyCycle(d);
+}
+
+void TestTask::SpeedTest()
+{
+	float frontLine = TrackDetector::GetInstance()->GetFrontLine();
+	float throttle = Remote::GetInstance().GetValue(chThrottle);
+
+	Steering* steering = Steering::GetInstance();
+	steering->SetLine(frontLine, 0);
+
+	float d = 0;
+
+	if (throttle > 0.15f)
+	{
+		d = SpeedPI(1.0f, false);
+	}
+	else
+	{
+		d = 0.0f;
+		SpeedPI(0.0f, true); // Reset PI controller
+	}
+
+	Traction::GetInstance()->SetDutyCycle(d);
+
+	float speed = Encoder::GetInstance().GetSpeed();
+	TRACE_DUMMY(speed * 1000);
+}
+
+#define d_MAX   0.5f
+#define d_MIN  -0.5f
+#define K_P  0.2f
+#define K_I  0.0075f
+
+#define SATURATE(x, min, max)  ((x) = (x) > (max) ? (max) : ((x) < (min) ? (min) : (x)))
+
+float TestTask::SpeedPI(float v, bool reset)
+{
+	float d;
+
+	float speed = Encoder::GetInstance().GetSpeed();
+	float error = v - speed;
+
+	static float cumulativeError = 0.0f;
+	if (reset)
+	{
+		cumulativeError = 0;
+	}
+	cumulativeError += error;
+
+	d = /*0.0789 * v + 0.058 +*/ K_P * error + K_I * cumulativeError;
+
+	SATURATE(d, d_MIN, d_MAX);
+
+	// TODO max delta
+
+	return d;
 }
