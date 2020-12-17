@@ -8,13 +8,16 @@ Pd_Controller::Pd_Controller(void)
     kd             = 0.0f;
     derivative     = 0.0f;
     previous_error = 0.0f;
+    previous_line  = 0.0f;
 }
 
 Pd_Controller::Pd_Controller(float const Kp, float const Kd)
 {
     Pd_Controller();
-    kp = Kp;
-    kd = Kd;
+    kd             = 0.0f;
+	derivative     = 0.0f;
+	previous_error = 0.0f;
+	previous_line  = 0.0f;
 }
 
 void Pd_Controller::Process(float const processValue)

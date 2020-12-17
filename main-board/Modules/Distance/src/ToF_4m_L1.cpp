@@ -16,7 +16,7 @@ TOF_L1::TOF_L1()
     Dev->comms_speed_khz = 100;
     Dev->comms_type      = 1;
 
-    timingBudget_ms     = 200;
+    timingBudget_ms     = 50; // TODO reduce
 
     XSDN_Port           = TOF_FRONT_XSDN_Port;
     XSDN_Pin            = TOF_FRONT_XSDN_Pin;

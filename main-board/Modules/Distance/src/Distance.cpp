@@ -93,7 +93,7 @@ void Distance::InitTof()
 {
 	tof_front = new TOF_L1(0x20,
 						   100,
-						   200,
+						   100,
 						   TOF_FRONT_XSDN_Port,
 						   TOF_FRONT_XSDN_Pin);
 	tof_front->Init();

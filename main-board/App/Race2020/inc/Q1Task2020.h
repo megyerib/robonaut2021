@@ -7,13 +7,13 @@
 #include "Steering.h"
 #include "Car.h"
 
-class Q1Task : public CyclicTask
+class Q1Task2020 : public CyclicTask
 {
 public:
-	static Q1Task* Init();
+	static Q1Task2020* Init();
 
 private:
-	Q1Task();
+	Q1Task2020();
 
 	Car*      car       = nullptr;
 	Remote&   remote;
