@@ -10,7 +10,7 @@ void WaitDistance::Wait_m(float m)
 	startDistance = encoder.GetDistance();
 	endDistance = startDistance + m;
 
-	positive = (m > 0);
+	positive = (m >= 0);
 
 	started = true;
 }

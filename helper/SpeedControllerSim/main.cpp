@@ -59,10 +59,10 @@ int main()
 #define T   1.0f
 #define p_d exp(-T_s/T)
 #define K_d (K * (1 - exp(-T_s/T)))
-#define T_Cl 0.5f
+#define T_Cl 0.25f
 #define K_C (1.0 / K_d * (1.0 - exp(-T_s/T_Cl)))
 #define z_d p_d
-#define MAX_u 300.0f
+#define MAX_u 200.0f
 
 float Controller(float r, float y)
 {
@@ -73,7 +73,7 @@ float Controller(float r, float y)
     float u_1 = K_C * e;
     float u_2 = z_d * u_2prev + (1.0 - z_d) * u_prev;
     float u = u_1 + u_2;
-    SATURATE(u, -150, 150);
+    SATURATE(u, -MAX_u, MAX_u);
 
     u_prev  = u;
     u_2prev = u_2;
@@ -85,13 +85,13 @@ float Process(float input)
 {
     static float state = 0;
 
-    SATURATE(input, -150, 150);
+    SATURATE(input, -MAX_u, MAX_u);
 
     float e = input - state;
 
     state += e * (1 - exp(-T_s/T));
 
-    return K * state + Random(-5, 5); // y
+    return K * state + Random(-2, 2); // y
 }
 
 float Random(float min, float max)

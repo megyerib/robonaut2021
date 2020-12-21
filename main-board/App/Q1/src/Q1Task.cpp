@@ -15,10 +15,20 @@
 #include "Distance.h"
 #include "Encoder.h"
 #include "WaitDistance.h"
+#include <cmath>
 
 #define PRIO        5
 #define PERIOD      5
 #define STACK    1024
+
+typedef enum
+{
+	sStraight,
+	eWaitForBraking,
+	sBraking,
+	sTurn
+}
+SPEEDRUN_STATE; // Only straight & turn
 
 Q1Task::Q1Task() : CyclicTask((char*)"Test", PERIOD, PRIO, STACK)
 {
@@ -49,7 +59,11 @@ void Q1Task::TaskInit()
 
 void Q1Task::TaskFunction()
 {
-	FastLap();
+	Follow();
+	//FastLap();
+
+	//ID_LowSpeed();
+	//ID_HighSpeed();
 }
 
 float Q1Task::GetSensorAngle(float line)
@@ -66,7 +80,7 @@ float Q1Task::GetSensorAngle(float line)
 	return ret;
 }
 
-void Q1Task::Follow()
+void Q1Task::Follow() // Now speed controller test TODO rewrite
 {
 	float frontLine = TrackDetector::GetInstance()->GetFrontLine();
 	float throttle = Remote::GetInstance().GetValue(chThrottle);
@@ -74,47 +88,25 @@ void Q1Task::Follow()
 	Steering* steering = Steering::GetInstance();
 	steering->SetLine(frontLine, 0);
 
-	Distance* dstSensor = Distance::GetInstance();
+	// Distance
+	/*Distance* dstSensor = Distance::GetInstance();
 	dstSensor->SetFrontServo(steering->GetFrontAngle());
 	float dist = dstSensor->GetDistance(ToF_Front);
-	TRACE_DUMMY(dist * 1000);
+	TRACE_DUMMY(dist * 1000);*/
 
 	float speed = Encoder::GetInstance().GetSpeed();
-	//TRACE_DUMMY(speed * 1000);
+	TRACE_DUMMY(speed * 1000);
 
-	float d = 0;
-
-	static bool started = false;
+	float d;
 
 	if (throttle > 0.15f)
 	{
-		if (!started)
-		{
-			// Soft start
-			d = 0.2f;
-			if (speed > 1.0f)
-				started = true;
-		}
-		else
-		{
-			if (dist < 0.25f)
-			{
-				d = SpeedPI(0.0f, false);
-			}
-			else if (dist < 1.0f)
-			{
-				d = SpeedPI((dist - 0.25f) * 1.5f, false);
-			}
-			else
-			{
-				d = SpeedPI(1.5f, false);
-			}
-		}
+		d = SpeedController(1.5f);
 	}
 	else
 	{
-		d = SpeedPI(0.0f, false);
-		started = false;
+		d = 0.0f;
+		//d = SpeedController(0.0f);
 	}
 
 	Traction::GetInstance()->SetDutyCycle(d);
@@ -122,20 +114,20 @@ void Q1Task::Follow()
 
 void Q1Task::FastLap()
 {
-	static enum
-	{
-		sStraight,
-		eWaitForBraking,
-		sBraking,
-		sTurn
-	}
-	FastLapState = sStraight;
-
-	static float maxThrottle = 0.2f;
-	static WaitDistance waitDst;
-
-	TrackType roadSignal = TrackDetector::GetInstance()->GetTrackType();
+	// 1 Read & trace speed (required for braking)
 	float speed = Encoder::GetInstance().GetSpeed();
+	TRACE_DUMMY(speed * 1000);
+
+	// 2 Read road signal
+	TrackType roadSignal = TrackDetector::GetInstance()->GetTrackType();
+
+	// 3 Speedrun state machine (set d & line following controller)
+	static SPEEDRUN_STATE FastLapState = sStraight;
+
+	static WaitDistance waitDst;
+	static float d = 0.2f;
+	static const float turnSpeed = 0.2f;
+	static const float straightSpeed = 0.35f;
 
 	switch (FastLapState)
 	{
@@ -154,7 +146,7 @@ void Q1Task::FastLap()
 			if (waitDst.IsExpired())
 			{
 				PRINTF("Braking");
-				maxThrottle = 0.0f;
+				d = 0.0f;
 				FastLapState = sBraking;
 			}
 			break;
@@ -164,7 +156,7 @@ void Q1Task::FastLap()
 			if (speed < 2.0f)
 			{
 				PRINTF("Turning");
-				maxThrottle = 0.2f;
+				d = turnSpeed;
 				FastLapState = sTurn;
 			}
 
@@ -177,25 +169,70 @@ void Q1Task::FastLap()
 			if (roadSignal == Acceleration)
 			{
 				PRINTF("Accel");
-				maxThrottle = 0.35f;
+				d = straightSpeed;
 				Steering::GetInstance()->SetMode(SingleLine_Race_Straight);
 				FastLapState = sStraight;
 			}
 		}
 	}
 
-	static float frontLines[3];
-	static size_t iFrontLine = 0;
+	// 4 Set line (& get average of front lines)
+	{
+		static float frontLines[3];
+		static size_t iFrontLine = 0;
 
-	frontLines[iFrontLine] = TrackDetector::GetInstance()->GetFrontLine();
-	iFrontLine++;
-	iFrontLine %= 3;
+		frontLines[iFrontLine] = TrackDetector::GetInstance()->GetFrontLine();
+		iFrontLine++;
+		iFrontLine %= 3;
 
-	float frontLine = (frontLines[0] + frontLines[1] + frontLines[2]) / 3;
+		float frontLine = (frontLines[0] + frontLines[1] + frontLines[2]) / 3;
+		Steering::GetInstance()->SetLine(frontLine, 0);
+	}
 
+	// 5 Set motor duty cycle if enabled
+	float remThr = Remote::GetInstance().GetValue(chThrottle);
+	Traction::GetInstance()->SetDutyCycle((remThr > 0.15f) ? d : 0);
+}
+
+#define SATURATE(x, min, max)  ((x) = (x) > (max) ? (max) : ((x) < (min) ? (min) : (x)))
+
+
+#define T_s 0.01f
+
+#define K   14.78f
+#define T   0.55f
+#define p_d exp(-T_s/T)
+#define K_d (K * (1 - exp(-T_s/T)))
+#define T_Cl 0.25f
+#define K_C (1.0 / K_d * (1.0 - exp(-T_s/T_Cl)))
+#define z_d p_d
+#define MAX_u 0.5f
+
+float Q1Task::SpeedController(float r)
+{
+	float y = Encoder::GetInstance().GetSpeed();
+
+	static float u_prev;
+	static float u_2prev;
+
+	float e = r - y;
+	float u_1 = K_C * e;
+	float u_2 = z_d * u_2prev + (1.0 - z_d) * u_prev;
+	float u = u_1 + u_2;
+	SATURATE(u, -MAX_u, MAX_u);
+
+	u_prev  = u;
+	u_2prev = u_2;
+
+	return u;
+}
+
+void Q1Task::ID_LowSpeed()
+{
+	float frontLine = TrackDetector::GetInstance()->GetFrontLine();
+
+	float speed = Encoder::GetInstance().GetSpeed();
 	TRACE_DUMMY(speed * 1000);
-
-	//TRACE_DUMMY(frontLine * 1000000);
 
 	float remThr = Remote::GetInstance().GetValue(chThrottle);
 
@@ -203,9 +240,28 @@ void Q1Task::FastLap()
 
 	float d = 0;
 
+	static float d_max = 0.0f;
+	static bool running = false;
+
 	if (remThr > 0.15f)
 	{
-		d = maxThrottle;
+		if (!running)
+		{
+			running = true;
+			d_max += 0.05f;
+			PRINTF("Speed: %d", (d_max * 100.0));
+		}
+
+		d = d_max;
+	}
+	else if (remThr < 0.05f)
+	{
+		d = 0.0f;
+
+		if (running)
+		{
+			running = false;
+		}
 	}
 	else
 	{
@@ -215,69 +271,118 @@ void Q1Task::FastLap()
 	Traction::GetInstance()->SetDutyCycle(d);
 }
 
-void Q1Task::SpeedTest()
+void Q1Task::ID_HighSpeed()
 {
-	float frontLine = TrackDetector::GetInstance()->GetFrontLine();
-	float throttle = Remote::GetInstance().GetValue(chThrottle);
-
-	Steering* steering = Steering::GetInstance();
-	steering->SetLine(frontLine, 0);
-
+	// 1 Read & trace speed (required for braking)
 	float speed = Encoder::GetInstance().GetSpeed();
 	TRACE_DUMMY(speed * 1000);
 
-	float d = 0;
+	// 2 Read road signal
+	TrackType roadSignal = TrackDetector::GetInstance()->GetTrackType();
 
-	static bool started = false;
+	// 3 Speedrun state machine (set d & line following controller)
+	static SPEEDRUN_STATE FastLapState = sStraight;
 
-	if (throttle > 0.15f)
+	static WaitDistance waitDst;
+	static float d = 0.2f;
+	static const float turnSpeed = 0.2f;
+	static float straightSpeed = 0.2f;
+
+	switch (FastLapState)
 	{
-		if (!started)
+		case sStraight:
 		{
-			d = 0.2f;
-			if (speed > 1.0f)
-				started = true;
+			if (roadSignal == Braking)
+			{
+				waitDst.Wait_m(0.0f); // Don't wait during this test
+				FastLapState = eWaitForBraking;
+			}
+
+			break;
 		}
-		else
+		case eWaitForBraking:
 		{
-			d = SpeedPI(1.5f, false);
+			if (waitDst.IsExpired())
+			{
+				PRINTF("Braking");
+				d = 0.0f;
+				FastLapState = sBraking;
+			}
+			break;
 		}
+		case sBraking:
+		{
+			if (speed < 2.0f)
+			{
+				PRINTF("Turning");
+				d = turnSpeed;
+				FastLapState = sTurn;
+			}
+
+			Steering::GetInstance()->SetMode(SingleLine_Race_Turn);
+
+			break;
+		}
+		case sTurn:
+		{
+			if (roadSignal == Acceleration)
+			{
+				PRINTF("Accel");
+				straightSpeed += 0.05f;
+				d = straightSpeed;
+				PRINTF("d = %d", (int32_t)(d * 100.0f));
+				Steering::GetInstance()->SetMode(SingleLine_Race_Straight);
+				FastLapState = sStraight;
+			}
+		}
+	}
+
+	// 4 Set line (& get average of front lines)
+	{
+		static float frontLines[3];
+		static size_t iFrontLine = 0;
+
+		frontLines[iFrontLine] = TrackDetector::GetInstance()->GetFrontLine();
+		iFrontLine++;
+		iFrontLine %= 3;
+
+		float frontLine = (frontLines[0] + frontLines[1] + frontLines[2]) / 3;
+		Steering::GetInstance()->SetLine(frontLine, 0);
+	}
+
+	// 5 Set motor duty cycle if enabled
+	float remThr = Remote::GetInstance().GetValue(chThrottle);
+	Traction::GetInstance()->SetDutyCycle((remThr > 0.15f) ? d : 0);
+}
+
+// Imaginary: What we want to achieve
+// Real: What the controller can push out
+float Q1Task::ReSpeedToIm(float realSpeed)
+{
+	if (realSpeed >= 0.07)
+	{
+		return realSpeed * 14.78 - 1.03;
+	}
+	else if (realSpeed < -0.07)
+	{
+		realSpeed *= -1.0;
+		return -(realSpeed * 14.78 - 1.03);
 	}
 	else
 	{
-		d = SpeedPI(0.0f, false);
-		started = false;
+		return 0.0f;
 	}
-
-	Traction::GetInstance()->SetDutyCycle(d);
 }
 
-#define d_MAX   0.5f
-#define d_MIN  -0.5f
-#define K_P  0.25f
-#define K_I  0.01f
-
-#define SATURATE(x, min, max)  ((x) = (x) > (max) ? (max) : ((x) < (min) ? (min) : (x)))
-
-float Q1Task::SpeedPI(float v, bool reset)
+float Q1Task::ImSpeedToRe(float imSpeed) // TODO inverse bad
 {
-	float d;
-
-	float speed = Encoder::GetInstance().GetSpeed();
-	float error = v - speed;
-
-	static float cumulativeError = 0.0f;
-	if (reset)
+	if (imSpeed >= 0)
 	{
-		cumulativeError = 0;
+		return imSpeed * 0.068 + 0.07;
 	}
-	cumulativeError += error;
-
-	d = /*0.0789 * v + 0.058 +*/ K_P * error + K_I * cumulativeError;
-
-	SATURATE(d, d_MIN, d_MAX);
-
-	// TODO max delta
-
-	return d;
+	else
+	{
+		imSpeed *= -1.0;
+		return -(imSpeed * 0.068 + 0.07);
+	}
 }

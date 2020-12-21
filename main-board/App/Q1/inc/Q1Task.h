@@ -17,7 +17,13 @@ private:
 
 	void Follow();
 	void FastLap();
-	void SpeedTest();
 
-	float SpeedPI(float v, bool reset);
+	// TODO to identification task
+	void ID_LowSpeed();
+	void ID_HighSpeed();
+
+	float ReSpeedToIm(float realSpeed);
+	float ImSpeedToRe(float imSpeed);
+
+	float SpeedController(float v);
 };
