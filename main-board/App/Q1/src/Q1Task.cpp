@@ -59,8 +59,8 @@ void Q1Task::TaskInit()
 
 void Q1Task::TaskFunction()
 {
-	Follow();
-	//FastLap();
+	//Follow();
+	FastLap();
 
 	//ID_LowSpeed();
 	//ID_HighSpeed();
@@ -125,9 +125,9 @@ void Q1Task::FastLap()
 	static SPEEDRUN_STATE FastLapState = sStraight;
 
 	static WaitDistance waitDst;
-	static float d = 0.2f;
-	static const float turnSpeed = 0.2f;
-	static const float straightSpeed = 0.35f;
+	static float targetSpeed = 1.65f;
+	static const float turnSpeed = 1.65f; // m/s
+	static const float straightSpeed = 4.0f; // m/s
 
 	switch (FastLapState)
 	{
@@ -146,19 +146,15 @@ void Q1Task::FastLap()
 			if (waitDst.IsExpired())
 			{
 				PRINTF("Braking");
-				d = 0.0f;
+				targetSpeed = turnSpeed; // Set turn speed by controller
 				FastLapState = sBraking;
 			}
 			break;
 		}
 		case sBraking:
 		{
-			if (speed < 2.0f)
-			{
-				PRINTF("Turning");
-				d = turnSpeed;
-				FastLapState = sTurn;
-			}
+			PRINTF("Turning");
+			FastLapState = sTurn;
 
 			Steering::GetInstance()->SetMode(SingleLine_Race_Turn);
 
@@ -169,7 +165,7 @@ void Q1Task::FastLap()
 			if (roadSignal == Acceleration)
 			{
 				PRINTF("Accel");
-				d = straightSpeed;
+				targetSpeed = straightSpeed;
 				Steering::GetInstance()->SetMode(SingleLine_Race_Straight);
 				FastLapState = sStraight;
 			}
@@ -191,7 +187,18 @@ void Q1Task::FastLap()
 
 	// 5 Set motor duty cycle if enabled
 	float remThr = Remote::GetInstance().GetValue(chThrottle);
-	Traction::GetInstance()->SetDutyCycle((remThr > 0.15f) ? d : 0);
+	float d;
+
+	if (remThr > 0.15f)
+	{
+		d = SpeedController(targetSpeed);
+	}
+	else
+	{
+		d = 0; // Dont calculate integrated error TODO solve this later properly
+	}
+
+	Traction::GetInstance()->SetDutyCycle(d);
 }
 
 #define SATURATE(x, min, max)  ((x) = (x) > (max) ? (max) : ((x) < (min) ? (min) : (x)))
