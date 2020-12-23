@@ -27,10 +27,10 @@ float Encoder::GetSpeed()
 {
 	float sum = 0;
 
-	for (size_t i = 0; i < 5; i++)
+	for (size_t i = 0; i < SPEED_AVGING_WINDOW; i++)
 		sum += speeds[i];
 
-	return sum / 5.0f; // TODO macros
+	return sum / SPEED_AVGING_WINDOW;
 }
 
 void Encoder::Process()
@@ -52,12 +52,5 @@ void Encoder::Process()
 
 	speeds[iSpeed] = (d_t != 0) ? (d_s / d_t) : 0;
 	iSpeed++;
-	iSpeed %= 5; // TODO macro
-
-	// Trace (dummy)
-	/*SM_DUMMY msg;
-	msg.id        = smDummy;
-	msg.timestamp = UPTIME_us();
-	msg.value     = speed * 1000;
-	TRACE_BIN(&msg, sizeof(msg));*/
+	iSpeed %= SPEED_AVGING_WINDOW;
 }

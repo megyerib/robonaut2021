@@ -1,17 +1,10 @@
 #pragma once
 
-#include "Pid_Controller.h"
-#include <cstddef> /* size_t */
-
-#define TRACTION_CONTROL_CYCLE   10 /* ms */
+#define TRACTION_CONTROL_PERIOD   10 /* ms */
 
 typedef enum
 {
-    tmode_Manual = 0,
-    tmode_Controller,
-	tmodeAccel,
-	tmodeBraking
-	// ...
+    tmDutyCycle = 0
 }
 TractionMode;
 
@@ -19,25 +12,17 @@ class Traction
 {
 public:
 	static Traction* GetInstance();
-	void SetSpeed(float speed /* m/s */);
-	void SetDutyCycle(float d /* % [-1;+1] */);
-	void SetMode(TractionMode mode);
-	void SetControllerIntegrationLimit(float const limit);
-
 	void Process();
 
+	void SetDutyCycle(float d)   {dutyCycle = d;}  // [-1;+1]
+	void SetMode(TractionMode m) {mode = m;}
+
 private:
-	Pid_Controller* controller;
-
-	//float targetSpeed;
-	float targetDutyCycle;
-	float prevDutyCycle;
-	float forceDutyCycle;
-
 	TractionMode mode;
+	float dutyCycle;
 
 	Traction();
 
-	void SendDutyCycle(float d /* % [-1;+1] */);
-	void PrintInt(void* dst, int n, size_t& size);
+	void SendDutyCycle(float d); // -1 <= d <= 1
+	int sprintint(char* dst, int n);
 };

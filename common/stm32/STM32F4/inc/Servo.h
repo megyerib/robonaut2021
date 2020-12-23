@@ -34,7 +34,7 @@ public:
      void  SetSteerAngle(float rad);
      float GetSteerAngle(void);
 
-     void SetPulseWidth_us(uint32_t compareValue); // TODO make it private again
+     void SetPulseWidth_us(uint32_t compareValue);
 
 private:
      ServoType          type;

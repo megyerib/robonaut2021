@@ -5,24 +5,11 @@
 
 #define PI 3.1415926535f
 
-#define SINGLE_SLOW_P           ( 15.0f)
-#define SINGLE_SLOW_D           (200.0f)
+#define TURN_P      (  10.5f  )
+#define TURN_D      (  75.0f  )
 
-#define SINGLE_FAST_P           ( 20.0f)
-#define SINGLE_FAST_D           (200.0f)
-
-#define SINGLE_RACE_TURN_P      ( 14.0f)    // 20
-#define SINGLE_RACE_TURN_D      (100.0f)    // 200
-
-#define SINGLE_RACE_ACCEL_P     ( 19.0f)
-#define SINGLE_RACE_ACCEL_D     (190.0f)
-
-#define SINGLE_RACE_STRAIGHT_P  ( 10.0f)    // 10
-#define SINGLE_RACE_STRAIGHT_D  (100.0f)    // 100
-
-#define SINGLE_RACE_DECEL_P     ( 19.0f)
-#define SINGLE_RACE_DECEL_D     (190.0f)
-
+#define STRAIGHT_P  (   7.5f  )
+#define STRAIGHT_D  (  75.0f  )
 
 Steering::Steering()
 {
@@ -33,7 +20,7 @@ Steering::Steering()
 	front.line       = 0.0f;
 	front.angle      = 0.0f;
 
-	mode = SteeringMode::Manual;
+	mode = SteeringMode::smManual;
 }
 
 Steering* Steering::GetInstance()
@@ -48,51 +35,24 @@ void Steering::SetMode(SteeringMode mode)
 
     switch (mode)
     {
-        case SingleLineFollow_Slow:
+        case smTurn:
         {
-            front.controller->Set_P_Term(SINGLE_SLOW_P);
-            front.controller->Set_D_Term(SINGLE_SLOW_D);
+            front.controller->SetPD(TURN_P, TURN_D);
             break;
         }
-        case SingleLineFollow_Fast:
+        case smStraight:
         {
-            front.controller->Set_P_Term(SINGLE_FAST_P);
-            front.controller->Set_D_Term(SINGLE_FAST_D);
-            break;
-        }
-        case SingleLine_Race_Turn:
-        {
-            front.controller->Set_P_Term(SINGLE_RACE_TURN_P);
-            front.controller->Set_D_Term(SINGLE_RACE_TURN_D);
-            break;
-        }
-        case SingleLine_Race_Accel:
-        {
-            front.controller->Set_P_Term(SINGLE_RACE_ACCEL_P);
-            front.controller->Set_D_Term(SINGLE_RACE_ACCEL_D);
-            break;
-        }
-        case SingleLine_Race_Straight:
-        {
-            front.controller->Set_P_Term(SINGLE_RACE_STRAIGHT_P);
-            front.controller->Set_D_Term(SINGLE_RACE_STRAIGHT_D);
-            break;
-        }
-        case SingleLine_Race_Decel:
-        {
-            front.controller->Set_P_Term(SINGLE_RACE_DECEL_P);
-            front.controller->Set_D_Term(SINGLE_RACE_DECEL_D);
+            front.controller->SetPD(STRAIGHT_P, STRAIGHT_D);
             break;
         }
         default:
         {
-
             break;
         }
     }
 }
 
-void Steering::SetLine(float front_line, float rear_line) // TODO add line with angle
+void Steering::SetLine(float front_line, float rear_line)
 {
     front.line = front_line;
 }
@@ -118,31 +78,31 @@ void Steering::Process()
 {
     switch (mode)
     {
-    	case SingleLineFollow_Slow:
-    	case SingleLineFollow_Fast:
-    	case SingleLine_Race_Straight:
-    	case SingleLine_Race_Decel:
-    	case SingleLine_Race_Accel:
-    	case SingleLine_Race_Turn:
+    	case smStraight:
+    	case smTurn:
         {
             front.controller->Process(front.line);
-            //TRACE_DUMMY(front.line * 1000);
 
-            float angle = front.controller->GetControlValue();
-            //TRACE_DUMMY(angle * 180 / PI);
+            // Line:   - ... +
+            // Angle:  +     -    ==> -1 multiplier
+            //          \   /
+            //           \ /
+
+            float angle = -1 * front.controller->GetOutput();
 
             SetFrontAngle(angle);
 
             break;
         }
-        case Manual:
+        case smManual:
         {
         	SetFrontAngle(front.angle);
-
             break;
         }
         default:
+        {
         	break;
+        }
     }
 }
 

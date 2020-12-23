@@ -67,7 +67,7 @@ CLASS_NAME::CLASS_NAME() : DmaUartF4(uart_cfg)
 
 /*extern "C" void DMA_RX_IRQ_HANDLER(void)
 {
-	CLASS_NAME::GetInstance()->HandleDmaRxIrq();
+	CLASS_NAME::GetInstance().HandleDmaRxIrq();
 }*/
 
 extern "C" void DMA_TX_IRQ_HANDLER(void)

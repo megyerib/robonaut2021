@@ -12,8 +12,6 @@
 
 #define NEAR_FAR_THRESHOLD_UNIT    (0.07f * UNIT_TO_M)
 
-#define DEBUG_TRACK               0
-
 #define CMD_PROC_BUF_LEN  300
 
 static uint8_t cmdProcBufFront[CMD_PROC_BUF_LEN];
@@ -27,29 +25,6 @@ TrackDetector::TrackDetector() : frontStm(front),
 {
 	front.receiver = &cmdProcFront;
 	rear.receiver  = &cmdProcRear;
-
-	/*M2L_RESET reset;
-
-	M2L_CFG cfg;
-	cfg.LedEn        = 1;
-	cfg.LineDataEn   = 1;
-	cfg.MeasEn       = 1;
-	cfg.SensorDataEn = 1;
-
-	// TODO do this nicely
-	static uint8_t txBuf[10];
-
-	EscapeEncoder enc;
-	BinTraceBase frontTrace(
-		LsFrontUart::GetInstance(),
-		txBuf,
-		10,
-		10,
-		enc
-	);
-
-	frontTrace.TraceBinary(false, &cfg, sizeof(cfg));
-	frontTrace.Process();*/
 }
 
 TrackDetector* TrackDetector::GetInstance()
@@ -239,7 +214,7 @@ void TrackDetector::GetMiddle(LineData& line)
 	}
 }
 
-void TrackDetector::FilterCnt(LineData& line) // TODO remove (this task is done by the line sensor)
+void TrackDetector::FilterCnt(LineData& line) // TODO remove line filtering on main (done by line sensor now)
 {
 	if (line.prevCnt == line.input.cnt)
 	{
@@ -314,72 +289,43 @@ void TrackDetector::EvalRaceTrackType()
 
 void TrackDetector::Process()
 {
-#if DEBUG_TRACK
-	uint16_t frontCnt = 0;
-	uint16_t rearCnt  = 0;
-#endif
-
 	// Front
 	while (ProcessRx(front) == true)
 	{
-#if DEBUG_TRACK		// Change trace
-		LineType  prevLineType = front.lType;
-		TrackType prevTrackType = front.tType;
-#endif
-
-		FilterCnt(front);
-		//GetNearest(front);
-		GetMiddle(front);
-		EvalLineType(front);
-
-		if (mode == Maze)
+		switch (mode)
 		{
-			frontStm.Process();
-			front.tType = frontStm.GetTrackType();
-			front.lDir  = frontStm.GetLineDirection();
-		}
-		else // Speedrun
-		{
-			EvalRaceTrackType();
-		}
+			case trackMaze:
+			{
+				FilterCnt(front);
+				GetNearest(front);
+				EvalLineType(front);
 
-#if DEBUG_TRACK // Change trace
-		if (prevLineType != front.lType)
-		{
-			const char* name = lineTypeNames[front.lType];
-			trace->Transmit(name, strlen(name));
-		}
-		if (prevTrackType != front.tType)
-		{
-			const char* name = trackTypeNames[front.tType];
-			trace->Transmit(name, strlen(name));
-		}
+				frontStm.Process();
+				front.tType = frontStm.GetTrackType();
+				front.lDir  = frontStm.GetLineDirection();
 
-		frontCnt++;
-#endif
+				break;
+			}
+			case trackSpeedrun:
+			{
+				FilterCnt(front);
+				GetMiddle(front);
+				EvalLineType(front);
+
+				EvalRaceTrackType();
+				break;
+			}
+			default:
+			{
+				break;
+			}
+		}
 	}
 
 	// Rear
 	while (ProcessRx(rear) == true)
 	{
-		FilterCnt(rear);
-		GetNearest(rear);
-
-#if DEBUG_TRACK
-		rearCnt++;
-#endif
-	}
-}
-
-bool TrackDetector::IsFrontLineDetected()
-{
-	if (front.filteredCnt > 0)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
+		// ...
 	}
 }
 

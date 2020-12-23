@@ -2,11 +2,13 @@
 
 #include <EncoderHw.h>
 
-#define ENC_SAMPLING_PERIOD_ms    (5)
+#define ENC_SAMPLING_PERIOD_ms    5
 // The accurate timing values will be read from the us timer.
 
-#define ENC_AVGING_WINDOW         (4)
+#define ENC_AVGING_WINDOW         4
 #define ENC_SAMPLES               (ENC_AVGING_WINDOW + 1)
+
+#define SPEED_AVGING_WINDOW       5
 
 typedef struct
 {
@@ -24,7 +26,7 @@ public:
 	void Process();
 
 private:
-	float speeds[5] = {0}; // TODO macro
+	float speeds[SPEED_AVGING_WINDOW] = {0};
 	size_t iSpeed = 0;
 	float distance = 0;
 

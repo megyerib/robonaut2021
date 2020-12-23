@@ -3,8 +3,6 @@
 #include "ShiftReg.h"
 #include "Line.h"
 
-// TODO interface is OK but the whole module needs refactoring
-
 class LedDriver
 {
 	ShiftReg leds;

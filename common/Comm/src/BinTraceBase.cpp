@@ -1,12 +1,6 @@
 #include "BinTraceBase.h"
 #include "crc8.h"
-// TODO resolve
-#ifdef STM32F446xx
-#include "stm32f4xx_hal.h"
-#endif
-#ifdef STM32F030xx
-#include "stm32f0xx_hal.h"
-#endif
+#include "cmsis_gcc.h" /* EI/DI; uC-independent (STM32 family only) */
 
 BinTraceBase::BinTraceBase(Transmitter& tx, uint8_t* txBuf, size_t txBufSize, size_t binQSize, BinaryEncoder& enc) : tx(tx), enc(enc)
 {
@@ -38,7 +32,6 @@ void BinTraceBase::TraceBinary(bool from_isr, const void* buf, size_t size)
 void BinTraceBase::Process()
 {
 	static uint8_t tmpBuf[66]; // 66: Length of the largest possible message
-	                           // TODO this needs to be secured
 	// For example: Buffer the data was created in -> RTOS Stream buffer -> Tx handler decoding buffer ->
 	// -> UART Tx buffer ...
 

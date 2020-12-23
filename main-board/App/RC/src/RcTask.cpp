@@ -26,8 +26,8 @@ void RcTask::TaskInit()
 	SteeringTask::Init();
 	TractionTask::Init();
 
-	Steering::GetInstance()->SetMode(Manual);
-	Traction::GetInstance()->SetMode(tmode_Manual);
+	Steering::GetInstance()->SetMode(smManual);
+	Traction::GetInstance()->SetMode(tmDutyCycle);
 }
 
 void RcTask::TaskFunction()

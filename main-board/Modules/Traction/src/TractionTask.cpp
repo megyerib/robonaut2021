@@ -1,7 +1,7 @@
 #include "TractionTask.h"
 #include "TaskPrio.h"
 
-TractionTask::TractionTask() : CyclicTask((char*)"Traction", TRACTION_CONTROL_CYCLE, TRACTION_TASK_PRIO, 512)
+TractionTask::TractionTask() : CyclicTask((char*)"Traction", TRACTION_CONTROL_PERIOD, TRACTION_TASK_PRIO, 512)
 {
 
 }

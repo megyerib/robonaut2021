@@ -3,8 +3,6 @@
 #include <stdint.h>
 #include "stm32f0xx_hal.h"
 
-// TODO
-
 #define UPTIME_us() Uptime::GetInstance().GetTime()
 
 class Uptime

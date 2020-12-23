@@ -14,21 +14,11 @@
 
 typedef enum
 {
-	Manual,
+	smManual,
 
-	SingleLineFollow_Fast,
-	SingleLineFollow_Slow,
-
-	SingleLine_Race_Straight,
-	SingleLine_Race_Decel,
-	SingleLine_Race_Turn,
-	SingleLine_Race_Accel,
-
-	SteeringReverse
-	// ...
+	smStraight,
+	smTurn
 } SteeringMode;
-
-// TODO names
 
 typedef struct
 {
@@ -48,7 +38,6 @@ public:
 	void SetAngleManual(float front_angle /* rad */); // For Free mode
 	float GetFrontAngle();
 	void Process();
-	// TODO sensors on
 
 private:
 	SteeringMode mode;

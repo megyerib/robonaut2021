@@ -1,32 +1,29 @@
 #pragma once
 
-struct FeedbackLoop
-{
-    float setpoint;
-    float error_value;
-    float control_value;
-    float process_value;
+/*  ref      err   ____________  cout  _____________    pout
+     r  +     e   |            |  u   |             |     y
+   ----->( )----->| Controller |----->|    Plant    |-----+----->
+        - ^       |____________|      |_____________|     |
+          |                                               |
+          +-----------------------------------------------+
 
-    void Init();
-};
+    Param | Member |
+    r     | ref    | Reference
+    e     | err    | Error
+    u     | cout   | Controller output / Plant input
+    y     | pout   | Plant output
+*/
 
 class Controller
 {
 protected:
-    FeedbackLoop loop;
-    float        kp;
-
-    void CalculateErrorValue(float processValue);
+	float ref  = 0;
+	float cout = 0;
 
 public:
-    Controller();
+    virtual void Process(float y) = 0;
 
-    virtual void Process(float processValue);
-
-    float GetControlValue();
-    void  SetSetpoint(float SP);
-    void  Set_P_Term(float P);
-
-    void SaturateControlValue(float min, float max);
+    float GetOutput() {return cout;}
+    void  SetRef(float r) {ref = r;}
 };
 

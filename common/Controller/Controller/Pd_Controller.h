@@ -5,16 +5,17 @@
 class Pd_Controller : public Controller
 {
 private:
-    float kd;
-    float derivative;
-    float previous_error;
-    float previous_line;
+    float kp;
+	float kd;
+
+    float derivative     = 0;
+    float previous_error = 0;
+    float err_prev       = 0;
 
 public:
-    Pd_Controller();
     Pd_Controller(float const Kp, float const Kd);
 
-    void Process(float const processValue) override;
+    virtual void Process(float const y) override;
 
-    void Set_D_Term(float const D);
+    void SetPD(float P, float D) {kp = P; kd = D;}
 };

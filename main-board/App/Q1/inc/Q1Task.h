@@ -13,17 +13,8 @@ private:
 	void TaskInit() override;
 	void TaskFunction() override;
 
-	float GetSensorAngle(float line);
-
-	void Follow();
 	void FastLap();
+	void Follow();
 
-	// TODO to identification task
-	void ID_LowSpeed();
-	void ID_HighSpeed();
-
-	float ReSpeedToIm(float realSpeed);
-	float ImSpeedToRe(float imSpeed);
-
-	float SpeedController(float v);
+	float SpeedPI(float v, bool reset); // TODO move to separate file & replace to FOXBORO
 };

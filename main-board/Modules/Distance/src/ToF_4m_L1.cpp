@@ -5,23 +5,6 @@
 #include "SerialMessages.h"
 #include "Uptime.h"
 
-TOF_L1::TOF_L1()
-{
-    i2c = ToF_I2c::GetInstance();
-
-    InitXsdnGpio();
-
-    Dev->I2cDevAddr      = 0x52;
-    Dev->I2cHandle       = i2c->GetHandle();
-    Dev->comms_speed_khz = 100;
-    Dev->comms_type      = 1;
-
-    timingBudget_ms     = 50; // TODO reduce
-
-    XSDN_Port           = TOF_FRONT_XSDN_Port;
-    XSDN_Pin            = TOF_FRONT_XSDN_Pin;
-}
-
 TOF_L1::TOF_L1(uint8_t             const Addr,
                uint16_t            const Speed,
                uint32_t            const TB_ms,
@@ -77,16 +60,6 @@ void TOF_L1::Process()
             {
             	distance_mm = RangingData.RangeMilliMeter;
             }
-            // TODO find out why do invalid measurements happen
-
-
-            // Trace (dummy)
-            /*SM_DUMMY msg;
-			msg.id = smDummy;
-			msg.timestamp = UPTIME_us();
-			msg.value = millimeter;
-
-			TRACE_BIN(&msg, sizeof(msg));*/
         }
         else
         {

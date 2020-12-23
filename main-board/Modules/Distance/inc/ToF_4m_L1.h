@@ -35,7 +35,6 @@ private:
     uint16_t        XSDN_Pin;
 
 public:
-    TOF_L1();
     TOF_L1(uint8_t              const Addr,
            uint16_t             const Speed,
            uint32_t             const TB_ms,

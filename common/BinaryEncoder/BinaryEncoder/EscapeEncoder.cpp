@@ -77,7 +77,6 @@ bool EscapeEncoder::Encode(const uint8_t* bin, size_t binSize, uint8_t* enc, siz
     return ret;
 }
 
-// TODO target size check
 bool EscapeEncoder::Decode(const uint8_t* enc, size_t encSize, uint8_t* bin, size_t& binSize, size_t binMax)
 {
 	size_t iBin = 0;

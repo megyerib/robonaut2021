@@ -8,8 +8,8 @@
 
 typedef enum
 {
-	Maze,
-	Speedrun
+	trackMaze,
+	trackSpeedrun
 }
 TrackMode;
 
@@ -21,19 +21,17 @@ public:
 
 	void SetMode(TrackMode mode){this->mode = mode;}
 	TrackType GetTrackType(){return front.tType;}
-	LineDirection GetLineDirection(){return front.lDir;}
 	float GetFrontLine(){return front.pos;} /* m */
 	float GetRearLine(){return rear.pos;} /* m */
 	float GetFrontLine(LineDirection const dir);
 	float GetRearLine(LineDirection const dir);
-	bool  IsFrontLineDetected();
 
 	bool IsJunction(TrackType const track);
 	bool IsFork(TrackType track);
 	LineDirection GetLineDir();
 
 private:
-	TrackMode mode = Maze;
+	TrackMode mode = trackMaze;
 
 	MazeDetectorSM frontStm;
 
