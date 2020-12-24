@@ -88,7 +88,7 @@ void Steering::Process()
             //          \   /
             //           \ /
 
-            float angle = -1 * front.controller->GetOutput();
+            float angle = front.controller->GetOutput();
 
             SetFrontAngle(angle);
 

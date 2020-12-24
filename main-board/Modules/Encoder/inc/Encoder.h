@@ -1,6 +1,7 @@
 #pragma once
 
 #include <EncoderHw.h>
+#include "EncoderTask.h"
 
 #define ENC_SAMPLING_PERIOD_ms    5
 // The accurate timing values will be read from the us timer.

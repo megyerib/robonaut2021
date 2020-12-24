@@ -1,16 +1,12 @@
 #include "System.h"
 
-#include "DistanceTask.h"
-#include "CalibrationTask.h"
-#include "RcTask.h"
-
-#include "Q1Task.h"
+#include "MusicTask.h"
 
 int main()
 {
 	SYSTEM_INIT();
 
-	Q1Task::Init();
+	//MusicTask::Init();
 
 	OS_START();
 

@@ -14,6 +14,7 @@
 #include "Encoder.h"
 #include "WaitDistance.h"
 #include <cmath>
+#include "PiFoxboro_Controller.h"
 
 #define PRIO        5
 #define PERIOD      5
@@ -28,9 +29,21 @@ typedef enum
 }
 SPEEDRUN_STATE; // Only straight & turn
 
+static const PIFB_PARAMS foxboroParams =
+{
+	.T_s     =  0.01f,
+	.T_Plant =  0.55f,
+	.K_Plant = 14.78f,
+	.u_MIN   = -0.3f,
+	.u_MAX   =  0.3f,
+	.T_Cl    =  0.25f
+};
+
+static PiFoxboro_Controller foxboroController(foxboroParams);
+
 SpeedTestTask::SpeedTestTask() : CyclicTask((char*)"Test", PERIOD, PRIO, STACK)
 {
-
+	controller = &foxboroController;
 }
 
 SpeedTestTask& SpeedTestTask::Init()
@@ -48,7 +61,8 @@ void SpeedTestTask::TaskInit()
 	TrackTask::Init();
 
 	TrackDetector::GetInstance()->SetMode(trackSpeedrun);
-	Steering::GetInstance()->SetMode(smStraight);
+	Steering::GetInstance()->SetMode(smManual);
+	Steering::GetInstance()->SetAngleManual(0);
 	Traction::GetInstance()->SetMode(tmDutyCycle);
 }
 
@@ -65,12 +79,6 @@ void SpeedTestTask::SpeedControllerTest()
 	Steering* steering = Steering::GetInstance();
 	steering->SetLine(frontLine, 0);
 
-	// Distance
-	/*Distance* dstSensor = Distance::GetInstance();
-	dstSensor->SetFrontServo(steering->GetFrontAngle());
-	float dist = dstSensor->GetDistance(ToF_Front);
-	TRACE_DUMMY(dist * 1000);*/
-
 	float speed = Encoder::GetInstance().GetSpeed();
 	TRACE_DUMMY(speed * 1000);
 
@@ -78,47 +86,17 @@ void SpeedTestTask::SpeedControllerTest()
 
 	if (throttle > 0.15f)
 	{
-		d = SpeedController(1.5f);
+		// TODO add plant characteristics
+		controller->SetRef(2.0f);
+		controller->Process(speed);
+		d = controller->GetOutput();
 	}
 	else
 	{
 		d = 0.0f;
-		//d = SpeedController(0.0f);
 	}
 
 	Traction::GetInstance()->SetDutyCycle(d);
-}
-
-#define SATURATE(x, min, max)  ((x) = (x) > (max) ? (max) : ((x) < (min) ? (min) : (x)))
-
-#define T_s 0.01f
-
-#define K   14.78f
-#define T   0.55f
-#define p_d exp(-T_s/T)
-#define K_d (K * (1 - exp(-T_s/T)))
-#define T_Cl 0.25f
-#define K_C (1.0 / K_d * (1.0 - exp(-T_s/T_Cl)))
-#define z_d p_d
-#define MAX_u 0.5f
-
-float SpeedTestTask::SpeedController(float r)
-{
-	float y = Encoder::GetInstance().GetSpeed();
-
-	static float u_prev;
-	static float u_2prev;
-
-	float e = r - y;
-	float u_1 = K_C * e;
-	float u_2 = z_d * u_2prev + (1.0 - z_d) * u_prev;
-	float u = u_1 + u_2;
-	SATURATE(u, -MAX_u, MAX_u);
-
-	u_prev  = u;
-	u_2prev = u_2;
-
-	return u;
 }
 
 void SpeedTestTask::ID_LowSpeed()

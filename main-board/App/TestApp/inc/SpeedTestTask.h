@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CyclicTask.h"
+#include "Controller.h"
 
 class SpeedTestTask : public CyclicTask
 {
@@ -18,5 +19,7 @@ private:
 	void ID_HighSpeed();
 	float ReSpeedToIm(float realSpeed);
 	float ImSpeedToRe(float imSpeed);
-	float SpeedController(float v);
+	//float SpeedController(float v);
+
+	Controller* controller;
 };

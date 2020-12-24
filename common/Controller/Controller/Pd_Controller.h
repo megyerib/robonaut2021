@@ -13,9 +13,9 @@ private:
     float err_prev       = 0;
 
 public:
-    Pd_Controller(float const Kp, float const Kd);
+    Pd_Controller(float Kp, float Kd);
 
-    virtual void Process(float const y) override;
+    virtual void Process(float y) override;
 
     void SetPD(float P, float D) {kp = P; kd = D;}
 };
