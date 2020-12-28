@@ -1,12 +1,12 @@
 #include "System.h"
 
-#include "MusicTask.h"
+#include "TestTask.h"
 
 int main()
 {
 	SYSTEM_INIT();
 
-	//MusicTask::Init();
+	TestTask::Init();
 
 	OS_START();
 

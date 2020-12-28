@@ -1,4 +1,6 @@
 #include "TestTask.h"
+#include "TraceTask.h"
+#include "InertialTask.h"
 
 #define PRIO        5
 #define PERIOD      5
@@ -17,7 +19,8 @@ TestTask& TestTask::Init()
 
 void TestTask::TaskInit()
 {
-
+	TraceTask::Init();
+	InertialTask::Init();
 }
 
 void TestTask::TaskFunction()
