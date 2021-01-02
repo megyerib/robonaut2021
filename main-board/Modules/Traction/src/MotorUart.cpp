@@ -47,7 +47,7 @@ static DMA_UART_CFG uart_cfg =
 	.uartInstance  = USART2,
 	.uartBaudRate  = 115200,
 	.uartIrq       = USART2_IRQn,
-	.uartNvicPrio  = DMA_NVIC_PRIO,
+	.uartNvicPrio  = DMA_UART_NVIC_PRIO,
 };
 
 // No touching needed ----------------------------------------------------------

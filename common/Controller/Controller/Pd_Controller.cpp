@@ -6,11 +6,11 @@ Pd_Controller::Pd_Controller(float Kp, float Kd)
     kd = Kd;
 }
 
-void Pd_Controller::Process(float y)
+void Pd_Controller::Process(float y) // TODO revise
 {
-	float err  = ref - y;
+	float err  = y - ref;
     derivative = err - err_prev;
     err_prev   = err;
 
-    cout = (err * kp) + (derivative * kd);
+    cout = - (err * kp) - (derivative * kd);
 }

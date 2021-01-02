@@ -1,5 +1,6 @@
 #include "Tof_I2c.h"
 #include "vl53l1_platform.h"
+#include "NvicPrio.h"
 
 ToF_I2c* ToF_I2c::GetInstance()
 {
@@ -33,9 +34,9 @@ void ToF_I2c::Init()
     __HAL_RCC_I2C1_CLK_ENABLE();
 
     // I2C1 interrupt Init
-    HAL_NVIC_SetPriority(I2C1_EV_IRQn, 5, 0);
+    HAL_NVIC_SetPriority(I2C1_EV_IRQn, TOF_I2C_NVIC_PRIO, 0);
     HAL_NVIC_EnableIRQ(I2C1_EV_IRQn);
-    HAL_NVIC_SetPriority(I2C1_ER_IRQn, 5, 0);
+    HAL_NVIC_SetPriority(I2C1_ER_IRQn, TOF_I2C_NVIC_PRIO, 0);
     HAL_NVIC_EnableIRQ(I2C1_ER_IRQn);
 
     ConfigureHandle();

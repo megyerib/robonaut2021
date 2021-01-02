@@ -5,6 +5,15 @@
 // https://www.st.com/en/mems-and-sensors/lsm6dso.html
 // https://www.st.com/resource/en/application_note/dm00517282-lsm6dso-alwayson-3d-accelerometer-and-3d-gyroscope-stmicroelectronics.pdf
 
+typedef struct
+{
+	bool     read; // read/!write
+	uint8_t  addr; // register address
+	uint8_t  data; // data buffer (both R/W -> needs to be static)
+	bool     done; // is operation complete
+}
+I2C_OP; // I2C operation
+
 class Inertial
 {
 public:

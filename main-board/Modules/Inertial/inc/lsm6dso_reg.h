@@ -271,13 +271,13 @@ typedef struct {
 
 #define LSM6DSO_CTRL7_G                      0x16U
 typedef struct {
-  uint8_t ois_on                   : 1;
-  uint8_t usr_off_on_out           : 1;
-  uint8_t ois_on_en                : 1;
-  uint8_t not_used_01              : 1;
-  uint8_t hpm_g                    : 2;
-  uint8_t hp_en_g                  : 1;
-  uint8_t g_hm_mode                : 1;
+  uint8_t ois_on                   : 1;  // OIS (Optical Image Stabilization) on
+  uint8_t usr_off_on_out           : 1;  // Enable accelerometer user offset correction block (low-pass path)
+  uint8_t ois_on_en                : 1;  // OIS SPI2/primary interface
+  uint8_t not_used_01              : 1;  // 0
+  uint8_t hpm_g                    : 2;  // Gyroscope digital HP filter cutoff
+  uint8_t hp_en_g                  : 1;  // Enable gyroscope digital high-pass filter.
+  uint8_t g_hm_mode                : 1;  // Disable high-performance operating mode for gyroscope
 } lsm6dso_ctrl7_g_t;
 
 #define LSM6DSO_CTRL8_XL                     0x17U

@@ -2,8 +2,24 @@
 #include "lsm6dso_reg.h"
 #include "Uptime.h"
 #include "Trace.h"
+#include "NvicPrio.h"
 
-#define SENSOR_ADDR  LSM6DSO_I2C_ADD_L
+const uint8_t addresses[12] =
+{
+	LSM6DSO_OUTX_L_A,
+	LSM6DSO_OUTX_H_A,
+	LSM6DSO_OUTY_L_A,
+	LSM6DSO_OUTY_H_A,
+	LSM6DSO_OUTZ_L_A,
+	LSM6DSO_OUTZ_H_A,
+
+	LSM6DSO_OUTX_L_G,
+	LSM6DSO_OUTX_H_G,
+	LSM6DSO_OUTY_L_G,
+	LSM6DSO_OUTY_H_G,
+	LSM6DSO_OUTZ_L_G,
+	LSM6DSO_OUTZ_H_G
+};
 
 Inertial::Inertial()
 {
@@ -22,22 +38,7 @@ Inertial& Inertial::GetInstance()
 
 void Inertial::Process()
 {
-	uint8_t addresses[12] =
-	{
-		LSM6DSO_OUTX_L_A,
-		LSM6DSO_OUTX_H_A,
-		LSM6DSO_OUTY_L_A,
-		LSM6DSO_OUTY_H_A,
-		LSM6DSO_OUTZ_L_A,
-		LSM6DSO_OUTZ_H_A,
 
-		LSM6DSO_OUTX_L_G,
-		LSM6DSO_OUTX_H_G,
-		LSM6DSO_OUTY_L_G,
-		LSM6DSO_OUTY_H_G,
-		LSM6DSO_OUTZ_L_G,
-		LSM6DSO_OUTZ_H_G
-	};
 
 	int16_t vals[6];
 
@@ -104,10 +105,10 @@ void Inertial::InitI2C()
 
 	HAL_I2C_Init(&hi2c);
 
-	// Interrupts
-	HAL_NVIC_SetPriority(I2C3_EV_IRQn, 6, 1);
+	// Interrupts (they must have the same prio not to interrupt eachother)
+	HAL_NVIC_SetPriority(I2C3_EV_IRQn, IMU_I2C_NVIC_PRIO, 0);
 	HAL_NVIC_EnableIRQ(I2C3_EV_IRQn);
-	HAL_NVIC_SetPriority(I2C3_ER_IRQn, 6, 1);
+	HAL_NVIC_SetPriority(I2C3_ER_IRQn, IMU_I2C_NVIC_PRIO, 0);
 	HAL_NVIC_EnableIRQ(I2C3_ER_IRQn);
 }
 
@@ -151,7 +152,7 @@ void Inertial::InitEXTIGPIO()
 
 	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-	HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
+	HAL_NVIC_SetPriority(EXTI15_10_IRQn, IMU_EXTI_NVIC_PRIO, 0);
 	HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 
 	// INT2: PC3
@@ -163,20 +164,20 @@ void Inertial::InitEXTIGPIO()
 
 	HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-	HAL_NVIC_SetPriority(EXTI3_IRQn, 0, 0);
+	HAL_NVIC_SetPriority(EXTI3_IRQn, IMU_EXTI_NVIC_PRIO, 0);
 	HAL_NVIC_EnableIRQ(EXTI3_IRQn);
 }
 
 HAL_StatusTypeDef Inertial::WriteReg(uint8_t addr, uint8_t val)
 {
 	HAL_StatusTypeDef ret = HAL_I2C_Mem_Write(
-		&hi2c,        // HAL I2C handle
-		SENSOR_ADDR,  // Device address
-		addr,         // Register address
-		1,            // Address size
-		&val,         // Tx buffer
-		1,            // Tx buffer size
-		1             // Timeout (HAL tick)
+		&hi2c,             // HAL I2C handle
+		LSM6DSO_I2C_ADD_L, // Device address
+		addr,              // Register address
+		1,                 // Address size
+		&val,              // Tx buffer
+		1,                 // Tx buffer size
+		1                  // Timeout (HAL tick)
 	);
 
 	return ret;
@@ -185,13 +186,13 @@ HAL_StatusTypeDef Inertial::WriteReg(uint8_t addr, uint8_t val)
 HAL_StatusTypeDef Inertial::ReadReg(uint8_t addr, uint8_t* buf)
 {
 	HAL_StatusTypeDef ret = HAL_I2C_Mem_Read(
-		&hi2c,        // HAL I2C handle
-		SENSOR_ADDR,  // Device address
-		addr,         // Register address
-		1,			  // Address size
-		buf,     	  // Rx buffer
-		1,			  // Rx buffer size
-		1			  // Timeout (HAL tick)
+		&hi2c,             // HAL I2C handle
+		LSM6DSO_I2C_ADD_L, // Device address
+		addr,              // Register address
+		1,			       // Address size
+		buf,     	       // Rx buffer
+		1,			       // Rx buffer size
+		1			       // Timeout (HAL tick)
 	);
 
 	return ret;
