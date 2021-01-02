@@ -53,6 +53,11 @@
 			<locationURI>PARENT-1-PROJECT_LOC/common/stm32/FreeRTOS</locationURI>
 		</link>
 		<link>
+			<name>Lib/MazeNav</name>
+			<type>2</type>
+			<locationURI>PARENT-1-PROJECT_LOC/helper/MazeNavTest/MazeNav</locationURI>
+		</link>
+		<link>
 			<name>Lib/OS</name>
 			<type>2</type>
 			<locationURI>PARENT-1-PROJECT_LOC/common/OS</locationURI>
