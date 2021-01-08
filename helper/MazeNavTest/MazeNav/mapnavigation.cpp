@@ -52,18 +52,18 @@ void MapNavigation::SetSection(MAZE_SECTION section)
     actual_vertex = section;
 }
 
-void MapNavigation::InitMap(Edge* const edge_list, uint16_t const node_count)
+void MapNavigation::InitMap(EDGE* const edge_list, uint16_t const node_count, uint16_t const edge_count)
 {
     if(edge_list != nullptr)
     {
         vertex_count = node_count;
-        CreateUndirectedAdjacencyMatrixFromEdges(edge_list);
+        CreateUndirectedAdjacencyMatrixFromEdges(edge_list, edge_count);
     }
 }
 
 void MapNavigation::Dijkstra()
 {
-    Vertex  selected_vertex = INVALID_VERTEX;
+    VERTEX  selected_vertex = INVALID_VERTEX;
     bool    unvisited_vertices[vertex_count];
     bool    neighbours[vertex_count];
     uint8_t neighbour_count = 0;
@@ -106,10 +106,9 @@ void MapNavigation::PlanRoute()
     }
 }
 
-void MapNavigation::CreateUndirectedAdjacencyMatrixFromEdges(Edge* const edge_list)
+void MapNavigation::CreateUndirectedAdjacencyMatrixFromEdges(EDGE* const edge_list, uint16_t const edge_count)
 {
-    Edge* actual_edge = nullptr;
-    uint16_t edge_count = sizeof(edge_list);
+    EDGE* actual_edge = nullptr;
 
     for(int i = 0; i < edge_count; i++)
     {
@@ -119,9 +118,9 @@ void MapNavigation::CreateUndirectedAdjacencyMatrixFromEdges(Edge* const edge_li
     }
 }
 
-Vertex MapNavigation::FindUnvisitedVertexWithSmallestDistance(bool* const unvisited_vertices)
+VERTEX MapNavigation::FindUnvisitedVertexWithSmallestDistance(bool* const unvisited_vertices)
 {
-    Vertex selected_vertex = INVALID_VERTEX;
+    VERTEX selected_vertex = INVALID_VERTEX;
     uint32_t min = INF + 1U;
 
     for (int i = 0U; i < vertex_count; i++)
@@ -136,7 +135,7 @@ Vertex MapNavigation::FindUnvisitedVertexWithSmallestDistance(bool* const unvisi
     return selected_vertex;
 }
 
-uint8_t MapNavigation::CountUnvisitedNeighbours(bool* neighbours, bool* const unvisited_vertices, const Vertex vertex)
+uint8_t MapNavigation::CountUnvisitedNeighbours(bool* neighbours, bool* const unvisited_vertices, const VERTEX vertex)
 {
     uint8_t count = 0U;
     memset(neighbours, false, sizeof(neighbours[0U]));
@@ -169,7 +168,7 @@ bool MapNavigation::AllVertexVisited(bool * const unvisited_vertices)
     return allVisited;
 }
 
-void MapNavigation::UpdateCurrentNeigbourDistances(const uint8_t neighbour_count, bool * const neighbours, Vertex const vertex)
+void MapNavigation::UpdateCurrentNeigbourDistances(const uint8_t neighbour_count, bool * const neighbours, VERTEX const vertex)
 {
     uint8_t n = 0U;
 
@@ -195,9 +194,9 @@ void MapNavigation::UpdateCurrentNeigbourDistances(const uint8_t neighbour_count
     }
 }
 
-Vertex MapNavigation::GetNextVertex()
+VERTEX MapNavigation::GetNextVertex()
 {
-    Vertex next_vertex = INVALID_VERTEX;
+    VERTEX next_vertex = INVALID_VERTEX;
     uint8_t index = 0U;
 
     while (index < steps)
