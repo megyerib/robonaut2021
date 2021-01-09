@@ -9,7 +9,6 @@ MapNavigation::MapNavigation()
 {
     vertex_count  = 0U;
     memset(graph,    0U, sizeof(graph));
-    memset(turnings, 0U, sizeof(turnings));
     source_vertex = 0U;
     target_vertex = 0U;
     actual_vertex = 0U;
@@ -18,11 +17,13 @@ MapNavigation::MapNavigation()
     InitArray<uint8_t>(result.vertex_list, INVALID_VERTEX, sizeof(result.vertex_list));
     InitArray<uint32_t>(result.distance_list, INF, sizeof(result.distance_list));
     InitArray<uint8_t>(result.prev_vertex_list, INVALID_VERTEX, sizeof(result.prev_vertex_list));
+    memset(turnMatrix, -1, sizeof(turnMatrix));
 }
 
 MAZE_MOVE MapNavigation::GetNextMove(uint8_t target)
 {
     MAZE_MOVE next_move;
+    VERTEX prev_vertex;
 
     if (target_vertex != target)
     {
@@ -31,10 +32,12 @@ MAZE_MOVE MapNavigation::GetNextMove(uint8_t target)
         PlanRoute();
     }
 
+    prev_vertex = actual_vertex;
     actual_vertex = GetNextVertex();
 
-    next_move.apprDir = APPR_DIR::adForward;
-    next_move.exitDir = EXIT_DIR::edFrontRight;
+    next_move.apprDir = turnMatrix[prev_vertex][actual_vertex].direction;
+    next_move.exitDir = turnMatrix[prev_vertex][actual_vertex].turning;
+
     if (actual_vertex == target_vertex)
     {
         next_move.arrived = true;
@@ -228,6 +231,411 @@ void MapNavigation::PrintfGraph(int size)
         for (int j = 0; j < size; j++)
         {
             printf("%d\t", graph[i][j]);
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
+
+void MapNavigation::InitMap(const uint16_t node_count)
+{
+    vertex_count = node_count;
+}
+
+void MapNavigation::AddJunction(const TRUNTABLE junction)
+{
+//    bool fl_valid = IsTurnInfoValid(junction.frontLeft);
+//    bool fm_valid = IsTurnInfoValid(junction.frontMiddle);
+//    bool fr_valid = IsTurnInfoValid(junction.frontRight);
+//    bool rl_valid = IsTurnInfoValid(junction.rearLeft);
+//    bool rm_valid = IsTurnInfoValid(junction.rearMiddle);
+//    bool rr_valid = IsTurnInfoValid(junction.rearRight);
+
+//    uint8_t front_count;
+//    uint8_t rear_count;
+
+
+/*//    uint8_t front_vertex_count = 0U;
+//    uint8_t rear_vertex_count = 0U;
+//    bool front_vertex_valid[6] = {false, false, false, false, false, false};
+//    bool rear_vertex_valid[6] = {false, false, false, false, false, false};
+
+//    for (int i = 0; i < 6; i++)
+//    {
+//        if ((junction.front_segments[i].vertex != INVALID_VERTEX) &&
+//            (junction.front_segments[i].weight > 0U))
+//        {
+//            front_vertex_count++;
+//            front_vertex_valid[i] = true;
+//        }
+//        if ((junction.rear_segments[i].vertex != INVALID_VERTEX) &&
+//            (junction.rear_segments[i].weight > 0U))
+//        {
+//            rear_vertex_count++;
+//            rear_vertex_valid[i] = true;
+//        }
+//    }
+
+//    for (int i = 0; i < 3; i++)
+//    {
+//        if (rear_vertex_valid[i] == true)
+//        {
+//            for (int j = 0; j < 3; j++)
+//            {
+//                if (front_vertex_valid[j] == true)
+//                {
+//                    switch (front_vertex_count)
+//                    {
+//                        case 1: // Only Middle.
+//                        {
+//                            start_vertex = junction.front_segments[i].vertex_pos;
+//                            end_vertex   = junction.front_segments[i].vertex;
+//                            graph[start_vertex][end_vertex] = junction.front_segments[i].weight + junction.rear_segments[j].weight;
+
+//                            turnMatrix[start_vertex][end_vertex].weight = graph[start_vertex][end_vertex];
+//                        }
+//                        case 2: // Left and Right.
+//                        {
+
+//                        }
+//                        case 3: // Left, Middle, Right turns possible.
+//                        {
+
+//                        }
+//                        default:
+//                        {
+//                            // Invlaid use case.
+//                        }
+//                    }
+//                }
+//            }
+//        }
+    //    }*/
+}
+
+bool MapNavigation::IsTurnInfoValid(const TURN_INFO turn_info)
+{
+    bool isValid = false;
+
+    if ((turn_info.vertex_in != INVALID_VERTEX) &&
+        (turn_info.vertex_out != INVALID_VERTEX) &&
+        (turn_info.weight > 0U))
+    {
+        isValid = true;
+    }
+
+    return isValid;
+}
+
+void MapNavigation::RegisterTurns(const TURN_INFO from, const TURN_INFO to, const TURN_POSITION tpos_from, const TURN_POSITION tpos_to)
+{
+    bool isFromFront = false;
+    bool isToFront   = false;
+    uint16_t distance = from.weight + to.weight;
+
+    if (from.turn == EXIT_DIR::edFrontLeft || from.turn == EXIT_DIR::edFrontMid || from.turn == EXIT_DIR::edFrontRight)
+    {
+        isFromFront = true;
+    }
+
+    if (to.turn == EXIT_DIR::edFrontLeft || to.turn == EXIT_DIR::edFrontMid || to.turn == EXIT_DIR::edFrontRight)
+    {
+        isToFront = true;
+    }
+
+
+    if (isFromFront == isToFront)
+    {
+        // From <- To
+        turnMatrix[from.vertex_in][to.vertex_in].direction   = APPR_DIR::adForward;
+        turnMatrix[from.vertex_out][to.vertex_out].direction = APPR_DIR::adBackward;
+
+        turnMatrix[from.vertex_in][to.vertex_in].weight   = distance;
+        turnMatrix[from.vertex_out][to.vertex_out].weight = distance;
+
+        switch (tpos_from)
+        {
+            case TURN_POSITION::eLeft:
+            {
+                turnMatrix[to.vertex_in][from.vertex_in].turning   = EXIT_DIR::edRearRight;
+                turnMatrix[to.vertex_out][from.vertex_out].turning = EXIT_DIR::edFrontLeft;
+                break;
+            }
+            case TURN_POSITION::eMiddle:
+            {
+                turnMatrix[to.vertex_in][from.vertex_in].turning   = EXIT_DIR::edRearMid;
+                turnMatrix[to.vertex_out][from.vertex_out].turning = EXIT_DIR::edFrontMid;
+                break;
+            }
+            case TURN_POSITION::eRight:
+            {
+                turnMatrix[to.vertex_in][from.vertex_in].turning   = EXIT_DIR::edRearLeft;
+                turnMatrix[to.vertex_out][from.vertex_out].turning = EXIT_DIR::edFrontRight;
+                break;
+            }
+            default:
+            {
+                // Error.
+                break;
+            }
+        }
+
+        // From -> To
+        turnMatrix[to.vertex_in][from.vertex_in].direction   = APPR_DIR::adForward;
+        turnMatrix[to.vertex_out][from.vertex_out].direction = APPR_DIR::adBackward;
+
+        turnMatrix[to.vertex_in][from.vertex_in].weight   = distance;
+        turnMatrix[to.vertex_out][from.vertex_out].weight = distance;
+
+        switch (tpos_to)
+        {
+            case TURN_POSITION::eLeft:
+            {
+                turnMatrix[from.vertex_in][to.vertex_in].turning   = EXIT_DIR::edRearRight;
+                turnMatrix[from.vertex_out][to.vertex_out].turning = EXIT_DIR::edFrontLeft;
+                break;
+            }
+            case TURN_POSITION::eMiddle:
+            {
+                turnMatrix[from.vertex_in][to.vertex_in].turning   = EXIT_DIR::edRearMid;
+                turnMatrix[from.vertex_out][to.vertex_out].turning = EXIT_DIR::edFrontMid;
+                break;
+            }
+            case TURN_POSITION::eRight:
+            {
+                turnMatrix[from.vertex_in][to.vertex_in].turning   = EXIT_DIR::edRearLeft;
+                turnMatrix[from.vertex_out][to.vertex_out].turning = EXIT_DIR::edFrontRight;
+                break;
+            }
+            default:
+            {
+                // Error.
+                break;
+            }
+        }
+    }
+    else
+    {
+        // From <- To
+        turnMatrix[from.vertex_in][to.vertex_out].direction = APPR_DIR::adForward;
+        turnMatrix[from.vertex_out][to.vertex_in].direction = APPR_DIR::adBackward;
+
+        turnMatrix[from.vertex_in][to.vertex_out].weight = distance;
+        turnMatrix[from.vertex_out][to.vertex_in].weight = distance;
+
+        switch (tpos_from)
+        {
+            case TURN_POSITION::eLeft:
+            {
+                turnMatrix[to.vertex_in][from.vertex_out].turning = EXIT_DIR::edFrontLeft;
+                turnMatrix[to.vertex_out][from.vertex_in].turning = EXIT_DIR::edRearRight;
+                break;
+            }
+            case TURN_POSITION::eMiddle:
+            {
+                turnMatrix[to.vertex_in][from.vertex_out].turning = EXIT_DIR::edFrontMid;
+                turnMatrix[to.vertex_out][from.vertex_in].turning = EXIT_DIR::edRearMid;
+                break;
+            }
+            case TURN_POSITION::eRight:
+            {
+                turnMatrix[to.vertex_in][from.vertex_out].turning = EXIT_DIR::edFrontRight;
+                turnMatrix[to.vertex_out][from.vertex_in].turning = EXIT_DIR::edRearLeft;
+                break;
+            }
+            default:
+            {
+                // Error.
+                break;
+            }
+        }
+
+        // From -> To
+        turnMatrix[to.vertex_in][from.vertex_out].direction = APPR_DIR::adForward;
+        turnMatrix[to.vertex_out][from.vertex_in].direction = APPR_DIR::adBackward;
+
+        turnMatrix[to.vertex_in][from.vertex_out].weight = distance;
+        turnMatrix[to.vertex_out][from.vertex_in].weight = distance;
+
+        switch (tpos_to)
+        {
+            case TURN_POSITION::eLeft:
+            {
+                turnMatrix[from.vertex_in][to.vertex_out].turning = EXIT_DIR::edFrontRight;
+                turnMatrix[from.vertex_out][to.vertex_in].turning = EXIT_DIR::edFrontLeft;
+                break;
+            }
+            case TURN_POSITION::eMiddle:
+            {
+                turnMatrix[from.vertex_in][to.vertex_out].turning = EXIT_DIR::edFrontMid;
+                turnMatrix[from.vertex_out][to.vertex_in].turning = EXIT_DIR::edRearMid;
+                break;
+            }
+            case TURN_POSITION::eRight:
+            {
+                turnMatrix[from.vertex_in][to.vertex_out].turning = EXIT_DIR::edFrontLeft;
+                turnMatrix[from.vertex_out][to.vertex_in].turning = EXIT_DIR::edFrontRight;
+                break;
+            }
+            default:
+            {
+                // Error.
+                break;
+            }
+        }
+
+/*//        switch (rear_count)
+//        {
+//            // \|/...
+//            //  x
+//            //  |
+//            case 1:
+//            {
+//                turnMatrix[from.vertex_in][to.vertex_out].turning = EXIT_DIR::edFrontMid;
+//                turnMatrix[from.vertex_out][to.vertex_in].turning = EXIT_DIR::edRearMid;
+
+//                if (tpos_from == TURN_POSITION::eLeft)
+//                {
+//                    turnMatrix[to.vertex_in][from.vertex_out].turning   = EXIT_DIR::edFrontLeft;
+//                    turnMatrix[to.vertex_out][from.vertex_in].turning   = EXIT_DIR::edRearRight;
+//                }
+//                else if (tpos_from == TURN_POSITION::eMiddle)
+//                {
+//                    turnMatrix[to.vertex_in][from.vertex_out].turning   = EXIT_DIR::edFrontMid;
+//                    turnMatrix[to.vertex_out][from.vertex_in].turning   = EXIT_DIR::edRearMid;
+//                }
+//                else
+//                {
+//                    turnMatrix[to.vertex_in][from.vertex_out].turning   = EXIT_DIR::edFrontRight;
+//                    turnMatrix[to.vertex_out][from.vertex_in].turning   = EXIT_DIR::edRearLeft;
+//                }
+//            }
+//            // \|/...
+//            //  x
+//            // /|
+//            case 2:
+//            {
+//                if (tpos_to == TURN_POSITION::eLeft)
+//                {
+//                    // Forward
+//                    turnMatrix[from.vertex_in][to.vertex_out].turning = EXIT_DIR::edFrontRight;
+//                    // Backward
+//                    turnMatrix[from.vertex_out][to.vertex_in].turning = EXIT_DIR::edFrontLeft;
+//                }
+//                else
+//                {
+//                    // Forward
+//                    turnMatrix[from.vertex_in][to.vertex_out].turning = EXIT_DIR::edFrontLeft;
+//                    // Backward
+//                    turnMatrix[from.vertex_out][to.vertex_in].turning = EXIT_DIR::edFrontRight;
+//                }
+
+//                switch (front_count)
+//                {
+//                    //   |M
+//                    //   x
+//                    // L/|R
+//                    case 1:
+//                    {
+//                        // Forward
+//                        turnMatrix[to.vertex_in][from.vertex_out].turning = EXIT_DIR::edFrontMid;
+//                        // Backward
+//                        turnMatrix[to.vertex_out][from.vertex_in].turning = EXIT_DIR::edRearMid;
+//                    }
+//                    // L\|R
+//                    //   x
+//                    // L/|R
+//                    case 2:
+//                    {
+//                        if (tpos_from == TURN_POSITION::eLeft)
+//                        {
+//                            // Forward
+//                            turnMatrix[to.vertex_in][from.vertex_out].turning = EXIT_DIR::edFrontLeft;
+//                            // Backward
+//                            turnMatrix[to.vertex_out][from.vertex_in].turning = EXIT_DIR::edRearRight;
+//                        }
+//                        else
+//                        {
+//                            // Forward
+//                            turnMatrix[to.vertex_in][from.vertex_out].turning = EXIT_DIR::edFrontRight;
+//                            // Backward
+//                            turnMatrix[to.vertex_out][from.vertex_in].turning = EXIT_DIR::edRearLeft;
+//                        }
+//                    }
+//                    // L\|M/R
+//                    //   x
+//                    // L/|R
+//                    case 3:
+//                    {
+//                        if (tpos_from == TURN_POSITION::eLeft)
+//                        {
+//                            // Forward
+//                            turnMatrix[to.vertex_in][from.vertex_out].turning = EXIT_DIR::edFrontLeft;
+//                            // Backward
+//                            turnMatrix[to.vertex_out][from.vertex_in].turning = EXIT_DIR::edRearRight;
+//                        }
+//                        else if (tpos_from == TURN_POSITION::eMiddle)
+//                        {
+//                            // Forward
+//                            turnMatrix[to.vertex_in][from.vertex_out].turning = EXIT_DIR::edFrontMid;
+//                            // Backward
+//                            turnMatrix[to.vertex_out][from.vertex_in].turning = EXIT_DIR::edRearMid;
+//                        }
+//                        else
+//                        {
+//                            // Forward
+//                            turnMatrix[to.vertex_in][from.vertex_out].turning = EXIT_DIR::edFrontRight;
+//                            // Backward
+//                            turnMatrix[to.vertex_out][from.vertex_in].turning = EXIT_DIR::edRearLeft;
+//                        }
+//                    }
+//                    default:
+//                    {
+//                        // Invalid Junction.
+//                    }
+//                }
+//            }
+//            // \|/...
+//            //  x
+//            // /|\.
+//            case 3:
+//            {
+
+//            }
+//            default:
+//            {
+
+//            }
+//        }*/
+    }
+}
+
+void MapNavigation::PrintTrunMatrix(int size)
+{
+    for (int i = 1; i < size; i++)
+    {
+        for (int j = 1; j < size; j++)
+        {
+            if (turnMatrix[i][j].weight == 65535)
+            {
+                printf("[0, 0, 00]\t");
+            }
+            else
+            {
+                char d = '0';
+                if (turnMatrix[i][j].direction == APPR_DIR::adBackward){    d = 'B';    }
+                else { d = 'F'; }
+
+                char t[3] = "00";
+                if (turnMatrix[i][j].turning == EXIT_DIR::edFrontLeft){         t[0] = 'F'; t[1] = 'L';   }
+                else if (turnMatrix[i][j].turning == EXIT_DIR::edFrontMid){     t[0] = 'F'; t[1] = 'M';   }
+                else if (turnMatrix[i][j].turning == EXIT_DIR::edFrontRight){   t[0] = 'F'; t[1] = 'R';   }
+                else if (turnMatrix[i][j].turning == EXIT_DIR::edRearLeft){     t[0] = 'R'; t[1] = 'L';   }
+                else if (turnMatrix[i][j].turning == EXIT_DIR::edRearMid){      t[0] = 'R'; t[1] = 'M';   }
+                else if (turnMatrix[i][j].turning == EXIT_DIR::edRearRight){    t[0] = 'R'; t[1] = 'R';   }
+
+                printf("[%d, %c, %s]\t", turnMatrix[i][j].weight, d, t);
+            }
         }
         printf("\n");
     }

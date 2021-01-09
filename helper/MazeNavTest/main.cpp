@@ -73,5 +73,23 @@ int main()
     move = navi.GetNextMove(0);
     move = navi.GetNextMove(0);
 
+    // 1\2 3|4
+    //   \  |
+    //   6\ |10
+    //     \|
+    //      x
+    //      |
+    //      |2
+    //      |
+    //     5|6
+    TURN_INFO turn1_2 = { 1, 2,  6, EXIT_DIR::edFrontLeft};
+    TURN_INFO turn3_4 = { 3, 4, 10, EXIT_DIR::edFrontRight};
+    TURN_INFO turn5_6 = { 5, 6,  2, EXIT_DIR::edRearMid};
+    navi.RegisterTurns(turn1_2, turn3_4, TURN_POSITION::eLeft, TURN_POSITION::eRight);
+    navi.RegisterTurns(turn1_2, turn5_6, TURN_POSITION::eLeft, TURN_POSITION::eMiddle);
+    navi.RegisterTurns(turn3_4, turn5_6, TURN_POSITION::eRight, TURN_POSITION::eMiddle);
+
+    navi.PrintTrunMatrix(7);
+
     return 0;
 }
