@@ -73,23 +73,49 @@ int main()
     move = navi.GetNextMove(0);
     move = navi.GetNextMove(0);
 
-    // 1\2 3|4
-    //   \  |
-    //   6\ |10
-    //     \|
-    //      x
-    //      |
-    //      |2
-    //      |
-    //     5|6
-    TURN_INFO turn1_2 = { 1, 2,  6, EXIT_DIR::edFrontLeft};
-    TURN_INFO turn3_4 = { 3, 4, 10, EXIT_DIR::edFrontRight};
-    TURN_INFO turn5_6 = { 5, 6,  2, EXIT_DIR::edRearMid};
-    navi.RegisterTurns(turn1_2, turn3_4, TURN_POSITION::eLeft, TURN_POSITION::eRight);
-    navi.RegisterTurns(turn1_2, turn5_6, TURN_POSITION::eLeft, TURN_POSITION::eMiddle);
-    navi.RegisterTurns(turn3_4, turn5_6, TURN_POSITION::eRight, TURN_POSITION::eMiddle);
+    //         <5
+    //   -----B---C-----
+    //  |    /  6  \    |
+    //  |    |     |    |
+    // 1|2  3|4   7|8  9|10
+    //  |    |     |    |
+    //  |   /  <11  \   |
+    //   --A---------D--
+    //          12
 
-    navi.PrintTrunMatrix(7);
+    // A
+    TURN_INFO turnA1_2   = {  1,  2,  7, EXIT_DIR::edFrontMid};
+    TURN_INFO turnA3_4   = {  3,  4,  4, EXIT_DIR::edRearRight};
+    TURN_INFO turnA11_12 = { 11, 12,  5, EXIT_DIR::edRearLeft};
+    navi.RegisterTurns(turnA1_2,   turnA3_4, TURN_POSITION::eMiddle, TURN_POSITION::eRight);
+    navi.RegisterTurns(turnA1_2, turnA11_12, TURN_POSITION::eMiddle, TURN_POSITION::eLeft);
+    navi.RegisterTurns(turnA3_4, turnA11_12, TURN_POSITION::eRight,  TURN_POSITION::eLeft);
+
+    // B
+    TURN_INFO turnB2_1 = { 2, 1, 8, EXIT_DIR::edFrontRight};
+    TURN_INFO turnB4_3 = { 4, 3, 3, EXIT_DIR::edFrontLeft};
+    TURN_INFO turnB5_6 = { 5, 6, 0, EXIT_DIR::edRearMid};
+    navi.RegisterTurns(turnB2_1, turnB4_3, TURN_POSITION::eRight, TURN_POSITION::eLeft);
+    navi.RegisterTurns(turnB2_1, turnB5_6, TURN_POSITION::eRight, TURN_POSITION::eMiddle);
+    navi.RegisterTurns(turnB4_3, turnB5_6, TURN_POSITION::eLeft,  TURN_POSITION::eMiddle);
+
+    // C
+    TURN_INFO turnC6_5  = {  6,  5, 0, EXIT_DIR::edFrontMid};
+    TURN_INFO turnC8_7  = {  8,  7, 4, EXIT_DIR::edRearLeft};
+    TURN_INFO turnC10_9 = { 10,  9, 9, EXIT_DIR::edRearRight};
+    navi.RegisterTurns(turnC6_5,  turnC8_7, TURN_POSITION::eMiddle, TURN_POSITION::eLeft);
+    navi.RegisterTurns(turnC6_5, turnC10_9, TURN_POSITION::eMiddle, TURN_POSITION::eRight);
+    navi.RegisterTurns(turnC8_7, turnC10_9, TURN_POSITION::eLeft,   TURN_POSITION::eRight);
+
+    // D
+    TURN_INFO turnD9_10  = {  9, 10, 6, EXIT_DIR::edFrontMid};
+    TURN_INFO turnD7_8   = {  7,  8, 3, EXIT_DIR::edRearLeft};
+    TURN_INFO turnD12_11 = { 12, 11, 6, EXIT_DIR::edRearRight};
+    navi.RegisterTurns(turnD9_10,   turnD7_8, TURN_POSITION::eMiddle, TURN_POSITION::eLeft);
+    navi.RegisterTurns(turnD9_10, turnD12_11, TURN_POSITION::eMiddle, TURN_POSITION::eRight);
+    navi.RegisterTurns(turnD7_8,  turnD12_11, TURN_POSITION::eLeft,   TURN_POSITION::eRight);
+
+    navi.PrintTrunMatrix(13);
 
     return 0;
 }

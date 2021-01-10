@@ -244,73 +244,7 @@ void MapNavigation::InitMap(const uint16_t node_count)
 
 void MapNavigation::AddJunction(const TRUNTABLE junction)
 {
-//    bool fl_valid = IsTurnInfoValid(junction.frontLeft);
-//    bool fm_valid = IsTurnInfoValid(junction.frontMiddle);
-//    bool fr_valid = IsTurnInfoValid(junction.frontRight);
-//    bool rl_valid = IsTurnInfoValid(junction.rearLeft);
-//    bool rm_valid = IsTurnInfoValid(junction.rearMiddle);
-//    bool rr_valid = IsTurnInfoValid(junction.rearRight);
 
-//    uint8_t front_count;
-//    uint8_t rear_count;
-
-
-/*//    uint8_t front_vertex_count = 0U;
-//    uint8_t rear_vertex_count = 0U;
-//    bool front_vertex_valid[6] = {false, false, false, false, false, false};
-//    bool rear_vertex_valid[6] = {false, false, false, false, false, false};
-
-//    for (int i = 0; i < 6; i++)
-//    {
-//        if ((junction.front_segments[i].vertex != INVALID_VERTEX) &&
-//            (junction.front_segments[i].weight > 0U))
-//        {
-//            front_vertex_count++;
-//            front_vertex_valid[i] = true;
-//        }
-//        if ((junction.rear_segments[i].vertex != INVALID_VERTEX) &&
-//            (junction.rear_segments[i].weight > 0U))
-//        {
-//            rear_vertex_count++;
-//            rear_vertex_valid[i] = true;
-//        }
-//    }
-
-//    for (int i = 0; i < 3; i++)
-//    {
-//        if (rear_vertex_valid[i] == true)
-//        {
-//            for (int j = 0; j < 3; j++)
-//            {
-//                if (front_vertex_valid[j] == true)
-//                {
-//                    switch (front_vertex_count)
-//                    {
-//                        case 1: // Only Middle.
-//                        {
-//                            start_vertex = junction.front_segments[i].vertex_pos;
-//                            end_vertex   = junction.front_segments[i].vertex;
-//                            graph[start_vertex][end_vertex] = junction.front_segments[i].weight + junction.rear_segments[j].weight;
-
-//                            turnMatrix[start_vertex][end_vertex].weight = graph[start_vertex][end_vertex];
-//                        }
-//                        case 2: // Left and Right.
-//                        {
-
-//                        }
-//                        case 3: // Left, Middle, Right turns possible.
-//                        {
-
-//                        }
-//                        default:
-//                        {
-//                            // Invlaid use case.
-//                        }
-//                    }
-//                }
-//            }
-//        }
-    //    }*/
 }
 
 bool MapNavigation::IsTurnInfoValid(const TURN_INFO turn_info)
@@ -319,7 +253,7 @@ bool MapNavigation::IsTurnInfoValid(const TURN_INFO turn_info)
 
     if ((turn_info.vertex_in != INVALID_VERTEX) &&
         (turn_info.vertex_out != INVALID_VERTEX) &&
-        (turn_info.weight > 0U))
+        (turn_info.weight >= 0U))   // TODO
     {
         isValid = true;
     }
@@ -343,22 +277,32 @@ void MapNavigation::RegisterTurns(const TURN_INFO from, const TURN_INFO to, cons
         isToFront = true;
     }
 
-
+    // L\|M/R
+    //    x
+    // L/|M\R
     if (isFromFront == isToFront)
     {
         // From <- To
-        turnMatrix[from.vertex_in][to.vertex_in].direction   = APPR_DIR::adForward;
-        turnMatrix[from.vertex_out][to.vertex_out].direction = APPR_DIR::adBackward;
+        turnMatrix[to.vertex_in][from.vertex_in].direction   = APPR_DIR::adForward;
+        turnMatrix[to.vertex_out][from.vertex_out].direction = APPR_DIR::adBackward;
 
-        turnMatrix[from.vertex_in][to.vertex_in].weight   = distance;
-        turnMatrix[from.vertex_out][to.vertex_out].weight = distance;
+        turnMatrix[to.vertex_in][from.vertex_in].weight   = distance;
+        turnMatrix[to.vertex_out][from.vertex_out].weight = distance;
 
         switch (tpos_from)
         {
             case TURN_POSITION::eLeft:
             {
-                turnMatrix[to.vertex_in][from.vertex_in].turning   = EXIT_DIR::edRearRight;
-                turnMatrix[to.vertex_out][from.vertex_out].turning = EXIT_DIR::edFrontLeft;
+                if (isFromFront == true)
+                {
+                    turnMatrix[to.vertex_in][from.vertex_in].turning   = EXIT_DIR::edRearRight;
+                    turnMatrix[to.vertex_out][from.vertex_out].turning = EXIT_DIR::edFrontLeft;
+                }
+                else
+                {
+                    turnMatrix[to.vertex_in][from.vertex_in].turning   = EXIT_DIR::edRearLeft;
+                    turnMatrix[to.vertex_out][from.vertex_out].turning = EXIT_DIR::edFrontRight;
+                }
                 break;
             }
             case TURN_POSITION::eMiddle:
@@ -369,8 +313,16 @@ void MapNavigation::RegisterTurns(const TURN_INFO from, const TURN_INFO to, cons
             }
             case TURN_POSITION::eRight:
             {
-                turnMatrix[to.vertex_in][from.vertex_in].turning   = EXIT_DIR::edRearLeft;
-                turnMatrix[to.vertex_out][from.vertex_out].turning = EXIT_DIR::edFrontRight;
+                if (isFromFront == true)
+                {
+                    turnMatrix[to.vertex_in][from.vertex_in].turning   = EXIT_DIR::edRearLeft;
+                    turnMatrix[to.vertex_out][from.vertex_out].turning = EXIT_DIR::edFrontRight;
+                }
+                else
+                {
+                    turnMatrix[to.vertex_in][from.vertex_in].turning   = EXIT_DIR::edRearRight;
+                    turnMatrix[to.vertex_out][from.vertex_out].turning = EXIT_DIR::edFrontLeft;
+                }
                 break;
             }
             default:
@@ -381,18 +333,26 @@ void MapNavigation::RegisterTurns(const TURN_INFO from, const TURN_INFO to, cons
         }
 
         // From -> To
-        turnMatrix[to.vertex_in][from.vertex_in].direction   = APPR_DIR::adForward;
-        turnMatrix[to.vertex_out][from.vertex_out].direction = APPR_DIR::adBackward;
+        turnMatrix[from.vertex_in][to.vertex_in].direction   = APPR_DIR::adForward;
+        turnMatrix[from.vertex_out][to.vertex_out].direction = APPR_DIR::adBackward;
 
-        turnMatrix[to.vertex_in][from.vertex_in].weight   = distance;
-        turnMatrix[to.vertex_out][from.vertex_out].weight = distance;
+        turnMatrix[from.vertex_in][to.vertex_in].weight   = distance;
+        turnMatrix[from.vertex_out][to.vertex_out].weight = distance;
 
         switch (tpos_to)
         {
             case TURN_POSITION::eLeft:
             {
-                turnMatrix[from.vertex_in][to.vertex_in].turning   = EXIT_DIR::edRearRight;
-                turnMatrix[from.vertex_out][to.vertex_out].turning = EXIT_DIR::edFrontLeft;
+                if (isFromFront == true)
+                {
+                    turnMatrix[from.vertex_in][to.vertex_in].turning   = EXIT_DIR::edRearRight;
+                    turnMatrix[from.vertex_out][to.vertex_out].turning = EXIT_DIR::edFrontLeft;
+                }
+                else
+                {
+                    turnMatrix[from.vertex_in][to.vertex_in].turning   = EXIT_DIR::edRearLeft;
+                    turnMatrix[from.vertex_out][to.vertex_out].turning = EXIT_DIR::edFrontRight;
+                }
                 break;
             }
             case TURN_POSITION::eMiddle:
@@ -403,8 +363,16 @@ void MapNavigation::RegisterTurns(const TURN_INFO from, const TURN_INFO to, cons
             }
             case TURN_POSITION::eRight:
             {
-                turnMatrix[from.vertex_in][to.vertex_in].turning   = EXIT_DIR::edRearLeft;
-                turnMatrix[from.vertex_out][to.vertex_out].turning = EXIT_DIR::edFrontRight;
+                if (isFromFront == true)
+                {
+                    turnMatrix[from.vertex_in][to.vertex_in].turning   = EXIT_DIR::edRearLeft;
+                    turnMatrix[from.vertex_out][to.vertex_out].turning = EXIT_DIR::edFrontRight;
+                }
+                else
+                {
+                    turnMatrix[from.vertex_in][to.vertex_in].turning   = EXIT_DIR::edRearRight;
+                    turnMatrix[from.vertex_out][to.vertex_out].turning = EXIT_DIR::edFrontLeft;
+                }
                 break;
             }
             default:
@@ -462,7 +430,7 @@ void MapNavigation::RegisterTurns(const TURN_INFO from, const TURN_INFO to, cons
             case TURN_POSITION::eLeft:
             {
                 turnMatrix[from.vertex_in][to.vertex_out].turning = EXIT_DIR::edFrontRight;
-                turnMatrix[from.vertex_out][to.vertex_in].turning = EXIT_DIR::edFrontLeft;
+                turnMatrix[from.vertex_out][to.vertex_in].turning = EXIT_DIR::edRearLeft;
                 break;
             }
             case TURN_POSITION::eMiddle:
@@ -474,7 +442,7 @@ void MapNavigation::RegisterTurns(const TURN_INFO from, const TURN_INFO to, cons
             case TURN_POSITION::eRight:
             {
                 turnMatrix[from.vertex_in][to.vertex_out].turning = EXIT_DIR::edFrontLeft;
-                turnMatrix[from.vertex_out][to.vertex_in].turning = EXIT_DIR::edFrontRight;
+                turnMatrix[from.vertex_out][to.vertex_in].turning = EXIT_DIR::edRearRight;
                 break;
             }
             default:
@@ -483,130 +451,6 @@ void MapNavigation::RegisterTurns(const TURN_INFO from, const TURN_INFO to, cons
                 break;
             }
         }
-
-/*//        switch (rear_count)
-//        {
-//            // \|/...
-//            //  x
-//            //  |
-//            case 1:
-//            {
-//                turnMatrix[from.vertex_in][to.vertex_out].turning = EXIT_DIR::edFrontMid;
-//                turnMatrix[from.vertex_out][to.vertex_in].turning = EXIT_DIR::edRearMid;
-
-//                if (tpos_from == TURN_POSITION::eLeft)
-//                {
-//                    turnMatrix[to.vertex_in][from.vertex_out].turning   = EXIT_DIR::edFrontLeft;
-//                    turnMatrix[to.vertex_out][from.vertex_in].turning   = EXIT_DIR::edRearRight;
-//                }
-//                else if (tpos_from == TURN_POSITION::eMiddle)
-//                {
-//                    turnMatrix[to.vertex_in][from.vertex_out].turning   = EXIT_DIR::edFrontMid;
-//                    turnMatrix[to.vertex_out][from.vertex_in].turning   = EXIT_DIR::edRearMid;
-//                }
-//                else
-//                {
-//                    turnMatrix[to.vertex_in][from.vertex_out].turning   = EXIT_DIR::edFrontRight;
-//                    turnMatrix[to.vertex_out][from.vertex_in].turning   = EXIT_DIR::edRearLeft;
-//                }
-//            }
-//            // \|/...
-//            //  x
-//            // /|
-//            case 2:
-//            {
-//                if (tpos_to == TURN_POSITION::eLeft)
-//                {
-//                    // Forward
-//                    turnMatrix[from.vertex_in][to.vertex_out].turning = EXIT_DIR::edFrontRight;
-//                    // Backward
-//                    turnMatrix[from.vertex_out][to.vertex_in].turning = EXIT_DIR::edFrontLeft;
-//                }
-//                else
-//                {
-//                    // Forward
-//                    turnMatrix[from.vertex_in][to.vertex_out].turning = EXIT_DIR::edFrontLeft;
-//                    // Backward
-//                    turnMatrix[from.vertex_out][to.vertex_in].turning = EXIT_DIR::edFrontRight;
-//                }
-
-//                switch (front_count)
-//                {
-//                    //   |M
-//                    //   x
-//                    // L/|R
-//                    case 1:
-//                    {
-//                        // Forward
-//                        turnMatrix[to.vertex_in][from.vertex_out].turning = EXIT_DIR::edFrontMid;
-//                        // Backward
-//                        turnMatrix[to.vertex_out][from.vertex_in].turning = EXIT_DIR::edRearMid;
-//                    }
-//                    // L\|R
-//                    //   x
-//                    // L/|R
-//                    case 2:
-//                    {
-//                        if (tpos_from == TURN_POSITION::eLeft)
-//                        {
-//                            // Forward
-//                            turnMatrix[to.vertex_in][from.vertex_out].turning = EXIT_DIR::edFrontLeft;
-//                            // Backward
-//                            turnMatrix[to.vertex_out][from.vertex_in].turning = EXIT_DIR::edRearRight;
-//                        }
-//                        else
-//                        {
-//                            // Forward
-//                            turnMatrix[to.vertex_in][from.vertex_out].turning = EXIT_DIR::edFrontRight;
-//                            // Backward
-//                            turnMatrix[to.vertex_out][from.vertex_in].turning = EXIT_DIR::edRearLeft;
-//                        }
-//                    }
-//                    // L\|M/R
-//                    //   x
-//                    // L/|R
-//                    case 3:
-//                    {
-//                        if (tpos_from == TURN_POSITION::eLeft)
-//                        {
-//                            // Forward
-//                            turnMatrix[to.vertex_in][from.vertex_out].turning = EXIT_DIR::edFrontLeft;
-//                            // Backward
-//                            turnMatrix[to.vertex_out][from.vertex_in].turning = EXIT_DIR::edRearRight;
-//                        }
-//                        else if (tpos_from == TURN_POSITION::eMiddle)
-//                        {
-//                            // Forward
-//                            turnMatrix[to.vertex_in][from.vertex_out].turning = EXIT_DIR::edFrontMid;
-//                            // Backward
-//                            turnMatrix[to.vertex_out][from.vertex_in].turning = EXIT_DIR::edRearMid;
-//                        }
-//                        else
-//                        {
-//                            // Forward
-//                            turnMatrix[to.vertex_in][from.vertex_out].turning = EXIT_DIR::edFrontRight;
-//                            // Backward
-//                            turnMatrix[to.vertex_out][from.vertex_in].turning = EXIT_DIR::edRearLeft;
-//                        }
-//                    }
-//                    default:
-//                    {
-//                        // Invalid Junction.
-//                    }
-//                }
-//            }
-//            // \|/...
-//            //  x
-//            // /|\.
-//            case 3:
-//            {
-
-//            }
-//            default:
-//            {
-
-//            }
-//        }*/
     }
 }
 
