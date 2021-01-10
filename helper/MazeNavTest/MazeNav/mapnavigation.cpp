@@ -61,7 +61,7 @@ void MapNavigation::SetCurrentSection(MAZE_SECTION section)
 
 MAZE_SECTION MapNavigation::GetCurrentSection()
 {
-    return MAZE_SECTION::s0neg; // TODO: Implementation.
+    return (MAZE_SECTION)actual_vertex;
 }
 
 void MapNavigation::InitMap(const uint16_t node_count)

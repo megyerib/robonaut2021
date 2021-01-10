@@ -23,9 +23,10 @@ int main()
     printf("--------------------------------------------------------------------------------\n");
     printf("%zu/%zu test cases passed (%zu%%)\n\n", passed, TEST_CASE_NUM, passed*100/TEST_CASE_NUM);
 
-    MapNavigation navi;
-    uint16_t node_count = 12;
-    MAZE_MOVE move;
+    MapNavigation navi;    
+    uint16_t      node_count = 12;
+    MAZE_MOVE     move;
+    MAZE_SECTION  current_section = MAZE_SECTION::s0pos;
 
     //         <4
     //   -----B---C-----
@@ -72,20 +73,32 @@ int main()
     navi.InitMap(node_count);
 
     navi.SetCurrentSection(MAZE_SECTION::s0pos);
+    current_section = navi.GetCurrentSection();
     move = navi.GetNextMove(1);
+    current_section = navi.GetCurrentSection();
     move = navi.GetNextMove(1);
+    current_section = navi.GetCurrentSection();
 
     move = navi.GetNextMove(4);
+    current_section = navi.GetCurrentSection();
     move = navi.GetNextMove(4);
+    current_section = navi.GetCurrentSection();
     move = navi.GetNextMove(4);
+    current_section = navi.GetCurrentSection();
 
     move = navi.GetNextMove(3);
+    current_section = navi.GetCurrentSection();
     move = navi.GetNextMove(3);
+    current_section = navi.GetCurrentSection();
 
     move = navi.GetNextMove(0);
+    current_section = navi.GetCurrentSection();
     move = navi.GetNextMove(0);
+    current_section = navi.GetCurrentSection();
     move = navi.GetNextMove(0);
+    current_section = navi.GetCurrentSection();
     move = navi.GetNextMove(0);
+    current_section = navi.GetCurrentSection();
 
     return 0;
 }
