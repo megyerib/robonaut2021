@@ -4,6 +4,7 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += \
+    MazeNav/dijkstra.cpp \
     MazeNav/mapnavigation.cpp \
     MazeNavTest.cpp \
     MazeNav/MazeNav_AlwaysLeft.cpp \
@@ -11,6 +12,8 @@ SOURCES += \
 
 HEADERS += \
     MazeNav/MazeNavBase.h \
+    MazeNav/dijkstra.h \
+    MazeNav/map_types.h \
     MazeNav/mapnavigation.h \
     MazeNavTest.h \
     MazeNav/MazeNav_AlwaysLeft.h \

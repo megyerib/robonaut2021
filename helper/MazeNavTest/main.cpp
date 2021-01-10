@@ -27,15 +27,15 @@ int main()
     uint16_t node_count = 12;
     MAZE_MOVE move;
 
-    //         <5
+    //         <4
     //   -----B---C-----
-    //  |    /  6  \    |
+    //  |    /  5  \    |
     //  |    |     |    |
-    // 1|2  3|4   7|8  9|10
+    // 0|1  2|3   6|7  8|9
     //  |    |     |    |
-    //  |   /  <11  \   |
+    //  |   /  <10  \   |
     //   --A---------D--
-    //          12
+    //          11
 
     // A
     TURN_INFO turnA0_1   = {  0,  1,  7, EXIT_DIR::edFrontMid};
@@ -48,13 +48,13 @@ int main()
     // B
     TURN_INFO turnB1_0 = { 1, 0, 8, EXIT_DIR::edFrontRight};
     TURN_INFO turnB3_2 = { 3, 2, 3, EXIT_DIR::edFrontLeft};
-    TURN_INFO turnB4_5 = { 4, 5, 0, EXIT_DIR::edRearMid};
+    TURN_INFO turnB4_5 = { 4, 5, 1, EXIT_DIR::edRearMid};
     navi.RegisterTurns(turnB1_0, turnB3_2, TURN_POSITION::eRight, TURN_POSITION::eLeft);
     navi.RegisterTurns(turnB1_0, turnB4_5, TURN_POSITION::eRight, TURN_POSITION::eMiddle);
     navi.RegisterTurns(turnB3_2, turnB4_5, TURN_POSITION::eLeft,  TURN_POSITION::eMiddle);
 
     // C
-    TURN_INFO turnC5_4 = { 5, 4, 0, EXIT_DIR::edFrontMid};
+    TURN_INFO turnC5_4 = { 5, 4, 1, EXIT_DIR::edFrontMid};
     TURN_INFO turnC7_6 = { 7, 6, 4, EXIT_DIR::edRearLeft};
     TURN_INFO turnC9_8 = { 9, 8, 9, EXIT_DIR::edRearRight};
     navi.RegisterTurns(turnC5_4, turnC7_6, TURN_POSITION::eMiddle, TURN_POSITION::eLeft);
@@ -69,9 +69,7 @@ int main()
     navi.RegisterTurns(turnD8_9, turnD11_10, TURN_POSITION::eMiddle, TURN_POSITION::eRight);
     navi.RegisterTurns(turnD6_7, turnD11_10, TURN_POSITION::eLeft,   TURN_POSITION::eRight);
 
-    navi.PrintTrunMatrix(node_count);
     navi.InitMap(node_count);
-    navi.PrintfGraph(node_count);
 
     navi.SetSection(MAZE_SECTION::s0pos);
     move = navi.GetNextMove(9);

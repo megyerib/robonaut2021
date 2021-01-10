@@ -1,15 +1,15 @@
 #pragma once
 
-#include <stdint.h>
+// Abstract Interfaces.
 #include "MazeNavBase.h"
 
-// Maximum values of the buffers.
-#define MAX_VERTEX   ( 30U)
+// Types.
+#include "map_types.h"
 
-typedef uint8_t  VERTEX;
-typedef uint8_t  PATH[MAX_VERTEX];
-typedef uint16_t GRAPH[MAX_VERTEX][MAX_VERTEX];
+// Used modules.
+#include "dijkstra.h"
 
+// Own Types.
 typedef struct
 {
     VERTEX   vertex_in;
@@ -27,13 +27,7 @@ typedef struct
 }
 MOVE_INFO;
 
-typedef struct
-{
-    VERTEX   vertex_list[MAX_VERTEX];
-    uint32_t distance_list[MAX_VERTEX];
-    VERTEX   prev_vertex_list[MAX_VERTEX];
-}
-DIJKSTRA_RESULT;
+typedef MOVE_INFO TURN_MATRIX[MAX_VERTEX][MAX_VERTEX];
 
 typedef struct
 {
@@ -46,15 +40,8 @@ typedef struct
 }
 TRUNTABLE;
 
-typedef MOVE_INFO TURN_MATRIX[MAX_VERTEX][MAX_VERTEX];
-
-typedef enum
-{
-    eLeft = 0U,
-    eMiddle,
-    eRight
-}
-TURN_POSITION;
+// ON = 1U, OFF = 0U
+#define DEBUG_NAVI_FUNC_ON   (0U)
 
 class MapNavigation : public MazeNavBase
 {
@@ -64,43 +51,37 @@ public:
     virtual MAZE_MOVE GetNextMove(uint8_t target) override;
     virtual void SetSection(MAZE_SECTION section) override;
 
-    void PrintfGraph(int size);
-
     void InitMap(uint16_t const node_count);
     void AddJunction(TRUNTABLE const junction);
     void RegisterTurns(TURN_INFO const from,
                        TURN_INFO const to,
                        TURN_POSITION const tpos_from,
                        TURN_POSITION const tpos_to);
-    void PrintTrunMatrix(int size);
-
-    void PrintPathMoves(int size);
 
 private:
-    uint16_t   vertex_count;
-    GRAPH      graph;
-    VERTEX     source_vertex;
-    VERTEX     target_vertex;
-    VERTEX     actual_vertex;
-    uint8_t    steps;
-    PATH       shortest_path;
-    DIJKSTRA_RESULT result;
-
+    // Map stored as a graph.
+    uint16_t    vertex_count;
     TURN_MATRIX turnMatrix;
+    VERTEX      actual_vertex;
 
-    void Dijkstra();
+    // Shortest path properties.
+    Dijkstra        pathfinder_algorithm;
+    DIJKSTRA_RESULT pathfinder_result;
+    VERTEX          source_vertex;
+    VERTEX          target_vertex;
+    PATH            shortest_path;
+    uint8_t         step_count;
 
     void PlanRoute();
 
-    VERTEX FindUnvisitedVertexWithSmallestDistance(bool* const unvisited_vertices);
-
-    uint8_t CountUnvisitedNeighbours(bool* neighbours, bool* const unvisited_vertices, VERTEX const vertex);
-
-    bool AllVertexVisited(bool* const unvisited_vertices);
-
-    void UpdateCurrentNeigbourDistances(uint8_t const neighbour_count, bool* const neighbours, VERTEX const vertex);
-
     VERTEX GetNextVertex();
+
+    bool IsTurnInfoValid(TURN_INFO const turn_info);
+
+#if DEBUG_NAVI_FUNC_ON == 1U
+    void PrintTrunMatrix(int size);
+    void PrintPathMoves(int size);
+#endif
 
     template<typename T>
     void InitArray(T* array, T value, size_t size)
@@ -110,7 +91,5 @@ private:
             array[i] = value;
         }
     }
-
-    bool IsTurnInfoValid(TURN_INFO const turn_info);
 };
 
