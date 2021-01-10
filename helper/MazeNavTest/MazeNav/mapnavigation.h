@@ -59,20 +59,6 @@ typedef struct
     TURN_INFO rearLeft;
     TURN_INFO rearMiddle;
     TURN_INFO rearRight;
-//    TURNTABLE front_segments[3];    // Left, Middle, Right
-//    TURNTABLE rear_segments[3];     // Left, Middle, Right
-//    VERTEX frontLeft;
-//    uint8_t fl_weight;
-//    VERTEX frontMid;
-//    uint8_t fm_weight;
-//    VERTEX frontRigth;
-//    uint8_t fr_weight;
-//    VERTEX rearLeft;
-//    uint8_t rl_weight;
-//    VERTEX rearMid;
-//    uint8_t rm_weight;
-//    VERTEX rearRigth;
-//    uint8_t rr_weight;
 }
 TRUNTABLE;
 
@@ -104,6 +90,8 @@ public:
                        TURN_POSITION const tpos_from,
                        TURN_POSITION const tpos_to);
     void PrintTrunMatrix(int size);
+
+    void PrintPathMoves(int size);
 
 private:
     uint16_t   vertex_count;

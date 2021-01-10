@@ -8,16 +8,16 @@
 MapNavigation::MapNavigation()
 {
     vertex_count  = 0U;
-    memset(graph,    0U, sizeof(graph));
+    memset(graph, 0U, sizeof(graph));
+    memset(turnMatrix, 0U, sizeof(turnMatrix));
     source_vertex = 0U;
     target_vertex = 0U;
     actual_vertex = 0U;
     steps         = 0U;
     InitArray<uint8_t>(shortest_path, INVALID_VERTEX, sizeof(shortest_path));
     InitArray<uint8_t>(result.vertex_list, INVALID_VERTEX, sizeof(result.vertex_list));
-    InitArray<uint32_t>(result.distance_list, INF, sizeof(result.distance_list));
+    InitArray<uint32_t>(result.distance_list, INF, sizeof(result.distance_list)/sizeof (result.distance_list[0]));
     InitArray<uint8_t>(result.prev_vertex_list, INVALID_VERTEX, sizeof(result.prev_vertex_list));
-    memset(turnMatrix, -1, sizeof(turnMatrix));
 }
 
 MAZE_MOVE MapNavigation::GetNextMove(uint8_t target)
@@ -30,6 +30,7 @@ MAZE_MOVE MapNavigation::GetNextMove(uint8_t target)
         target_vertex = target;
         source_vertex = actual_vertex;
         PlanRoute();
+        PrintPathMoves(steps);
     }
 
     prev_vertex = actual_vertex;
@@ -69,13 +70,13 @@ void MapNavigation::Dijkstra()
     VERTEX  selected_vertex = INVALID_VERTEX;
     bool    unvisited_vertices[vertex_count];
     bool    neighbours[vertex_count];
-    uint8_t neighbour_count = 0;
+    uint8_t neighbour_count = 0U;
 
-    InitArray<uint32_t>(result.distance_list, INF, sizeof(result.distance_list));
+    InitArray<uint32_t>(result.distance_list, INF, sizeof(result.distance_list)/sizeof(result.distance_list[0]));
     InitArray<uint8_t>(result.prev_vertex_list, INVALID_VERTEX, sizeof(result.prev_vertex_list));
     memset(unvisited_vertices, true, sizeof(unvisited_vertices));
 
-    result.distance_list[source_vertex] = 0;
+    result.distance_list[source_vertex] = 0U;
 
     while (AllVertexVisited(unvisited_vertices) == false)
     {
@@ -86,7 +87,7 @@ void MapNavigation::Dijkstra()
         unvisited_vertices[selected_vertex] = false;
     }
 
-    for (int i = 0; i < vertex_count; i++)
+    for (int i = 0U; i < vertex_count; i++)
     {
         result.vertex_list[i] = i;
     }
@@ -226,9 +227,9 @@ VERTEX MapNavigation::GetNextVertex()
 
 void MapNavigation::PrintfGraph(int size)
 {
-    for (int i = 0; i < size; i++)
+    for (int i = 0U; i < size; i++)
     {
-        for (int j = 0; j < size; j++)
+        for (int j = 0U; j < size; j++)
         {
             printf("%d\t", graph[i][j]);
         }
@@ -240,6 +241,14 @@ void MapNavigation::PrintfGraph(int size)
 void MapNavigation::InitMap(const uint16_t node_count)
 {
     vertex_count = node_count;
+
+    for (int i = 0U; i < vertex_count; i++)
+    {
+        for (int j = 0U; j < vertex_count; j++)
+        {
+            graph[i][j] = turnMatrix[i][j].weight;
+        }
+    }
 }
 
 void MapNavigation::AddJunction(const TRUNTABLE junction)
@@ -456,9 +465,9 @@ void MapNavigation::RegisterTurns(const TURN_INFO from, const TURN_INFO to, cons
 
 void MapNavigation::PrintTrunMatrix(int size)
 {
-    for (int i = 1; i < size; i++)
+    for (int i = 0U; i < size; i++)
     {
-        for (int j = 1; j < size; j++)
+        for (int j = 0U; j < size; j++)
         {
             if (turnMatrix[i][j].weight == 65535)
             {
@@ -482,6 +491,33 @@ void MapNavigation::PrintTrunMatrix(int size)
             }
         }
         printf("\n");
+    }
+    printf("\n");
+}
+
+void MapNavigation::PrintPathMoves(int size)
+{
+    VERTEX next = INVALID_VERTEX;
+    VERTEX act  = INVALID_VERTEX;
+
+    for (uint8_t i = size-1U; i > 0U; i--)
+    {
+        act  = shortest_path[i];
+        next = shortest_path[i-1U];
+
+        char d = '0';
+        if (turnMatrix[act][next].direction == APPR_DIR::adBackward){    d = 'B';    }
+        else { d = 'F'; }
+
+        char t[3] = "00";
+        if (turnMatrix[act][next].turning == EXIT_DIR::edFrontLeft){         t[0] = 'F'; t[1] = 'L';   }
+        else if (turnMatrix[act][next].turning == EXIT_DIR::edFrontMid){     t[0] = 'F'; t[1] = 'M';   }
+        else if (turnMatrix[act][next].turning == EXIT_DIR::edFrontRight){   t[0] = 'F'; t[1] = 'R';   }
+        else if (turnMatrix[act][next].turning == EXIT_DIR::edRearLeft){     t[0] = 'R'; t[1] = 'L';   }
+        else if (turnMatrix[act][next].turning == EXIT_DIR::edRearMid){      t[0] = 'R'; t[1] = 'M';   }
+        else if (turnMatrix[act][next].turning == EXIT_DIR::edRearRight){    t[0] = 'R'; t[1] = 'R';   }
+
+        printf("[%d, %c, %s]\t", turnMatrix[act][next].weight, d, t);
     }
     printf("\n");
 }
