@@ -4,13 +4,18 @@
 
 MapNavigation::MapNavigation()
 {
-    vertex_count    = 0U;
+    vertex_count      = 0U;
     memset(turnMatrix, 0U, sizeof(turnMatrix));
-    actual_vertex  = 0U;
-    source_vertex  = 0U;
-    target_vertex  = 0U;
+    actual_vertex     = 0U;
+    pathfinder_result.target = INVALID_VERTEX;
+    InitArray<uint32_t>(pathfinder_result.distance_list, INF_DIST, sizeof(pathfinder_result.distance_list)/sizeof (pathfinder_result.distance_list[0]));
+    InitArray<uint8_t>(pathfinder_result.prev_vertex_list, INVALID_VERTEX, sizeof(pathfinder_result.prev_vertex_list));
+    source_vertex     = 0U;
+    target_segment    = 0U;
+    target_vertex_pos = 0U;
+    target_vertex_neg = 0U;
     InitArray<uint8_t>(shortest_path, INVALID_VERTEX, sizeof(shortest_path));
-    step_count     = 0U;
+    step_count        = 0U;
 }
 
 MAZE_MOVE MapNavigation::GetNextMove(uint8_t target)
@@ -18,9 +23,11 @@ MAZE_MOVE MapNavigation::GetNextMove(uint8_t target)
     MAZE_MOVE next_move;
     VERTEX next_vertex;
 
-    if (target_vertex != target)
+    if (target_segment != target)
     {
-        target_vertex = target;
+        target_segment    = target;
+        target_vertex_pos = target_segment * 2U;
+        target_vertex_neg = target_vertex_pos + 1U;
         source_vertex = actual_vertex;
         PlanRoute();
 #if DEBUG_NAVI_FUNC_ON == 1U
@@ -33,7 +40,7 @@ MAZE_MOVE MapNavigation::GetNextMove(uint8_t target)
     next_move.apprDir = turnMatrix[actual_vertex][next_vertex].direction;
     next_move.exitDir = turnMatrix[actual_vertex][next_vertex].turning;
 
-    if (actual_vertex == target_vertex)
+    if (actual_vertex == pathfinder_result.target)
     {
         next_move.arrived = true;
     }
@@ -280,12 +287,13 @@ void MapNavigation::RegisterTurns(const TURN_INFO from, const TURN_INFO to, cons
 
 void MapNavigation::PlanRoute()
 {
-    uint8_t actual_vertex = target_vertex;
+    uint8_t actual_vertex = INVALID_VERTEX;
 
-    pathfinder_algorithm.CalculatePath(source_vertex);
+    pathfinder_algorithm.CalculatePath(source_vertex, target_vertex_pos, target_vertex_neg);
     pathfinder_result = pathfinder_algorithm.GetResult();
 
-    shortest_path[0U] = target_vertex;
+    shortest_path[0U] = pathfinder_result.target;
+    actual_vertex     = pathfinder_result.target;
 
     step_count = 1U;
     while (actual_vertex != source_vertex)
@@ -396,7 +404,7 @@ void MapNavigation::PrintPathMoves(int size)
         else if (turnMatrix[act][next].turning == EXIT_DIR::edRearRight){    t[0] = 'R'; t[1] = 'R';   }
         else{ t[0] = '?'; t[1] = '?'; }
 
-        if (act == target_vertex){    a = 'T';    }
+        if (act == pathfinder_result.target){    a = 'T';    }
         else{   a = 'F';    }
         (void)a;
 

@@ -12,7 +12,7 @@ public:
     Dijkstra();
 
     void CalculatePath(VERTEX const source);
-    void CalculatePath(VERTEX const target_pos, VERTEX const target_neg);
+    void CalculatePath(VERTEX const source, VERTEX const target_pos, VERTEX const target_neg);
 
     DIJKSTRA_RESULT GetResult();
 
@@ -32,12 +32,10 @@ private:
     VERTEX          target_vertex_pos;
     VERTEX          target_vertex_neg;
     DIJKSTRA_RESULT result;
+    bool            stop_at_target;
 
 
-    // Shortest path algorithms.
-    void Algoritm_Full();
-
-    void Algorithm_UntilTargets(VERTEX const target_pos, VERTEX const target_neg);
+    void Algorithm();
 
 
     // Helper functions.

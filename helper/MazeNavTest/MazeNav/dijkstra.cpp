@@ -4,24 +4,34 @@
 
 Dijkstra::Dijkstra()
 {
+    vertex_count = 0U;
     memset(graph, 0U, sizeof(graph));
-    InitArray<uint8_t>(result.vertex_list, INVALID_VERTEX, sizeof(result.vertex_list));
+    source_vertex     = 0U;
+    target_vertex     = 0U;
+    target_vertex_pos = 0U;
+    target_vertex_neg = 0U;
+    result.target = INVALID_VERTEX;
     InitArray<uint32_t>(result.distance_list, INF_DIST, sizeof(result.distance_list)/sizeof (result.distance_list[0]));
     InitArray<uint8_t>(result.prev_vertex_list, INVALID_VERTEX, sizeof(result.prev_vertex_list));
+    stop_at_target    = false;
 }
 
 void Dijkstra::CalculatePath(const VERTEX source)
 {
-    source_vertex = source;
+    source_vertex  = source;
+    stop_at_target = false;
 
-    Algoritm_Full();
+    Algorithm();
 }
 
-void Dijkstra::CalculatePath(const VERTEX target_pos, const VERTEX target_neg)
+void Dijkstra::CalculatePath(VERTEX const source, const VERTEX target_pos, const VERTEX target_neg)
 {
-    // TODO: Implementation.
-    (void)target_pos;
-    (void)target_neg;
+    source_vertex     = source;
+    target_vertex_pos = target_pos;
+    target_vertex_neg = target_neg;
+    stop_at_target    = true;
+
+    Algorithm();
 }
 
 DIJKSTRA_RESULT Dijkstra::GetResult()
@@ -54,7 +64,7 @@ void Dijkstra::PrintfGraph(int size)
 }
 #endif
 
-void Dijkstra::Algoritm_Full()
+void Dijkstra::Algorithm()
 {
     VERTEX  selected_vertex = INVALID_VERTEX;
     bool    unvisited_vertices[vertex_count];
@@ -74,19 +84,14 @@ void Dijkstra::Algoritm_Full()
         neighbour_count = CountUnvisitedNeighbours(neighbours, unvisited_vertices, selected_vertex);
         UpdateCurrentNeigbourDistances(neighbour_count, neighbours, selected_vertex);
         unvisited_vertices[selected_vertex] = false;
-    }
 
-    for (int i = 0U; i < vertex_count; i++)
-    {
-        result.vertex_list[i] = i;
+        if ((stop_at_target = true)
+             && ((selected_vertex == target_vertex_pos) || (selected_vertex == target_vertex_neg)))
+        {
+            result.target = selected_vertex;
+            break;
+        }
     }
-}
-
-void Dijkstra::Algorithm_UntilTargets(VERTEX const target_pos, VERTEX const target_neg)
-{
-    // TODO: Implementation.
-    (void)target_pos;
-    (void)target_neg;
 }
 
 bool Dijkstra::AllVertexVisited(bool * const unvisited_vertices)

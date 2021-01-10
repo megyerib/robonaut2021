@@ -72,17 +72,20 @@ int main()
     navi.InitMap(node_count);
 
     navi.SetCurrentSection(MAZE_SECTION::s0pos);
-    move = navi.GetNextMove(9);
-    move = navi.GetNextMove(9);
-    move = navi.GetNextMove(9);
+    move = navi.GetNextMove(1);
+    move = navi.GetNextMove(1);
 
-    move = navi.GetNextMove(7);
-    move = navi.GetNextMove(7);
+    move = navi.GetNextMove(4);
+    move = navi.GetNextMove(4);
+    move = navi.GetNextMove(4);
 
-    move = navi.GetNextMove(1);
-    move = navi.GetNextMove(1);
-    move = navi.GetNextMove(1);
-    move = navi.GetNextMove(1);
+    move = navi.GetNextMove(3);
+    move = navi.GetNextMove(3);
+
+    move = navi.GetNextMove(0);
+    move = navi.GetNextMove(0);
+    move = navi.GetNextMove(0);
+    move = navi.GetNextMove(0);
 
     return 0;
 }

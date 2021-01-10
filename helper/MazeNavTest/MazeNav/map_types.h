@@ -22,7 +22,7 @@ TURN_POSITION;
 
 typedef struct
 {
-    VERTEX   vertex_list[MAX_VERTEX];
+    VERTEX   target;
     uint32_t distance_list[MAX_VERTEX];
     VERTEX   prev_vertex_list[MAX_VERTEX];
 }

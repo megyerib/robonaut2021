@@ -71,7 +71,9 @@ private:
     Dijkstra        pathfinder_algorithm;
     DIJKSTRA_RESULT pathfinder_result;
     VERTEX          source_vertex;
-    VERTEX          target_vertex;
+    uint8_t         target_segment;
+    VERTEX          target_vertex_pos;
+    VERTEX          target_vertex_neg;
     PATH            shortest_path;
     uint8_t         step_count;
 

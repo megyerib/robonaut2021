@@ -3,8 +3,24 @@
 
 typedef enum
 {
-	s0pos, s1pos, s2pos,
-	s0neg, s1neg, s2neg
+    s0pos,  s0neg,
+    s1pos,  s1neg,
+    s2pos,  s2neg,
+    s3pos,  s3neg,
+    s4pos,  s4neg,
+    s5pos,  s5neg,
+    s6pos,  s6neg,
+    s7pos,  s7neg,
+    s8pos,  s8neg,
+    s9pos,  s9neg,
+    s10pos, s10neg,
+    s11pos, s11neg,
+    s12pos, s12neg,
+    s13pos, s13neg,
+    s14pos, s14neg,
+    s15pos, s15neg,
+    s16pos, s16neg,
+    s17pos, s17neg
 }
 MAZE_SECTION;
 
