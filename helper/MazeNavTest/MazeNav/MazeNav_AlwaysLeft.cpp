@@ -19,7 +19,12 @@ MAZE_MOVE MazeNav_AlwaysLeft::GetNextMove(uint8_t target)
     return ret;
 }
 
-void MazeNav_AlwaysLeft::SetSection(MAZE_SECTION section)
+void MazeNav_AlwaysLeft::SetCurrentSection(MAZE_SECTION section)
 {
     (void) section;
+}
+
+MAZE_SECTION MazeNav_AlwaysLeft::GetCurrentSection()
+{
+
 }

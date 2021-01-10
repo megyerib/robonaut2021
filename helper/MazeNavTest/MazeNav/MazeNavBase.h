@@ -4,11 +4,11 @@
 typedef enum
 {
 	s0pos, s1pos, s2pos,
-
 	s0neg, s1neg, s2neg
 }
 MAZE_SECTION;
 
+// Approach direction
 typedef enum
 {
 	adForward,
@@ -16,6 +16,7 @@ typedef enum
 }
 APPR_DIR;
 
+// Exit direction
 typedef enum
 {
 	edFrontLeft,
@@ -29,9 +30,9 @@ EXIT_DIR;
 
 typedef struct
 {
-	APPR_DIR apprDir;
-	EXIT_DIR exitDir;
-    bool     arrived;
+    APPR_DIR apprDir; // Approach direction
+    EXIT_DIR exitDir; // Exit direction
+    bool     arrived; // Target reached
 }
 MAZE_MOVE;
 
@@ -45,5 +46,8 @@ public:
 
 	// Set the section where the robot is currently standing.
 	// Needs to be called only at start or during testing.
-    virtual void SetSection(MAZE_SECTION section) = 0;
+    virtual void SetCurrentSection(MAZE_SECTION section) = 0;
+
+    // Get the section where the robot is currently standing.
+    virtual MAZE_SECTION GetCurrentSection() = 0;
 };

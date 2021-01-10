@@ -46,9 +46,14 @@ MAZE_MOVE MapNavigation::GetNextMove(uint8_t target)
     return next_move;
 }
 
-void MapNavigation::SetSection(MAZE_SECTION section)
+void MapNavigation::SetCurrentSection(MAZE_SECTION section)
 {
     actual_vertex = section;
+}
+
+MAZE_SECTION MapNavigation::GetCurrentSection()
+{
+
 }
 
 void MapNavigation::InitMap(const uint16_t node_count)

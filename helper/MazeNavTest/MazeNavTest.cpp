@@ -2,7 +2,7 @@
 
 bool MazeNavTest::Test(MazeNavBase& nav, NAV_TEST_CASE& testCase)
 {
-    nav.SetSection(testCase.startSection);
+    nav.SetCurrentSection(testCase.startSection);
 
     for (size_t i = 0; i < testCase.stepNum; i++)
     {

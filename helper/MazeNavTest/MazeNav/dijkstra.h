@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stddef.h>
 #include "map_types.h"
 
 // ON = 1U, OFF = 0U

@@ -21,7 +21,7 @@ int main()
     }
 
     printf("--------------------------------------------------------------------------------\n");
-    printf("%zu test cases passed out of %zu (%zu%%)\n\n", passed, TEST_CASE_NUM, passed*100/TEST_CASE_NUM);
+    printf("%zu/%zu test cases passed (%zu%%)\n\n", passed, TEST_CASE_NUM, passed*100/TEST_CASE_NUM);
 
     MapNavigation navi;
     uint16_t node_count = 12;
@@ -71,7 +71,7 @@ int main()
 
     navi.InitMap(node_count);
 
-    navi.SetSection(MAZE_SECTION::s0pos);
+    navi.SetCurrentSection(MAZE_SECTION::s0pos);
     move = navi.GetNextMove(9);
     move = navi.GetNextMove(9);
     move = navi.GetNextMove(9);
