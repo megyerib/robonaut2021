@@ -5,26 +5,10 @@
 
 // Maximum values of the buffers.
 #define MAX_VERTEX   ( 30U)
-#define MAX_EDGES    ( 60U)
 
 typedef uint8_t  VERTEX;
 typedef uint8_t  PATH[MAX_VERTEX];
 typedef uint16_t GRAPH[MAX_VERTEX][MAX_VERTEX];
-
-typedef struct
-{
-    VERTEX   start_vertex;
-    VERTEX   end_vertex;
-    uint16_t weight;
-
-    void Init(VERTEX s, VERTEX e, uint32_t w)
-    {
-        start_vertex = s;
-        end_vertex = e;
-        weight = w;
-    }
-}
-EDGE;
 
 typedef struct
 {
@@ -80,7 +64,6 @@ public:
     virtual MAZE_MOVE GetNextMove(uint8_t target) override;
     virtual void SetSection(MAZE_SECTION section) override;
 
-    void InitMap(EDGE* const edge_list, uint16_t const node_count, uint16_t const edge_count);
     void PrintfGraph(int size);
 
     void InitMap(uint16_t const node_count);
@@ -108,8 +91,6 @@ private:
     void Dijkstra();
 
     void PlanRoute();
-
-    void CreateUndirectedAdjacencyMatrixFromEdges(EDGE* const edge_list, uint16_t const edge_count);
 
     VERTEX FindUnvisitedVertexWithSmallestDistance(bool* const unvisited_vertices);
 

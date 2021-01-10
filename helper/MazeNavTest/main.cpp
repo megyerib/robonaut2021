@@ -25,53 +25,7 @@ int main()
 
     MapNavigation navi;
     uint16_t node_count = 12;
-    uint16_t edge_count = 24;
-    EDGE edges[edge_count];
     MAZE_MOVE move;
-
-    //          <5
-    //   -----x---x-----
-    //  |    /  6  \    |
-    // 1|2  3|4   7|8  9|10
-    //  |   /  <11  \   |
-    //   --x---------x--
-    //          12
-    edges[0].Init(0,  2, 11);
-    edges[1].Init(0,  3, 11);
-    edges[2].Init(0,  4,  8);
-    edges[3].Init(0, 11, 12);
-    edges[4].Init(1,  2, 11);
-    edges[5].Init(1,  3, 11);
-    edges[6].Init(1,  5,  8);
-    edges[7].Init(1, 10, 12);
-    edges[8].Init(2,  4,  3);
-    edges[9].Init(2, 10,  9);
-    edges[10].Init(3,  5,  3);
-    edges[11].Init(3, 11,  9);
-    edges[12].Init(4,  7,  4);
-    edges[13].Init(4,  9,  9);
-    edges[14].Init(5,  6,  4);
-    edges[15].Init(5,  8,  9);
-    edges[16].Init(6,  8, 13);
-    edges[17].Init(6,  9,  9);
-    edges[18].Init(6, 11,  9);
-    edges[19].Init(7,  8,  9);
-    edges[20].Init(7,  9, 13);
-    edges[21].Init(7, 10,  9);
-    edges[22].Init(8, 10, 12);
-    edges[23].Init(9, 11, 12);
-
-    navi.InitMap(edges, node_count, edge_count);
-    navi.PrintfGraph(12);
-
-    navi.SetSection(MAZE_SECTION::s0pos);
-    move = navi.GetNextMove(2);
-    move = navi.GetNextMove(2);
-    move = navi.GetNextMove(2);
-
-    move = navi.GetNextMove(0);
-    move = navi.GetNextMove(0);
-    move = navi.GetNextMove(0);
 
     //         <5
     //   -----B---C-----
@@ -115,9 +69,9 @@ int main()
     navi.RegisterTurns(turnD8_9, turnD11_10, TURN_POSITION::eMiddle, TURN_POSITION::eRight);
     navi.RegisterTurns(turnD6_7, turnD11_10, TURN_POSITION::eLeft,   TURN_POSITION::eRight);
 
-    navi.PrintTrunMatrix(12);
-    navi.InitMap(12);
-    navi.PrintfGraph(12);
+    navi.PrintTrunMatrix(node_count);
+    navi.InitMap(node_count);
+    navi.PrintfGraph(node_count);
 
     navi.SetSection(MAZE_SECTION::s0pos);
     move = navi.GetNextMove(9);

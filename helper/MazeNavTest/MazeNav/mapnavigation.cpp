@@ -56,15 +56,6 @@ void MapNavigation::SetSection(MAZE_SECTION section)
     actual_vertex = section;
 }
 
-void MapNavigation::InitMap(EDGE* const edge_list, uint16_t const node_count, uint16_t const edge_count)
-{
-    if(edge_list != nullptr)
-    {
-        vertex_count = node_count;
-        CreateUndirectedAdjacencyMatrixFromEdges(edge_list, edge_count);
-    }
-}
-
 void MapNavigation::Dijkstra()
 {
     VERTEX  selected_vertex = INVALID_VERTEX;
@@ -107,18 +98,6 @@ void MapNavigation::PlanRoute()
         actual_vertex = result.prev_vertex_list[actual_vertex];
         shortest_path[steps] = actual_vertex;
         steps++;
-    }
-}
-
-void MapNavigation::CreateUndirectedAdjacencyMatrixFromEdges(EDGE* const edge_list, uint16_t const edge_count)
-{
-    EDGE* actual_edge = nullptr;
-
-    for(int i = 0; i < edge_count; i++)
-    {
-        actual_edge = &edge_list[i];
-        graph[actual_edge->start_vertex][actual_edge->end_vertex] = actual_edge->weight;
-        graph[actual_edge->end_vertex][actual_edge->start_vertex] = actual_edge->weight;
     }
 }
 
