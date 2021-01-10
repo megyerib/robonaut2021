@@ -16,7 +16,7 @@ MapNavigation::MapNavigation()
 MAZE_MOVE MapNavigation::GetNextMove(uint8_t target)
 {
     MAZE_MOVE next_move;
-    VERTEX prev_vertex;
+    VERTEX next_vertex;
 
     if (target_vertex != target)
     {
@@ -28,11 +28,10 @@ MAZE_MOVE MapNavigation::GetNextMove(uint8_t target)
 #endif
     }
 
-    prev_vertex = actual_vertex;
-    actual_vertex = GetNextVertex();
+    next_vertex = GetNextVertex();
 
-    next_move.apprDir = turnMatrix[prev_vertex][actual_vertex].direction;
-    next_move.exitDir = turnMatrix[prev_vertex][actual_vertex].turning;
+    next_move.apprDir = turnMatrix[actual_vertex][next_vertex].direction;
+    next_move.exitDir = turnMatrix[actual_vertex][next_vertex].turning;
 
     if (actual_vertex == target_vertex)
     {
@@ -42,6 +41,8 @@ MAZE_MOVE MapNavigation::GetNextMove(uint8_t target)
     {
         next_move.arrived = false;
     }
+
+    actual_vertex = next_vertex;
 
     return next_move;
 }
@@ -53,7 +54,7 @@ void MapNavigation::SetCurrentSection(MAZE_SECTION section)
 
 MAZE_SECTION MapNavigation::GetCurrentSection()
 {
-
+    return MAZE_SECTION::s0neg; // TODO: Implementation.
 }
 
 void MapNavigation::InitMap(const uint16_t node_count)
@@ -374,23 +375,30 @@ void MapNavigation::PrintPathMoves(int size)
 {
     VERTEX next = INVALID_VERTEX;
     VERTEX act  = INVALID_VERTEX;
+    char d    = '0';
+    char t[3] = "00";
+    char a    = '0';
 
     for (uint8_t i = size-1U; i > 0U; i--)
     {
         act  = shortest_path[i];
         next = shortest_path[i-1U];
 
-        char d = '0';
-        if (turnMatrix[act][next].direction == APPR_DIR::adBackward){    d = 'B';    }
-        else { d = 'F'; }
+        if (turnMatrix[act][next].direction == APPR_DIR::adBackward){       d = 'B';    }
+        else if (turnMatrix[act][next].direction == APPR_DIR::adForward){   d = 'F';    }
+        else { d = '?'; }
 
-        char t[3] = "00";
         if (turnMatrix[act][next].turning == EXIT_DIR::edFrontLeft){         t[0] = 'F'; t[1] = 'L';   }
         else if (turnMatrix[act][next].turning == EXIT_DIR::edFrontMid){     t[0] = 'F'; t[1] = 'M';   }
         else if (turnMatrix[act][next].turning == EXIT_DIR::edFrontRight){   t[0] = 'F'; t[1] = 'R';   }
         else if (turnMatrix[act][next].turning == EXIT_DIR::edRearLeft){     t[0] = 'R'; t[1] = 'L';   }
         else if (turnMatrix[act][next].turning == EXIT_DIR::edRearMid){      t[0] = 'R'; t[1] = 'M';   }
         else if (turnMatrix[act][next].turning == EXIT_DIR::edRearRight){    t[0] = 'R'; t[1] = 'R';   }
+        else{ t[0] = '?'; t[1] = '?'; }
+
+        if (act == target_vertex){    a = 'T';    }
+        else{   a = 'F';    }
+        (void)a;
 
         printf("[%d, %c, %s]\t", turnMatrix[act][next].weight, d, t);
     }

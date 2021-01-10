@@ -82,6 +82,7 @@ int main()
     move = navi.GetNextMove(1);
     move = navi.GetNextMove(1);
     move = navi.GetNextMove(1);
+    move = navi.GetNextMove(1);
 
     return 0;
 }
