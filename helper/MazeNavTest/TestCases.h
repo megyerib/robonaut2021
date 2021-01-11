@@ -7,7 +7,7 @@ NAV_TEST_CASE testCases[] =
 {
     // Test case 0
     {
-        .startSection = s0pos,
+        .startSection = sApos,
         .stepNum = 3,
         .steps={
             {3, {adForward, edFrontLeft, false}},
@@ -17,7 +17,7 @@ NAV_TEST_CASE testCases[] =
     },
     // Test case 1
     {
-        .startSection = s0pos,
+        .startSection = sApos,
         .stepNum = 3,
         .steps={
             {3, {adForward, edFrontLeft, false}},

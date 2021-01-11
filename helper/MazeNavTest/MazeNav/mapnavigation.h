@@ -44,6 +44,7 @@ TRUNTABLE;
 
 // ON = 1U, OFF = 0U
 #define DEBUG_NAVI_FUNC_ON   (0U)
+#define DEBUG_PATH_DISP      (1U)
 
 class MapNavigation : public MazeNavBase
 {
@@ -85,6 +86,9 @@ private:
 
 #if DEBUG_NAVI_FUNC_ON == 1U
     void PrintTrunMatrix(int size);
+#endif
+
+#if DEBUG_PATH_DISP == 1U
     void PrintPathMoves(int size);
 #endif
 

@@ -3,7 +3,7 @@
 #include <stdint.h>
 
 // Maximum values of the buffers.
-#define MAX_VERTEX        (30U)
+#define MAX_VERTEX        (48U)
 
 #define INF_DIST          UINT16_MAX
 #define INVALID_VERTEX    UINT8_MAX
@@ -14,9 +14,9 @@ typedef uint16_t GRAPH[MAX_VERTEX][MAX_VERTEX];
 
 typedef enum
 {
-    eLeft = 0U,
-    eMiddle,
-    eRight
+    tpLeft = 0U,
+    tpMiddle,
+    tpRight
 }
 TURN_POSITION;
 

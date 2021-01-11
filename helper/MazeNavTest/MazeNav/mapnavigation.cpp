@@ -30,7 +30,7 @@ MAZE_MOVE MapNavigation::GetNextMove(uint8_t target)
         target_vertex_neg = target_vertex_pos + 1U;
         source_vertex = actual_vertex;
         PlanRoute();
-#if DEBUG_NAVI_FUNC_ON == 1U
+#if DEBUG_PATH_DISP == 1U
         PrintPathMoves(step_count);
 #endif
     }
@@ -122,7 +122,7 @@ void MapNavigation::RegisterTurns(const TURN_INFO from, const TURN_INFO to, cons
 
         switch (tpos_from)
         {
-            case TURN_POSITION::eLeft:
+            case tpLeft:
             {
                 if (isFromFront == true)
                 {
@@ -136,13 +136,13 @@ void MapNavigation::RegisterTurns(const TURN_INFO from, const TURN_INFO to, cons
                 }
                 break;
             }
-            case TURN_POSITION::eMiddle:
+            case tpMiddle:
             {
                 turnMatrix[to.vertex_in][from.vertex_in].turning   = EXIT_DIR::edRearMid;
                 turnMatrix[to.vertex_out][from.vertex_out].turning = EXIT_DIR::edFrontMid;
                 break;
             }
-            case TURN_POSITION::eRight:
+            case tpRight:
             {
                 if (isFromFront == true)
                 {
@@ -172,7 +172,7 @@ void MapNavigation::RegisterTurns(const TURN_INFO from, const TURN_INFO to, cons
 
         switch (tpos_to)
         {
-            case TURN_POSITION::eLeft:
+            case tpLeft:
             {
                 if (isFromFront == true)
                 {
@@ -186,13 +186,13 @@ void MapNavigation::RegisterTurns(const TURN_INFO from, const TURN_INFO to, cons
                 }
                 break;
             }
-            case TURN_POSITION::eMiddle:
+            case tpMiddle:
             {
                 turnMatrix[from.vertex_in][to.vertex_in].turning   = EXIT_DIR::edRearMid;
                 turnMatrix[from.vertex_out][to.vertex_out].turning = EXIT_DIR::edFrontMid;
                 break;
             }
-            case TURN_POSITION::eRight:
+            case tpRight:
             {
                 if (isFromFront == true)
                 {
@@ -224,19 +224,19 @@ void MapNavigation::RegisterTurns(const TURN_INFO from, const TURN_INFO to, cons
 
         switch (tpos_from)
         {
-            case TURN_POSITION::eLeft:
+            case tpLeft:
             {
                 turnMatrix[to.vertex_in][from.vertex_out].turning = EXIT_DIR::edFrontLeft;
                 turnMatrix[to.vertex_out][from.vertex_in].turning = EXIT_DIR::edRearRight;
                 break;
             }
-            case TURN_POSITION::eMiddle:
+            case tpMiddle:
             {
                 turnMatrix[to.vertex_in][from.vertex_out].turning = EXIT_DIR::edFrontMid;
                 turnMatrix[to.vertex_out][from.vertex_in].turning = EXIT_DIR::edRearMid;
                 break;
             }
-            case TURN_POSITION::eRight:
+            case tpRight:
             {
                 turnMatrix[to.vertex_in][from.vertex_out].turning = EXIT_DIR::edFrontRight;
                 turnMatrix[to.vertex_out][from.vertex_in].turning = EXIT_DIR::edRearLeft;
@@ -258,19 +258,19 @@ void MapNavigation::RegisterTurns(const TURN_INFO from, const TURN_INFO to, cons
 
         switch (tpos_to)
         {
-            case TURN_POSITION::eLeft:
+            case tpLeft:
             {
                 turnMatrix[from.vertex_in][to.vertex_out].turning = EXIT_DIR::edFrontRight;
                 turnMatrix[from.vertex_out][to.vertex_in].turning = EXIT_DIR::edRearLeft;
                 break;
             }
-            case TURN_POSITION::eMiddle:
+            case tpMiddle:
             {
                 turnMatrix[from.vertex_in][to.vertex_out].turning = EXIT_DIR::edFrontMid;
                 turnMatrix[from.vertex_out][to.vertex_in].turning = EXIT_DIR::edRearMid;
                 break;
             }
-            case TURN_POSITION::eRight:
+            case tpRight:
             {
                 turnMatrix[from.vertex_in][to.vertex_out].turning = EXIT_DIR::edFrontLeft;
                 turnMatrix[from.vertex_out][to.vertex_in].turning = EXIT_DIR::edRearRight;
@@ -378,7 +378,9 @@ void MapNavigation::PrintTrunMatrix(int size)
     }
     printf("\n");
 }
+#endif
 
+#if DEBUG_PATH_DISP == 1U
 void MapNavigation::PrintPathMoves(int size)
 {
     VERTEX next = INVALID_VERTEX;

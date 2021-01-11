@@ -56,7 +56,7 @@ void Dijkstra::PrintfGraph(int size)
     {
         for (int j = 0U; j < size; j++)
         {
-            printf("%d\t", graph[i][j]);
+            printf("%2d  ", graph[i][j]);
         }
         printf("\n");
     }
