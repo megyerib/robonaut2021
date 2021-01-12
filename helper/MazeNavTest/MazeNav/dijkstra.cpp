@@ -11,7 +11,7 @@ Dijkstra::Dijkstra()
     target_vertex_pos = 0U;
     target_vertex_neg = 0U;
     result.target = INVALID_VERTEX;
-    InitArray<uint32_t>(result.distance_list, INF_DIST, sizeof(result.distance_list)/sizeof (result.distance_list[0]));
+    InitArray<uint16_t>(result.distance_list, INF_DIST, sizeof(result.distance_list)/sizeof (result.distance_list[0]));
     InitArray<uint8_t>(result.prev_vertex_list, INVALID_VERTEX, sizeof(result.prev_vertex_list));
     stop_at_target    = false;
 }
@@ -71,7 +71,7 @@ void Dijkstra::Algorithm()
     bool    neighbours[vertex_count];
     uint8_t neighbour_count = 0U;
 
-    InitArray<uint32_t>(result.distance_list, INF_DIST, sizeof(result.distance_list)/sizeof(result.distance_list[0]));
+    InitArray<uint16_t>(result.distance_list, INF_DIST, sizeof(result.distance_list)/sizeof(result.distance_list[0]));
     InitArray<uint8_t>(result.prev_vertex_list, INVALID_VERTEX, sizeof(result.prev_vertex_list));
     memset(unvisited_vertices, true, sizeof(unvisited_vertices));
 

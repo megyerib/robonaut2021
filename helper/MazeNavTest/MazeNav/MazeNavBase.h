@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
 
-typedef enum
+typedef enum : uint8_t
 {
     sApos,  sAneg,
     sBpos,  sBneg,
@@ -31,7 +31,7 @@ typedef enum
 MAZE_SECTION;
 
 // Approach direction
-typedef enum
+typedef enum : uint8_t
 {
 	adForward,
 	adBackward
@@ -39,7 +39,7 @@ typedef enum
 APPR_DIR;
 
 // Exit direction
-typedef enum
+typedef enum : uint8_t
 {
 	edFrontLeft,
 	edFrontMid,

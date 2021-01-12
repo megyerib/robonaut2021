@@ -8,7 +8,7 @@ MapNavigation::MapNavigation()
     memset(turnMatrix, 0U, sizeof(turnMatrix));
     actual_vertex     = 0U;
     pathfinder_result.target = INVALID_VERTEX;
-    InitArray<uint32_t>(pathfinder_result.distance_list, INF_DIST, sizeof(pathfinder_result.distance_list)/sizeof (pathfinder_result.distance_list[0]));
+    InitArray<uint16_t>(pathfinder_result.distance_list, INF_DIST, sizeof(pathfinder_result.distance_list)/sizeof (pathfinder_result.distance_list[0]));
     InitArray<uint8_t>(pathfinder_result.prev_vertex_list, INVALID_VERTEX, sizeof(pathfinder_result.prev_vertex_list));
     source_vertex     = 0U;
     target_segment    = 0U;
