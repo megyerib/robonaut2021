@@ -28,6 +28,7 @@ int main()
     MAZE_MOVE     move;
     MAZE_SECTION  current_section = MAZE_SECTION::sApos;
 
+#if USE_STATIC_MAP == 0U
     // 1
     TURN_INFO turn1Ap_n = { sApos, sAneg,  399, edFrontRight};
     TURN_INFO turn1An_p = { sAneg, sApos,  362, edFrontLeft};
@@ -226,7 +227,15 @@ int main()
     current_section = navi.GetCurrentSection();
     move = navi.GetNextMove(23);
     current_section = navi.GetCurrentSection();
+#else
+    navi.InitMap();
 
+    navi.SetCurrentSection(MAZE_SECTION::sApos);
+    current_section = navi.GetCurrentSection();
+    move = navi.GetNextMove(1);
+    current_section = navi.GetCurrentSection();
+    move = navi.GetNextMove(0);
+#endif
 
     return 0;
 }

@@ -55,17 +55,26 @@ public:
     virtual void SetCurrentSection(MAZE_SECTION section) override;
     virtual MAZE_SECTION GetCurrentSection() override;
 
+#if USE_STATIC_MAP == 1U
+    void InitMap();
+#else
     void InitMap(uint16_t const node_count);
     void AddJunction(TRUNTABLE const junction);
     void RegisterTurns(TURN_INFO const from,
                        TURN_INFO const to,
                        TURN_POSITION const tpos_from,
                        TURN_POSITION const tpos_to);
+#endif
 
 private:
     // Map stored as a graph.
-    uint16_t    vertex_count;
-    TURN_MATRIX turnMatrix;
+ #if USE_STATIC_MAP == 0U
+    uint16_t    vertex_count;   // Holds the dinamic map size only! Normally use the GetVetrexCount()
+                                // function get the vertex count (static or dynamic) based on the
+                                // settings (USE_STATIC_MAP).
+    TURN_MATRIX turn_matrix;    // Holds the dinamic map only! Normally use the GetTurnMatrix() function to
+                                // get the map (static or dynamic) based on the settings (USE_STATIC_MAP).
+#endif
     VERTEX      actual_vertex;
 
     // Shortest path properties.
@@ -83,6 +92,10 @@ private:
     VERTEX GetNextVertex();
 
     bool IsTurnInfoValid(TURN_INFO const turn_info);
+
+    TURN_MATRIX const & GetTurnMatrix();
+
+    uint8_t  GetVertexCount();
 
 #if DEBUG_NAVI_FUNC_ON == 1U
     void PrintTrunMatrix(int size);

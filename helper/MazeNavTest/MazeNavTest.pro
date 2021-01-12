@@ -15,6 +15,7 @@ HEADERS += \
     MazeNav/dijkstra.h \
     MazeNav/map_types.h \
     MazeNav/mapnavigation.h \
+    MazeNav/static_map.h \
     MazeNavTest.h \
     MazeNav/MazeNav_AlwaysLeft.h \
     TestCases.h
