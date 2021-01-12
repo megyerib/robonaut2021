@@ -117,8 +117,8 @@ void MapNavigation::RegisterTurns(const TURN_INFO from, const TURN_INFO to, cons
         turnMatrix[to.vertex_in][from.vertex_in].direction   = APPR_DIR::adForward;
         turnMatrix[to.vertex_out][from.vertex_out].direction = APPR_DIR::adBackward;
 
-        turnMatrix[to.vertex_in][from.vertex_in].weight   = distance;
-        turnMatrix[to.vertex_out][from.vertex_out].weight = distance;
+        turnMatrix[to.vertex_in][from.vertex_in].weight   = distance * DIRECTION_CHANGE_PENALTY;
+        turnMatrix[to.vertex_out][from.vertex_out].weight = distance * DIRECTION_CHANGE_PENALTY * BACKWARD_PENALTY;
 
         switch (tpos_from)
         {
@@ -167,8 +167,8 @@ void MapNavigation::RegisterTurns(const TURN_INFO from, const TURN_INFO to, cons
         turnMatrix[from.vertex_in][to.vertex_in].direction   = APPR_DIR::adForward;
         turnMatrix[from.vertex_out][to.vertex_out].direction = APPR_DIR::adBackward;
 
-        turnMatrix[from.vertex_in][to.vertex_in].weight   = distance;
-        turnMatrix[from.vertex_out][to.vertex_out].weight = distance;
+        turnMatrix[from.vertex_in][to.vertex_in].weight   = distance * DIRECTION_CHANGE_PENALTY;
+        turnMatrix[from.vertex_out][to.vertex_out].weight = distance * DIRECTION_CHANGE_PENALTY * BACKWARD_PENALTY;
 
         switch (tpos_to)
         {
@@ -220,7 +220,7 @@ void MapNavigation::RegisterTurns(const TURN_INFO from, const TURN_INFO to, cons
         turnMatrix[from.vertex_out][to.vertex_in].direction = APPR_DIR::adBackward;
 
         turnMatrix[from.vertex_in][to.vertex_out].weight = distance;
-        turnMatrix[from.vertex_out][to.vertex_in].weight = distance;
+        turnMatrix[from.vertex_out][to.vertex_in].weight = distance * BACKWARD_PENALTY;
 
         switch (tpos_from)
         {
@@ -254,7 +254,7 @@ void MapNavigation::RegisterTurns(const TURN_INFO from, const TURN_INFO to, cons
         turnMatrix[to.vertex_out][from.vertex_in].direction = APPR_DIR::adBackward;
 
         turnMatrix[to.vertex_in][from.vertex_out].weight = distance;
-        turnMatrix[to.vertex_out][from.vertex_in].weight = distance;
+        turnMatrix[to.vertex_out][from.vertex_in].weight = distance * BACKWARD_PENALTY;
 
         switch (tpos_to)
         {
