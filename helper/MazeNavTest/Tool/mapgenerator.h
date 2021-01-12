@@ -13,6 +13,8 @@ public:
 
     void GenerateMap(TURN_MATRIX const & matrix, uint8_t const vertex_count);
 
+    void RobonautTestMapGenerator();
+
 private:
     std::vector<std::string> csv_string;
     std::string file_name;
@@ -22,5 +24,4 @@ private:
     void SerializeMoveInfo(MOVE_INFO const move);
 
     void CreateCsvExport();
-
 };

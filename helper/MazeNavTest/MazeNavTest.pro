@@ -9,6 +9,7 @@ SOURCES += \
     MazeNavTest.cpp \
     MazeNav/MazeNav_AlwaysLeft.cpp \
     Tool/mapgenerator.cpp \
+    Tool/robonauttestmapgenerator.cpp \
     main.cpp
 
 HEADERS += \

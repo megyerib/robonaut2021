@@ -7,7 +7,7 @@
 #define BACKWARD_PENALTY         (1.10F)
 #define DIRECTION_CHANGE_PENALTY (1.05F)
 
-#define USE_STATIC_MAP           (0U)
+#define USE_STATIC_MAP           (1U)
 #define MAP_GENERATOR_ACTIVE     (0U)
 
 // Maximum values of the buffers.

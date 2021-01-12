@@ -21,6 +21,11 @@ MapNavigation::MapNavigation()
     target_vertex_neg = 0U;
     InitArray<uint8_t>(shortest_path, INVALID_VERTEX, sizeof(shortest_path));
     step_count        = 0U;
+
+
+#if USE_STATIC_MAP == 1U
+    InitMap();
+#endif
 }
 
 MAZE_MOVE MapNavigation::GetNextMove(uint8_t target)
