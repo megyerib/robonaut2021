@@ -1,10 +1,12 @@
 #include <cstdio>
 #include "MazeNavTest.h"
 #include "TestCases.h"
+#include "mapgenerator.h"
 
 // Units under test
 #include "MazeNav_AlwaysLeft.h"
 #include "mapnavigation.h"
+
 
 int main()
 {
@@ -168,6 +170,17 @@ int main()
     navi.RegisterTurns(turn15Np_n, turn15Exn_p, tpMiddle, tpMiddle);
 
     navi.InitMap(node_count);
+#if MAP_GENERATOR_ACTIVE == 1U
+    MapGenerator generator;
+    generator.GenerateMap(navi.GetTurnMatrix(), node_count);
+#endif
+#else
+    navi.InitMap();
+#if MAP_GENERATOR_ACTIVE == 1U
+    MapGenerator generator;
+    generator.GenerateMap(navi.GetTurnMatrix(), 48);
+#endif
+#endif
 
     navi.SetCurrentSection(MAZE_SECTION::sStpos);
     current_section = navi.GetCurrentSection();
@@ -227,15 +240,6 @@ int main()
     current_section = navi.GetCurrentSection();
     move = navi.GetNextMove(23);
     current_section = navi.GetCurrentSection();
-#else
-    navi.InitMap();
-
-    navi.SetCurrentSection(MAZE_SECTION::sApos);
-    current_section = navi.GetCurrentSection();
-    move = navi.GetNextMove(1);
-    current_section = navi.GetCurrentSection();
-    move = navi.GetNextMove(0);
-#endif
 
     return 0;
 }

@@ -8,6 +8,7 @@
 #define DIRECTION_CHANGE_PENALTY (1.05F)
 
 #define USE_STATIC_MAP           (0U)
+#define MAP_GENERATOR_ACTIVE     (0U)
 
 // Maximum values of the buffers.
 #define MAX_VERTEX        (48U)

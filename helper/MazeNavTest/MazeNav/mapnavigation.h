@@ -66,6 +66,10 @@ public:
                        TURN_POSITION const tpos_to);
 #endif
 
+#if MAP_GENERATOR_ACTIVE == 1U
+    TURN_MATRIX const & GetTurnMatrix();
+#endif
+
 private:
     // Map stored as a graph.
  #if USE_STATIC_MAP == 0U
@@ -93,7 +97,9 @@ private:
 
     bool IsTurnInfoValid(TURN_INFO const turn_info);
 
+#if MAP_GENERATOR_ACTIVE == 0U
     TURN_MATRIX const & GetTurnMatrix();
+#endif
 
     uint8_t  GetVertexCount();
 
