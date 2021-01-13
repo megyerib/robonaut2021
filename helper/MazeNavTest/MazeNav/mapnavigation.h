@@ -44,7 +44,7 @@ TRUNTABLE;
 
 // ON = 1U, OFF = 0U
 #define DEBUG_NAVI_FUNC_ON   (0U)
-#define DEBUG_PATH_DISP      (1U)
+#define DEBUG_PATH_DISP      (0U)
 
 class MapNavigation : public MazeNavBase
 {
