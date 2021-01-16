@@ -1,5 +1,6 @@
 #include "MazeExit.h"
 #include "MazeExit_Settings.h"
+#include "Trace.h"
 
 MazeExit& MazeExit::GetInstance()
 {
@@ -64,6 +65,9 @@ void MazeExit::StateMachine_ExitForward()
     {
         case mesInitialized:
         {
+#ifdef TRACE_ENABLED
+            PRINTF("Maze Exit Forward is initialized.\n");
+#endif
             dist_waiter.Wait_m(FORWARDEXIT_PREPARE_WAIT_DIST);
 
             control_values.speed       = FORWARDEXIT_PREPARE_SPEED;
@@ -106,6 +110,10 @@ void MazeExit::State_ExitForward_PrepareToLeaveLine()
         dist_waiter.Wait_m(FORWARDEXIT_LEAVE_LINE_WAIT_DIST);
 
         state = mesForwardExit_LeaveLine;
+
+#ifdef TRACE_ENABLED
+        PRINTF("Exit: Leave the maze.\n");
+#endif
     }
 }
 
@@ -120,6 +128,10 @@ void MazeExit::State_ExitForward_LeaveLine()
         dist_waiter.Wait_m(FORWARDEXIT_SEARCH_LINE_WAIT_DIST);
 
         state = mesForwardExit_SearchLine;
+
+#ifdef TRACE_ENABLED
+        PRINTF("Exit: Search for race line.\n");
+#endif
     }
 }
 
@@ -147,6 +159,9 @@ void MazeExit::StateMachine_ExitY()
     {
         case mesInitialized:
         {
+#ifdef TRACE_ENABLED
+            PRINTF("Maze Exit Y is initialized.\n");
+#endif
             dist_waiter.Wait_m(YEXIT_PREPARE_WAIT_DIST);
 
             control_values.speed       = YEXIT_PREPARE_SPEED;
@@ -194,6 +209,10 @@ void MazeExit::State_ExitY_PrepareToLeaveLine()
         dist_waiter.Wait_m(YEXIT_LEAVE_LINE_WAIT_DIST);
 
         state = mesYExit_LeaveLine;
+
+#ifdef TRACE_ENABLED
+        PRINTF("Exit Y: Leave the maze.\n");
+#endif
     }
 }
 
@@ -208,6 +227,10 @@ void MazeExit::State_ExitY_LeaveLine()
         dist_waiter.Wait_m(YEXIT_REVERSE_WAIT_DIST);
 
         state = mesYExit_Reverse;
+
+#ifdef TRACE_ENABLED
+        PRINTF("Exit Y: Reversing.\n");
+#endif
     }
 }
 
@@ -222,6 +245,10 @@ void MazeExit::State_ExitY_Reverse()
         dist_waiter.Wait_m(YEXIT_SEARCH_LINE_WAIT_DIST);
 
         state = mesYExit_SearchLine;
+
+#ifdef TRACE_ENABLED
+        PRINTF("Exit Y: Search for the race line.\n");
+#endif
     }
 }
 
@@ -245,11 +272,17 @@ void MazeExit::State_ExitY_SearchLine()
 
 void MazeExit::State_ExitSuccessful()
 {
+#ifdef TRACE_ENABLED
+    PRINTF("Exit: Successfully changed lane.\n");
+#endif
     control_values.error = memerrSuccessfullyEnded;
 }
 
 void MazeExit::State_ExitFailed()
 {
+#ifdef TRACE_ENABLED
+    PRINTF("Exit: Failed to change lane.\n");
+#endif
     control_values.error = memerrFailedExit;
     control_values.speed = 0.0f;
 }

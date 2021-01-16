@@ -1,5 +1,8 @@
 #pragma once
 
+// Trace on = leave defined, Trace off = comment out.
+#define TRACE_ENABLED
+
 // Settings of the maneuvers.
 // Q2 Forward Exit
 #define FORWARDEXIT_PREPARE_WAIT_DIST       ( 0.050f)   // m
