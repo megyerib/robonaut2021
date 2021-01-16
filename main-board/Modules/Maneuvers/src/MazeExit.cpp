@@ -20,50 +20,20 @@ MEM_ERROR MazeExit::Init(MAZE_EXIT_MODE const mode)
     return error_code;
 }
 
-EXIT_INFO MazeExit::MazeExit_Process_Q2()
+EXIT_INFO MazeExit::MazeExit_Process()
 {
     if (error_code == memerrNoError)
     {
         switch (mode)
         {
-            case memQ2Left:
+            case memForward:
             {
-                StateMachine_Q2ExitLeft();
+                StateMachine_ExitForward();
                 break;
             }
-            case memQ2Right:
+            case memY:
             {
-                StateMachine_Q2ExitRight();
-                break;
-            }
-            default:
-            {
-                error_code = memerrUnknown;
-                break;
-            }
-        }
-    }
-    control_values.error = error_code;
-
-    return control_values;
-}
-
-EXIT_INFO MazeExit::Exit_Process()
-{
-    if (error_code == memerrNoError)
-    {
-        switch (mode)
-        {
-            case memQ2Left:
-            {
-                // TODO
-                error_code = memerrUnknown;
-                break;
-            }
-            case memQ2Right:
-            {
-                // TODO
-                error_code = memerrUnknown;
+                StateMachine_ExitY();
                 break;
             }
             default:
@@ -88,34 +58,34 @@ MazeExit::MazeExit()
     line_detector  = TrackDetector::GetInstance();
 }
 
-void MazeExit::StateMachine_Q2ExitLeft()
+void MazeExit::StateMachine_ExitForward()
 {
     switch (state)
     {
         case mesInitialized:
         {
-            dist_waiter.Wait_m(Q2_LEFTEXIT_PREPARE_WAIT_DIST);
+            dist_waiter.Wait_m(FORWARDEXIT_PREPARE_WAIT_DIST);
 
-            control_values.speed       = Q2_LEFTEXIT_PREPARE_SPEED;
-            control_values.wheel_angle = Q2_LEFTEXIT_PREPARE_WHEEL_ANGLE;
-            control_values.error       = memerrOngoingExitLeftQ2;
+            control_values.speed       = FORWARDEXIT_PREPARE_SPEED;
+            control_values.wheel_angle = FORWARDEXIT_PREPARE_WHEEL_ANGLE;
+            control_values.error       = memerrOngoingExitForward;
 
-            state = mesQ2LeftExit_Prepare;
+            state = mesForwardExit_Prepare;
             break;
         }
-        case mesQ2LeftExit_Prepare:
+        case mesForwardExit_Prepare:
         {
-            StateQ2_ExitLeft_PrepareToLeaveLine();
+            State_ExitForward_PrepareToLeaveLine();
             break;
         }
-        case mesQ2LeftExit_LeaveLine:
+        case mesForwardExit_LeaveLine:
         {
-            StateQ2_ExitLeft_LeaveLine();
+            State_ExitForward_LeaveLine();
             break;
         }
-        case mesQ2LeftExit_SearchLine:
+        case mesForwardExit_SearchLine:
         {
-            StateQ2_ExitLeft_SearchLine();
+            State_ExitForward_SearchLine();
             break;
         }
         default:
@@ -125,47 +95,39 @@ void MazeExit::StateMachine_Q2ExitLeft()
     }
 }
 
-void MazeExit::StateQ2_ExitLeft_PrepareToLeaveLine()
+void MazeExit::State_ExitForward_PrepareToLeaveLine()
 {
-    control_values.speed       = Q2_LEFTEXIT_PREPARE_SPEED;
-    control_values.wheel_angle = Q2_LEFTEXIT_PREPARE_WHEEL_ANGLE;
-    control_values.error       = memerrOngoingExitLeftQ2;
+    control_values.speed       = FORWARDEXIT_PREPARE_SPEED;
+    control_values.wheel_angle = FORWARDEXIT_PREPARE_WHEEL_ANGLE;
+    control_values.error       = memerrOngoingExitForward;
 
     if (dist_waiter.IsExpired())
     {
-        dist_waiter.Wait_m(Q2_LEFTEXIT_LEAVE_LINE_WAIT_DIST);
+        dist_waiter.Wait_m(FORWARDEXIT_LEAVE_LINE_WAIT_DIST);
 
-        state = mesQ2LeftExit_LeaveLine;
+        state = mesForwardExit_LeaveLine;
     }
 }
 
-void MazeExit::StateQ2_ExitLeft_LeaveLine()
+void MazeExit::State_ExitForward_LeaveLine()
 {
-    control_values.speed       = Q2_LEFTEXIT_LEAVE_LINE_SPEED;
-    control_values.wheel_angle = Q2_LEFTEXIT_LEAVE_LINE_WHEEL_ANGLE;
-    control_values.error       = memerrOngoingExitLeftQ2;
+    control_values.speed       = FORWARDEXIT_LEAVE_LINE_SPEED;
+    control_values.wheel_angle = FORWARDEXIT_LEAVE_LINE_WHEEL_ANGLE;
+    control_values.error       = memerrOngoingExitForward;
 
-    if (dist_waiter.IsExpired() && (line_detector->GetTrackType() == None))
+    if (dist_waiter.IsExpired())
     {
-        dist_waiter.Wait_m(Q2_LEFTEXIT_SEARCH_LINE_WAIT_DIST);
+        dist_waiter.Wait_m(FORWARDEXIT_SEARCH_LINE_WAIT_DIST);
 
-        state = mesQ2LeftExit_SearchLine;
-    }
-    else if (dist_waiter.GetDiff() > Q2_LEFTEXIT_LEAVE_LINE_MAX_DISTANCE)
-    {
-        state = mesFailedToExit;
-    }
-    else
-    {
-        // Waiting.
+        state = mesForwardExit_SearchLine;
     }
 }
 
-void MazeExit::StateQ2_ExitLeft_SearchLine()
+void MazeExit::State_ExitForward_SearchLine()
 {
-    control_values.speed       = Q2_LEFTEXIT_SEARCH_LINE_SPEED;
-    control_values.wheel_angle = Q2_LEFTEXIT_SEARCH_LINE_WHEEL_ANGLE;
-    control_values.error       = memerrOngoingExitLeftQ2;
+    control_values.speed       = FORWARDEXIT_SEARCH_LINE_SPEED;
+    control_values.wheel_angle = FORWARDEXIT_SEARCH_LINE_WHEEL_ANGLE;
+    control_values.error       = memerrOngoingExitForward;
 
     if (line_detector->GetTrackType() != None && !dist_waiter.IsExpired())
     {
@@ -179,39 +141,39 @@ void MazeExit::StateQ2_ExitLeft_SearchLine()
     }
 }
 
-void MazeExit::StateMachine_Q2ExitRight()
+void MazeExit::StateMachine_ExitY()
 {
     switch (state)
     {
         case mesInitialized:
         {
-            dist_waiter.Wait_m(Q2_RIGHTEXIT_PREPARE_WAIT_DIST);
+            dist_waiter.Wait_m(YEXIT_PREPARE_WAIT_DIST);
 
-            control_values.speed       = Q2_RIGHTEXIT_PREPARE_SPEED;
-            control_values.wheel_angle = Q2_RIGHTEXIT_PREPARE_WHEEL_ANGLE;
-            control_values.error       = memerrOngoingExitLeftQ2;
+            control_values.speed       = YEXIT_PREPARE_SPEED;
+            control_values.wheel_angle = YEXIT_PREPARE_WHEEL_ANGLE;
+            control_values.error       = memerrOngoingExitForward;
 
-            state = mesQ2RightExit_Prepare;
+            state = mesYExit_Prepare;
             break;
         }
-        case mesQ2RightExit_Prepare:
+        case mesYExit_Prepare:
         {
-            StateQ2_ExitRight_PrepareToLeaveLine();
+            State_ExitY_PrepareToLeaveLine();
             break;
         }
-        case mesQ2RightExit_LeaveLine:
+        case mesYExit_LeaveLine:
         {
-            StateQ2_ExitLeft_LeaveLine();
+            State_ExitForward_LeaveLine();
             break;
         }
-        case mesQ2RightExit_Reverse:
+        case mesYExit_Reverse:
         {
-            StateQ2_ExitRight_Reverse();
+            State_ExitY_Reverse();
             break;
         }
-        case mesQ2RightExit_SearchLine:
+        case mesYExit_SearchLine:
         {
-            StateQ2_ExitRight_SearchLine();
+            State_ExitY_SearchLine();
             break;
         }
         default:
@@ -221,53 +183,53 @@ void MazeExit::StateMachine_Q2ExitRight()
     }
 }
 
-void MazeExit::StateQ2_ExitRight_PrepareToLeaveLine()
+void MazeExit::State_ExitY_PrepareToLeaveLine()
 {
-    control_values.speed       = Q2_RIGHTEXIT_PREPARE_SPEED;
-    control_values.wheel_angle = Q2_RIGHTEXIT_PREPARE_WHEEL_ANGLE;
-    control_values.error       = memerrOngoingExitRightQ2;
+    control_values.speed       = YEXIT_PREPARE_SPEED;
+    control_values.wheel_angle = YEXIT_PREPARE_WHEEL_ANGLE;
+    control_values.error       = memerrOngoingExitY;
 
     if (dist_waiter.IsExpired())
     {
-        dist_waiter.Wait_m(Q2_RIGHTEXIT_LEAVE_LINE_WAIT_DIST);
+        dist_waiter.Wait_m(YEXIT_LEAVE_LINE_WAIT_DIST);
 
-        state = mesQ2RightExit_LeaveLine;
+        state = mesYExit_LeaveLine;
     }
 }
 
-void MazeExit::StateQ2_ExitRight_LeaveLine()
+void MazeExit::State_ExitY_LeaveLine()
 {
-    control_values.speed       = Q2_RIGHTEXIT_LEAVE_LINE_SPEED;
-    control_values.wheel_angle = Q2_RIGHTEXIT_LEAVE_LINE_WHEEL_ANGLE;
-    control_values.error       = memerrOngoingExitRightQ2;
+    control_values.speed       = YEXIT_LEAVE_LINE_SPEED;
+    control_values.wheel_angle = YEXIT_LEAVE_LINE_WHEEL_ANGLE;
+    control_values.error       = memerrOngoingExitY;
 
     if (dist_waiter.IsExpired())
     {
-        dist_waiter.Wait_m(Q2_RIGHTEXIT_REVERSE_WAIT_DIST);
+        dist_waiter.Wait_m(YEXIT_REVERSE_WAIT_DIST);
 
-        state = mesQ2RightExit_Reverse;
+        state = mesYExit_Reverse;
     }
 }
 
-void MazeExit::StateQ2_ExitRight_Reverse()
+void MazeExit::State_ExitY_Reverse()
 {
-    control_values.speed       = Q2_RIGHTEXIT_REVERSE_SPEED;
-    control_values.wheel_angle = Q2_RIGHTEXIT_REVERSE_WHEEL_ANGLE;
-    control_values.error       = memerrOngoingExitRightQ2;
+    control_values.speed       = YEXIT_REVERSE_SPEED;
+    control_values.wheel_angle = YEXIT_REVERSE_WHEEL_ANGLE;
+    control_values.error       = memerrOngoingExitY;
 
     if (dist_waiter.IsExpired())
     {
-        dist_waiter.Wait_m(Q2_RIGHTEXIT_SEARCH_LINE_WAIT_DIST);
+        dist_waiter.Wait_m(YEXIT_SEARCH_LINE_WAIT_DIST);
 
-        state = mesQ2RightExit_SearchLine;
+        state = mesYExit_SearchLine;
     }
 }
 
-void MazeExit::StateQ2_ExitRight_SearchLine()
+void MazeExit::State_ExitY_SearchLine()
 {
-    control_values.speed       = Q2_RIGHTEXIT_SEARCH_LINE_SPEED;
-    control_values.wheel_angle = Q2_RIGHTEXIT_SEARCH_LINE_WHEEL_ANGLE;
-    control_values.error       = memerrOngoingExitRightQ2;
+    control_values.speed       = YEXIT_SEARCH_LINE_SPEED;
+    control_values.wheel_angle = YEXIT_SEARCH_LINE_WHEEL_ANGLE;
+    control_values.error       = memerrOngoingExitY;
 
     if ((line_detector->GetTrackType() != None) && !dist_waiter.IsExpired())
     {
@@ -279,11 +241,6 @@ void MazeExit::StateQ2_ExitRight_SearchLine()
         State_ExitFailed();
         state = mesFailedToExit;
     }
-}
-
-void StateMachine()
-{
-    // TODO implement
 }
 
 void MazeExit::State_ExitSuccessful()

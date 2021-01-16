@@ -8,23 +8,21 @@ typedef enum : uint8_t
 {
     mesUninitialzed = 0U,
     mesInitialized,
-    mesQ2LeftExit_Prepare,
-    mesQ2LeftExit_LeaveLine,
-    mesQ2LeftExit_SearchLine,
-    mesQ2RightExit_Prepare,
-    mesQ2RightExit_LeaveLine,
-    mesQ2RightExit_Reverse,
-    mesQ2RightExit_SearchLine,
+    mesForwardExit_Prepare,
+    mesForwardExit_LeaveLine,
+    mesForwardExit_SearchLine,
+    mesYExit_Prepare,
+    mesYExit_LeaveLine,
+    mesYExit_Reverse,
+    mesYExit_SearchLine,
     mesSuccessfullyFinished,
     mesFailedToExit
 } MAZE_EXIT_STATE;
 
 typedef enum : uint8_t
 {
-    memQ2Left = 0U,
-    memQ2Right,
-    memLeft,
-    memRight,
+    memForward = 0U,
+    memY,
 
     memNotSet = 255U
 } MAZE_EXIT_MODE;
@@ -33,10 +31,8 @@ typedef enum : uint8_t
 {
     memerrNoError = 0U,
     memerrNotInitialized,
-    memerrOngoingExitLeftQ2,
-    memerrOngoingExitRightQ2,
-    memerrOngoingExitLeft,
-    memerrOngoingExitRight,
+    memerrOngoingExitForward,
+    memerrOngoingExitY,
     memerrSuccessfullyEnded,
     memerrFailedExit,
 
@@ -58,8 +54,7 @@ static MazeExit& GetInstance();
 
 MEM_ERROR Init(MAZE_EXIT_MODE const mode);
 
-EXIT_INFO MazeExit_Process_Q2();
-EXIT_INFO Exit_Process();
+EXIT_INFO MazeExit_Process();
 
 private:
     MAZE_EXIT_MODE  mode;
@@ -73,20 +68,16 @@ private:
 
 MazeExit();
 
-void StateMachine_Q2ExitLeft();
-void StateQ2_ExitLeft_PrepareToLeaveLine();
-void StateQ2_ExitLeft_LeaveLine();
-void StateQ2_ExitLeft_SearchLine();
+void StateMachine_ExitForward();
+void State_ExitForward_PrepareToLeaveLine();
+void State_ExitForward_LeaveLine();
+void State_ExitForward_SearchLine();
 
-void StateMachine_Q2ExitRight();
-void StateQ2_ExitRight_PrepareToLeaveLine();
-void StateQ2_ExitRight_LeaveLine();
-void StateQ2_ExitRight_Reverse();
-void StateQ2_ExitRight_SearchLine();
-
-void StateMachine_ExitLeft();
-
-void StateMachine_ExitRigth();
+void StateMachine_ExitY();
+void State_ExitY_PrepareToLeaveLine();
+void State_ExitY_LeaveLine();
+void State_ExitY_Reverse();
+void State_ExitY_SearchLine();
 
 void State_ExitSuccessful();
 void State_ExitFailed();
