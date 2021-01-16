@@ -21,9 +21,24 @@ void TestTask::TaskInit()
 {
 	TraceTask::Init();
 	InertialTask::Init();
+
+	navi.InitMap();
+	target_node = 13U;
+	current_section = sStpos;
+	source_section = sStpos;
 }
 
 void TestTask::TaskFunction()
 {
-
+    navi.SetCurrentSection(source_section);
+    current_section = navi.GetCurrentSection();
+    move = navi.GetNextMove(target_node);
+    current_section = navi.GetCurrentSection();
+    move = navi.GetNextMove(target_node);
+    current_section = navi.GetCurrentSection();
+    move = navi.GetNextMove(target_node);
+    current_section = navi.GetCurrentSection();
+    move = navi.GetNextMove(target_node);
+    current_section = navi.GetCurrentSection();
+    move = navi.GetNextMove(target_node);
 }
