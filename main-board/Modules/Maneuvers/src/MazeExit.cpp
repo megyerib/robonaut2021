@@ -141,12 +141,13 @@ void MazeExit::State_ExitForward_SearchLine()
     control_values.wheel_angle = FORWARDEXIT_SEARCH_LINE_WHEEL_ANGLE;
     control_values.error       = memerrOngoingExitForward;
 
-    if (line_detector->GetTrackType() != None && !dist_waiter.IsExpired())
+    if (line_detector->GetTrackType() != None)
     {
         State_ExitSuccessful();
         state = mesSuccessfullyFinished;
     }
-    else
+
+    if (dist_waiter.IsExpired())
     {
         State_ExitFailed();
         state = mesFailedToExit;
@@ -258,12 +259,13 @@ void MazeExit::State_ExitY_SearchLine()
     control_values.wheel_angle = YEXIT_SEARCH_LINE_WHEEL_ANGLE;
     control_values.error       = memerrOngoingExitY;
 
-    if ((line_detector->GetTrackType() != None) && !dist_waiter.IsExpired())
+    if (line_detector->GetTrackType() != None)
     {
         State_ExitSuccessful();
         state = mesSuccessfullyFinished;
     }
-    else
+
+    if (dist_waiter.IsExpired())
     {
         State_ExitFailed();
         state = mesFailedToExit;
