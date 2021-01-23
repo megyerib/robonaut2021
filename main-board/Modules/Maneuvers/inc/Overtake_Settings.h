@@ -1,7 +1,7 @@
 #pragma once
 
 // Trace on = leave defined, Trace off = comment out.
-//#define OVERTAKE_TRACE_ENABLED
+#define OVERTAKE_TRACE_ENABLED
 
 // Maneuver settings
 // Q2

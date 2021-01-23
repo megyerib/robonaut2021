@@ -1,5 +1,6 @@
 #include "Overtake.h"
 #include "Overtake_Settings.h"
+#include "Trace.h"
 
 Overtake& Overtake::GetInstance()
 {
@@ -17,6 +18,7 @@ OVERTAKE_INFO Overtake::Overtake_Process()
 Overtake::Overtake() : state(ovrsIdle),
                        control_values({0.0f, 0.0f, ovrerrNoError}),
                        dist_waiter(new WaitDistance()),
+                       line_detector(TrackDetector::GetInstance()),
                        inert_sensor(Inertial::GetInstance())
 {}
 
@@ -35,6 +37,7 @@ void Overtake::StateMachine_OverTake()
 #endif
 
             state = ovrsPrepare;
+            break;
         }
         case ovrsPrepare:
         {
