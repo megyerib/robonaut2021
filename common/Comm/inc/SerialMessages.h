@@ -8,7 +8,7 @@
 // Serial message types ------------------------------------------------------------------------------------------------
 
 typedef uint8_t  smID;
-typedef uint16_t tmID;
+typedef uint8_t  tmID;
 typedef uint16_t cfgID;
 
 typedef enum
@@ -96,7 +96,7 @@ SM_CFG_UINUMBER;
 typedef struct
 {
     smID     id = smTelemetry;
-    cfgID    type = tmDistanceFront;
+    tmID     type = tmDistanceFront;
     uint32_t timestamp;  // [us]
     uint16_t dist;       // mm
 }
@@ -105,7 +105,7 @@ SM_TM_FORNTDISTANCE;
 typedef struct
 {
     smID     id = smTelemetry;
-    cfgID    type = tmSpeedCtrlProc;
+    tmID     type = tmSpeedCtrlProc;
     uint32_t timestamp;  // [us]
     int32_t  setpoint_r;
     int32_t  controlvalue_u;
@@ -116,7 +116,7 @@ SM_TM_SPEEDCTRLPROC;
 typedef struct
 {
     smID     id = smTelemetry;
-    cfgID    type = tmSpeedCtrlPID;
+    tmID     type = tmSpeedCtrlPID;
     uint32_t timestamp;  // [us]
     int32_t  P;
     int32_t  I;
@@ -126,8 +126,8 @@ SM_TM_SPEEDCTRLPID;
 
 typedef struct
 {
-    smID     id = smCfg;
-    cfgID    type = tmSpeedCtrlDetail;
+    smID     id = smTelemetry;
+    tmID     type = tmSpeedCtrlDetail;
     uint32_t timestamp;  // [us]
     int32_t  intlimit;
     int32_t  integrate;
@@ -177,16 +177,18 @@ SM_CFG_SPEEDCTRLILIM;
 
 #pragma pack(pop)
 
-#define TRACE_DUMMY(x) SM_DUMMY msg; msg.timestamp = UPTIME_us(); msg.value = (x); TRACE_BIN(&msg, sizeof(msg))
+#define TRACE_DUMMY(x) SM_DUMMY msg_dummy; msg_dummy.timestamp = UPTIME_us(); msg_dummy.value = (x); TRACE_BIN(&msg_dummy, sizeof(msg_dummy))
 
-#define TRACE_TM_SPEED(v, d) SM_TM_SPEED msg; msg.timestamp = UPTIME_us(); msg.speed = (v); msg.distance = (d); TRACE_BIN(&msg, sizeof(msg))
+#define TRACE_TM_SPEED(v, d) SM_TM_SPEED msg_tm_speed; msg_tm_speed.timestamp = UPTIME_us(); msg_tm_speed.speed = (v); msg_tm_speed.distance = (d); TRACE_BIN(&msg_tm_speed, sizeof(msg_tm_speed))
 
-#define TRACE_TM_REMOTE(ch1, ch2, ch3) SM_TM_REMOTE msg; msg.timestamp = UPTIME_us(); msg.channel[0] = (ch1); msg.channel[1] = (ch2); msg.channel[2] = (ch3); TRACE_BIN(&msg, sizeof(msg))
+#define TRACE_TM_REMOTE(ch1, ch2, ch3) SM_TM_REMOTE msg_tm_remote; msg_tm_remote.timestamp = UPTIME_us(); msg_tm_remote.channel[0] = (ch1); msg_tm_remote.channel[1] = (ch2); msg_tm_remote.channel[2] = (ch3); TRACE_BIN(&msg_tm_remote, sizeof(msg_tm_remote))
 
-#define TRACE_TM_FORNTDISTANCE(d) SM_TM_FORNTDISTANCE msg; msg.timestamp = UPTIME_us(); msg.dist = (d); TRACE_BIN(&msg, sizeof(msg))
+#define TRACE_CFG_UINUMBER(n) SM_CFG_UINUMBER msg_cfg_uinum; msg_cfg_uinum.number = (n); TRACE_BIN(&msg_cfg_uinum, sizeof(msg_cfg_uinum))
 
-#define TRACE_TM_SPEEDCTRLPROC(r, u, y) SM_TM_SPEEDCTRLPROC msg; msg.timestamp = UPTIME_us(); msg.setpoint_r = (r); msg.controlvalue_u = (u); msg.processvalue_y = (y); TRACE_BIN(&msg, sizeof(msg))
+#define TRACE_TM_FORNTDISTANCE(d) SM_TM_FORNTDISTANCE msg_tm_distf; msg_tm_distf.timestamp = UPTIME_us(); msg_tm_distf.dist = (d); TRACE_BIN(&msg_tm_distf, sizeof(msg_tm_distf))
 
-#define TRACE_TM_SPEEDCTRLPID(p, i, d) SM_TM_SPEEDCTRLPID msg; msg.timestamp = UPTIME_us(); msg.P = (p); msg.I = (i); msg.D = (d); TRACE_BIN(&msg, sizeof(msg))
+#define TRACE_TM_SPEEDCTRLPROC(r, u, y) SM_TM_SPEEDCTRLPROC msg_tm_spctrlproc; msg_tm_spctrlproc.timestamp = UPTIME_us(); msg_tm_spctrlproc.setpoint_r = (r); msg_tm_spctrlproc.controlvalue_u = (u); msg_tm_spctrlproc.processvalue_y = (y); TRACE_BIN(&msg_tm_spctrlproc, sizeof(msg_tm_spctrlproc))
 
-#define TRACE_TM_SPEEDCTRLDETAIL(ilim, i, d) SM_TM_SPEEDCTRLDETAIL msg; msg.timestamp = UPTIME_us(); msg.intlimit = (ilim); msg.integrate = (i); msg.derivative = (d); TRACE_BIN(&msg, sizeof(msg))
+#define TRACE_TM_SPEEDCTRLPID(p, i, d) SM_TM_SPEEDCTRLPID msg_tm_spctrlpid; msg_tm_spctrlpid.timestamp = UPTIME_us(); msg_tm_spctrlpid.P = (p); msg_tm_spctrlpid.I = (i); msg_tm_spctrlpid.D = (d); TRACE_BIN(&msg_tm_spctrlpid, sizeof(msg_tm_spctrlpid))
+
+#define TRACE_TM_SPEEDCTRLDETAIL(ilim, i, d) SM_TM_SPEEDCTRLDETAIL msg_tm_spctrldetail; msg_tm_spctrldetail.timestamp = UPTIME_us(); msg_tm_spctrldetail.intlimit = (ilim); msg_tm_spctrldetail.integrate = (i); msg_tm_spctrldetail.derivative = (d); TRACE_BIN(&msg_tm_spctrldetail, sizeof(msg_tm_spctrldetail))
