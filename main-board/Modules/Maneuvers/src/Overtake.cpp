@@ -186,28 +186,28 @@ void Overtake::State_SearchLine()
 
     if (line_detector->GetTrackType() != None)
     {
+#ifdef OVERTAKE_TRACE_ENABLED
+    PRINTF("Overtake: Successfully overtook the safety car.\n");
+#endif
         state = ovrsSuccessfulOvertake;
     }
 
     if (dist_waiter->IsExpired())
     {
+#ifdef OVERTAKE_TRACE_ENABLED
+    PRINTF("Overtake: Failed to overtook the safety car.\n");
+#endif
         state = ovrsFailedOvertake;
     }
 }
 
 void Overtake::State_SuccessfulOvertake()
 {
-#ifdef OVERTAKE_TRACE_ENABLED
-    PRINTF("Overtake: Successfully overtook the safety car.\n");
-#endif
     control_values.error = ovrerrSuccessfulOvertake;
 }
 
 void Overtake::State_FailedOvertake()
 {
-#ifdef OVERTAKE_TRACE_ENABLED
-    PRINTF("Overtake: Failed to overtook the safety car.\n");
-#endif
     control_values.error = ovrerrFailedOvertake;
     control_values.speed = 0.0f;
 }
