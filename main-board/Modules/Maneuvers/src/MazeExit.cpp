@@ -11,40 +11,35 @@ MazeExit& MazeExit::GetInstance()
 MEM_ERROR MazeExit::Init(MAZE_EXIT_MODE const mode)
 {
     this->mode     = mode;
-    error_code     = memerrNoError;
     state          = mesInitialized;
     control_values = {0.0f, 0.0f, memerrUnknown};
     initialized    = true;
 
     line_detector->SetMode(trackMaze);
 
-    return error_code;
+    return memerrNoError;
 }
 
 EXIT_INFO MazeExit::MazeExit_Process()
 {
-    if (error_code == memerrNoError)
+    switch (mode)
     {
-        switch (mode)
+        case memForward:
         {
-            case memForward:
-            {
-                StateMachine_ExitForward();
-                break;
-            }
-            case memY:
-            {
-                StateMachine_ExitY();
-                break;
-            }
-            default:
-            {
-                error_code = memerrUnknown;
-                break;
-            }
+            StateMachine_ExitForward();
+            break;
+        }
+        case memY:
+        {
+            StateMachine_ExitY();
+            break;
+        }
+        default:
+        {
+            control_values.error = memerrInvalidMode;
+            break;
         }
     }
-    control_values.error = error_code;
 
     return control_values;
 }
@@ -52,7 +47,6 @@ EXIT_INFO MazeExit::MazeExit_Process()
 MazeExit::MazeExit()
 {
     mode           = memNotSet;
-    error_code     = memerrNoError;
     state          = mesUninitialzed;
     control_values = {0.0f, 0.0f, memerrUnknown};
     initialized    = false;
@@ -179,7 +173,7 @@ void MazeExit::StateMachine_ExitY()
         }
         case mesYExit_LeaveLine:
         {
-            State_ExitForward_LeaveLine();
+            State_ExitY_LeaveLine();
             break;
         }
         case mesYExit_Reverse:

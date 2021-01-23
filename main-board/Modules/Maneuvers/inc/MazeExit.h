@@ -35,6 +35,7 @@ typedef enum : uint8_t
     memerrOngoingExitY,
     memerrSuccessfullyEnded,
     memerrFailedExit,
+    memerrInvalidMode,
 
     memerrUnknown = 255U
 } MEM_ERROR;
@@ -58,7 +59,6 @@ EXIT_INFO MazeExit_Process();
 
 private:
     MAZE_EXIT_MODE  mode;
-    MEM_ERROR       error_code;
     MAZE_EXIT_STATE state;
     EXIT_INFO       control_values;
     bool            initialized;
