@@ -1,0 +1,13 @@
+common/stm32/** linguist-vendored
+
+startup*.s linguist-vendored
+FreeRTOSConfig.h linguist-vendored
+*_hal_conf.h linguist-vendored
+system_stm32*.c linguist-vendored
+port.c linguist-vendored
+portmacro.h linguist-vendored
+
+lsm6dso_reg.* linguist-vendored
+
+helper/MazeNavTest/MazeNav/static_map.h linguist-language=C++
+main-board/App/TestApp/inc/Tone.h linguist-language=C++
